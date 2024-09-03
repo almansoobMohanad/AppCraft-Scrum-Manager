@@ -1,14 +1,15 @@
 import * as React from 'react';
 
-const App = () => {
+const CancelButton = () => {
     const handleClick = () => {
         alert('Cancel button clicked');
     };
   return (
     <div>
-      <button type="button">Cancel</button>
+      <button type="button" onClick={handleClick}>
+        Cancel </button>
     </div>
   );
-};
+}
 
-export default App;
+export default CancelButton;
