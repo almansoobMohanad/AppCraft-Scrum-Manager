@@ -1,0 +1,53 @@
+.header {
+    background-color: #00008B; /* Dark blue color */
+    width: 80px; /* Narrow width */
+    height: 100vh; /* Full height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center the items vertically */
+    align-items: center; /* Center the items horizontally */
+    padding: 20px 0;
+    box-sizing: border-box;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Space between the items */
+    width: 100%;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-size: 14px; /* Font size for the labels */
+    font-weight: 500;
+    width: 100%;
+    padding: 10px 0;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.nav-item .nav-icon {
+    width: 24px; /* Set the width of the image */
+    height: 24px; /* Set the height of the image */
+    margin-bottom: 5px; /* Space between the image and text */
+}
+
+.nav-item.active {
+    background-color: #4169E1; /* Light blue background for active item */
+    border-radius: 15px; /* Rounded corners */
+    padding: 15px 0; /* Padding for active state */
+}
+
+.nav-item:hover {
+    background-color: #3333FF; /* Hover effect */
+    border-radius: 15px;
+}
