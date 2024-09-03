@@ -1,23 +1,21 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import CancelButton from './components/CancelButton.jsx'
 import CreateButton from './components/CreateButton.jsx'
 import './App.css'
+import NavigationBar from './components/NavigationBar.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
+    <div>
+      <NavigationBar />
 
-
-    
-    <>
-    <CreateButton/>
-    <CancelButton/>
-
-    </>
-
+      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <CreateButton />
+        <CancelButton />
+      </div>
+    </div>
   )
 }
 
