@@ -1,0 +1,99 @@
+/* AddTaskOverlay.css */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensure it's on top of other content */
+
+}
+
+.overlay-content {
+    position: relative; /* Ensure this is set to relative */
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+}
+
+.overlay-title {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.task-label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.task-input {
+    width: 95%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.task-textarea {
+    width: 95%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-height: 100px; /* Adjust as needed */
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tag-label {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.overlay-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cancel-button, .create-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancel-button {
+    background: #f44336; /* Red color */
+    color: white;
+}
+
+.create-button {
+    background: #4caf50; /* Green color */
+    color: white;
+}
+
+.cross-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #000;
+}
