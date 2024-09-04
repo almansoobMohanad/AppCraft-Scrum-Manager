@@ -1,0 +1,26 @@
+/* App.css */
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  background-color: #d9d9d9; /* Light background for the content area */
+}
+
+.content {
+  flex-grow: 1;
+  padding: 40px;
+  margin-left: 80px; /* Adjust this based on your NavigationBar's width */
+}
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+/* CreateButton and CancelButton styles should be defined in their respective CSS files or here if they're shared */
