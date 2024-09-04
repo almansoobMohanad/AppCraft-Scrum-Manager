@@ -1,15 +1,13 @@
 import * as React from 'react';
 
-const CancelButton = () => {
-    const handleClick = () => {
-        alert('Cancel button clicked');
-    };
+const CancelButton = ({ onClick, className }) => {
   return (
     <div>
-      <button type="button" onClick={handleClick}>
-        Cancel </button>
+      <button type="button" onClick={onClick} className={className}>
+        Cancel
+      </button>
     </div>
   );
-}
+};
 
 export default CancelButton;
