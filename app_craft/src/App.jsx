@@ -1,22 +1,23 @@
-import { useState } from 'react'
-import CancelButton from './components/CancelButton.jsx'
-import CreateButton from './components/CreateButton.jsx'
-import './App.css'
-import NavigationBar from './components/NavigationBar.jsx'
+import { useState } from 'react';
+import CancelButton from './components/CancelButton.jsx';
+import CreateButton from './components/CreateButton.jsx';
+import './App.css';
+import NavigationBar from './components/NavigationBar.jsx';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div>
+    <div className="app-container">
       <NavigationBar />
 
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <CreateButton />
-        <CancelButton />
+      <div className="content">
+        <h1 className="title">Product Backlog</h1>
+        <div className="button-group">
+          <CreateButton />
+          <CancelButton />
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
