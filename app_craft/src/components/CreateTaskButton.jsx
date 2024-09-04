@@ -1,17 +1,13 @@
 import * as React from 'react';
 
-const CreateTaskButton = () => {
-    const handleClick = () => {
-        alert('Create button clicked!');
-    };
-
+const CreateTaskButton = ({ onClick }) => {
     return (
         <div>
-            <button type="button" onClick={handleClick}>
+            <button type="button" onClick={onClick}>
                 Create
             </button>
         </div>
     );
-    };
+};
 
 export default CreateTaskButton;
