@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const CreateButton = () => {
+const CreateTaskButton = () => {
     const handleClick = () => {
         alert('Create button clicked!');
     };
@@ -14,4 +14,4 @@ const CreateButton = () => {
     );
     };
 
-export default CreateButton;
+export default CreateTaskButton;
