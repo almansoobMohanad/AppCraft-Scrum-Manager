@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import CancelButton from './components/CancelButton.jsx';
-import CreateButton from './components/CreateButton.jsx';
+import CreateTaskButton from './components/CreateTaskButton.jsx';
 import './App.css';
 import NavigationBar from './components/NavigationBar.jsx';
 import CrossButton from './components/CrossButton.jsx';
@@ -14,7 +14,7 @@ function App() {
         <h1 className="title">Product Backlog</h1>
         <div className="button-group">
           <CrossButton />
-          <CreateButton />
+          <CreateTaskButton />
           <CancelButton />
         </div>
       </div>
