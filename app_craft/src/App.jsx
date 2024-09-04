@@ -5,6 +5,7 @@ import AddTaskOverlay from './components/AddTaskOverlay.jsx';  // Import the ove
 import './App.css';
 import NavigationBar from './components/NavigationBar.jsx';
 import CrossButton from './components/CrossButton.jsx';
+import Home from './pages/home.jsx';
 
 function App() {
   // State to control overlay visibility
@@ -29,8 +30,9 @@ function App() {
   return (
     <div className="app-container">
       <NavigationBar />
-
+      
       <div className="content">
+      <Home /> {/* Add the Home component here */}
         <h1 className="title">Product Backlog</h1>
         <div className="button-group">
           <CrossButton />
@@ -38,6 +40,7 @@ function App() {
           <CreateTaskButton onClick={handleCreateButtonClick} />
           <CancelButton />
         </div>
+        
       </div>
 
       {/* Conditionally render the AddTaskOverlay */}
