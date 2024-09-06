@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import {firestore} from '../firebaseConfig';
+import {firestore} from '../firebase/firebaseConfig';
 import {addDoc, collection} from '@firebase/firestore';
 
 export default function Home() {
