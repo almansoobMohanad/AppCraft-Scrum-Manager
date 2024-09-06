@@ -7,8 +7,8 @@ import NavigationBar from './components/NavigationBar.jsx';
 import CrossButton from './components/CrossButton.jsx';
 import Home from './pages/home.jsx';
 import {doc, getDoc} from 'firebase/firestore';
-import {db} from './firebaseConfig';
-
+import {db} from './firebase/firebaseConfig.js';
+import { createTask } from "./services/tasksService"; //import task service
 
 function App() {
   // State to control overlay visibility
@@ -36,8 +36,18 @@ function App() {
   };
 
   // Function to handle saving the task (example logic)
-  const handleTaskSave = (task) => {
-    console.log('Task saved:', task);  // Perform save logic here
+  const handleTaskSave = async (task) => {
+    try {
+      // Call the createTask function from your task service
+      const taskId = await createTask(task);
+      console.log('Task created with ID:', taskId);
+
+      // Optionally handle UI updates here (e.g., showing success message or clearing the form)
+    } catch (error) {
+      console.error('Error saving task:', error);
+      // Optionally handle error states in UI
+    }
+
     setOverlayVisible(false);  // Hide the overlay after saving
   };
 
