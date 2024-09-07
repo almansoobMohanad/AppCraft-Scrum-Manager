@@ -9,6 +9,7 @@ import Home from './pages/home.jsx';
 import {doc, getDoc} from 'firebase/firestore';
 import {db} from './firebase/firebaseConfig.js';
 import { createTask } from "./services/tasksService"; //import task service
+import backEndDeleteTask from './components/backEndDeleteTask.jsx';
 
 function App() {
   // State to control overlay visibility
@@ -51,6 +52,10 @@ function App() {
     setOverlayVisible(false);  // Hide the overlay after saving
   };
 
+  const handleDeleteTask = (taskIdToDelete) => {
+    backEndDeleteTask(taskIdToDelete);
+  }
+
   return (
     <div className="app-container">
       <NavigationBar />
@@ -63,6 +68,7 @@ function App() {
           {/* Pass the click handler to CreateTaskButton */}
           <CreateTaskButton onClick={handleCreateButtonClick} />
           <CancelButton />
+          <button onClick={handleDeleteTask}>Delete Task</button>
         </div>
         
       </div>
