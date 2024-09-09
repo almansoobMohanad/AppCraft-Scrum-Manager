@@ -13,7 +13,6 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { retrieveTask } from '../services/tasksService.js';
 import { db } from '../firebase/firebaseConfig.js';
 import { getDocs, collection } from 'firebase/firestore';
 import './TaskCardDetail.css';
