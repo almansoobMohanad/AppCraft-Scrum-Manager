@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -16,9 +16,9 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { db } from '../firebase/firebaseConfig.js';
 import { getDocs, collection } from 'firebase/firestore';
 import './TaskCardDetail.css';
+import backEndDeleteTask from './backEndDeleteTask'; // Corrected import path
 
-
-function createData(taskName, tag, priority, storyPoint) {
+function createData(taskName, tag, priority, storyPoint, databaseID) {
     return {
         taskName,
         tag,
@@ -34,91 +34,113 @@ function createData(taskName, tag, priority, storyPoint) {
                 changedBy: 'Anonymous',
             },
         ],
+        databaseID,
     };
 }
 
-function Row(props) {
-    const { row } = props;
-    const [open, setOpen] = React.useState(false);
+function Row({ row, onDelete }) {
+    const [open, setOpen] = useState(false);
+
+    const handleDelete = async () => {
+        await backEndDeleteTask(row.databaseID);
+        onDelete(row.databaseID);
+    };
 
     return (
         <React.Fragment>
-        <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-            <TableCell>
-            <IconButton
-                aria-label="expand row"
-                size="small"
-                onClick={() => setOpen(!open)}
-            >
-                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-            </TableCell>
-            <TableCell component="th" scope="row">
-            {row.taskName}
-            </TableCell>
-            <TableCell align="right">{row.tag}</TableCell>
-            <TableCell align="right">{row.priority}</TableCell>
-            <TableCell align="right">{row.storyPoint}</TableCell>
-        </TableRow>
-        <TableRow>
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-                <Box sx={{ margin: 1 }}>
-                <Typography variant="h6" gutterBottom component="div">
-                    History
-                </Typography>
-                <Table size="small" aria-label="purchases">
-                    <TableHead>
-                    <TableRow>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Changed By</TableCell>
-                    </TableRow>
-                    </TableHead>
-                    <TableBody>
-                    {row.history.map((historyRow) => (
-                        <TableRow key={historyRow.date}>
-                        <TableCell component="th" scope="row">
-                            {historyRow.date}
-                        </TableCell>
-                        <TableCell>{historyRow.changedBy}</TableCell>
-                        </TableRow>
-                    ))}
-                    </TableBody>
-                </Table>
-                </Box>
-            </Collapse>
-            </TableCell>
-        </TableRow>
+            <TableRow className="custom-row" sx={{ '& > *': { borderBottom: 'unset' } }}>
+                <TableCell>
+                    <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => setOpen(!open)}
+                    >
+                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                    </IconButton>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                    {row.taskName}
+                </TableCell>
+                <TableCell colSpan={4} className="task-details">
+                    <div className="task-details-container">
+                        <span className="task-detail">{row.tag}</span>
+                        <span className="task-detail">{row.priority}</span>
+                        <span className="task-detail">{row.storyPoint}</span>
+                        <button className="delete-button" onClick={handleDelete}>Dlt</button>
+                    </div>
+                </TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Box sx={{ margin: 1 }}>
+                            <Typography variant="h6" gutterBottom component="div">
+                                History
+                            </Typography>
+                            <Table size="small" aria-label="purchases">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Date</TableCell>
+                                        <TableCell>Changed By</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {row.history.map((historyRow) => (
+                                        <TableRow key={historyRow.date}>
+                                            <TableCell component="th" scope="row">
+                                                {historyRow.date}
+                                            </TableCell>
+                                            <TableCell>{historyRow.changedBy}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </Box>
+                    </Collapse>
+                </TableCell>
+            </TableRow>
         </React.Fragment>
     );
 }
 
 Row.propTypes = {
     row: PropTypes.shape({
-        tag: PropTypes.number.isRequired,
+        tag: PropTypes.string.isRequired,
         storyPoint: PropTypes.number.isRequired,
-        priority: PropTypes.number.isRequired,
+        priority: PropTypes.string.isRequired,
         history: PropTypes.arrayOf(
-        PropTypes.shape({
-            changedBy: PropTypes.string.isRequired,
-            date: PropTypes.string.isRequired,
-        }),
+            PropTypes.shape({
+                changedBy: PropTypes.string.isRequired,
+                date: PropTypes.string.isRequired,
+            }),
         ).isRequired,
-        taskName: PropTypes.string.isRequired
+        taskName: PropTypes.string.isRequired,
+        databaseID: PropTypes.string.isRequired,
     }).isRequired,
+    onDelete: PropTypes.func.isRequired,
 };
 
-// need to make logic to get data from database and place it as an array in rows
-
-const rows = []
-const querySnapshot = await getDocs(collection(db, "tasks"));
-    querySnapshot.forEach((doc) => {
-        const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints);
-        console.log(data);
-        rows.push(data);
-});
-
 export default function CollapsibleTable() {
+    const [rows, setRows] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const querySnapshot = await getDocs(collection(db, "tasks"));
+            const fetchedRows = [];
+            querySnapshot.forEach((doc) => {
+                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id);
+                fetchedRows.push(data);
+            });
+            setRows(fetchedRows);
+        };
+
+        fetchData();
+    }, []);
+
+    const handleDelete = (databaseID) => {
+        setRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
+    };
+
     return (
         <div className="TableContainer">
             <TableContainer component={Paper}>
@@ -127,14 +149,19 @@ export default function CollapsibleTable() {
                         <TableRow>
                             <TableCell />
                             <TableCell>Task Name</TableCell>
-                            <TableCell align="right">Tag</TableCell>
-                            <TableCell align="right">Priority</TableCell>
-                            <TableCell align="right">Story Point</TableCell>
+                            <TableCell colSpan={4} className="task-details">
+                                <div className="task-details-container">
+                                    <span className="task-detail">Tag</span>
+                                    <span className="task-detail">Priority</span>
+                                    <span className="task-detail">Story Point</span>
+                                    <span className="task-detail">_______</span> {/* Empty span for alignment */}
+                                </div>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map((row) => (
-                            <Row key={row.taskName} row={row} />
+                            <Row key={row.databaseID} row={row} onDelete={handleDelete} />
                         ))}
                     </TableBody>
                 </Table>
