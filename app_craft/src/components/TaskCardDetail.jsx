@@ -123,24 +123,20 @@ export default function CollapsibleTable() {
         <div className="TableContainer">
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
-                    <div className="TableHeader">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell />
-                                <TableCell>Task Name</TableCell>
-                                <TableCell align="right">Tag</TableCell>
-                                <TableCell align="right">Priority</TableCell>
-                                <TableCell align="right">Story Point</TableCell>
-                            </TableRow>
-                        </TableHead>
-                    </div>
-                    <div className="TableBody">
-                        <TableBody>
-                            {rows.map((row) => (
-                                <Row key={row.taskName} row={row} />
-                            ))}
-                        </TableBody>
-                    </div>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell />
+                            <TableCell>Task Name</TableCell>
+                            <TableCell align="right">Tag</TableCell>
+                            <TableCell align="right">Priority</TableCell>
+                            <TableCell align="right">Story Point</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map((row) => (
+                            <Row key={row.taskName} row={row} />
+                        ))}
+                    </TableBody>
                 </Table>
             </TableContainer>
         </div>
