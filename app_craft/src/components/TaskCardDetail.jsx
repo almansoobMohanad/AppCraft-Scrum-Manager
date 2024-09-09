@@ -1,6 +1,4 @@
 import React from "react";
-import { getDatabase, ref, child, get } from "firebase/database";
-import * as React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -15,23 +13,11 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { retrieveTask } from '../services/tasksService.js';
+import { db } from '../firebase/firebaseConfig.js';
+import { getDocs, collection } from 'firebase/firestore';
+import './TaskCardDetail.css';
 
-
-
-const dbRef = ref(getDatabase());
-
-// change `tasks/${taskId}` to the path of the task you want to get
-
-get(child(dbRef, `tasks/${taskId}`)).then((snapshot) => {
-    if (snapshot.exists()) {
-        console.log(snapshot.val());
-        createData('Dummy Task 1', "Front-end", "Low", 10) // replace this with the data you get from the database
-    } else {
-        console.log("No data available");
-    }
-}).catch((error) => {
-    console.error(error);
-});
 
 function createData(taskName, tag, priority, storyPoint) {
     return {
@@ -106,9 +92,9 @@ function Row(props) {
         </TableRow>
         </React.Fragment>
     );
-    }
+}
 
-    Row.propTypes = {
+Row.propTypes = {
     row: PropTypes.shape({
         tag: PropTypes.number.isRequired,
         storyPoint: PropTypes.number.isRequired,
@@ -121,37 +107,43 @@ function Row(props) {
         ).isRequired,
         taskName: PropTypes.string.isRequired
     }).isRequired,
-    };
+};
 
-    // need to make logic to get data from database and place it as an array in rows
+// need to make logic to get data from database and place it as an array in rows
 
-    const rows = [
-    createData('Dummy Task 1', "Front-end", "Low", 10),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
-    createData('Eclair', 262, 16.0, 24, 6.0, 3.79),
-    createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-    createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-    ];
+const rows = []
+const querySnapshot = await getDocs(collection(db, "tasks"));
+    querySnapshot.forEach((doc) => {
+        const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints);
+        console.log(data);
+        rows.push(data);
+});
 
-    export default function CollapsibleTable() {
+export default function CollapsibleTable() {
     return (
-        <TableContainer component={Paper}>
-        <Table aria-label="collapsible table">
-            <TableHead>
-            <TableRow>
-                <TableCell />
-                <TableCell>Task Name</TableCell>
-                <TableCell align="right">Tag</TableCell>
-                <TableCell align="right">Priority</TableCell>
-                <TableCell align="right">Story Point</TableCell>
-            </TableRow>
-            </TableHead>
-            <TableBody>
-            {rows.map((row) => (
-                <Row key={row.taskName} row={row} />
-            ))}
-            </TableBody>
-        </Table>
-        </TableContainer>
+        <div className="TableContainer">
+            <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                    <div className="TableHeader">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell />
+                                <TableCell>Task Name</TableCell>
+                                <TableCell align="right">Tag</TableCell>
+                                <TableCell align="right">Priority</TableCell>
+                                <TableCell align="right">Story Point</TableCell>
+                            </TableRow>
+                        </TableHead>
+                    </div>
+                    <div className="TableBody">
+                        <TableBody>
+                            {rows.map((row) => (
+                                <Row key={row.taskName} row={row} />
+                            ))}
+                        </TableBody>
+                    </div>
+                </Table>
+            </TableContainer>
+        </div>
     );
 }

@@ -10,6 +10,7 @@ import {doc, getDoc} from 'firebase/firestore';
 import {db} from './firebase/firebaseConfig.js';
 import { createTask } from "./services/tasksService"; //import task service
 import backEndDeleteTask from './components/backEndDeleteTask.jsx';
+import CollapsibleTable from './components/TaskCardDetail.jsx';
 
 function App() {
   // State to control overlay visibility
@@ -56,6 +57,8 @@ function App() {
     backEndDeleteTask(taskIdToDelete);
   }
 
+  CollapsibleTable();
+
   return (
     <div className="app-container">
       <NavigationBar />
@@ -70,8 +73,10 @@ function App() {
           <CancelButton />
           <button onClick={handleDeleteTask}>Delete Task</button>
         </div>
+        <CollapsibleTable />
         
       </div>
+
 
       {/* Conditionally render the AddTaskOverlay */}
       {isOverlayVisible && (

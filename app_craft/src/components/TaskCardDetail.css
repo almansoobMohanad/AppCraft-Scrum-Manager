@@ -1,0 +1,17 @@
+.TableContainer {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  height: 80%;
+  overflow: auto;
+}
+
+.TableHeader {
+    position: sticky;
+    top: 0;
+}
+
+.TableBody {
+  height: 100%;
+  overflow-y: auto;
+}
