@@ -1,29 +1,59 @@
-.button-container {
-    display: flex;
-    align-items: center; /* Align items vertically in the center */
-    gap: 10px; /* Space between buttons */
+/* Flex container to align buttons horizontally */
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between buttons */
 }
 
-.create-button, .filter-buttons {
-    display: inline-flex;
-    align-items: center;
+/* Buttons and dropdowns in the same row */
+.filter-button, .dropdown-button, .Storypoint-button {
+  background-color: #D9D9D9;
+  border: 2px solid black;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
 }
 
-.filter-button {
-    background-color: #D9D9D9;
-    border: 2px solid black;
-    padding: 20px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-align: center;
+.filter-button:hover, .dropdown-button:hover, .Storypoint-button:hover {
+  background-color: #b3b3b3;
 }
 
-.filter-button:hover {
-    background-color: #b3b3b3;
+/* Ensure dropdowns do not affect layout */
+.dropdown-container {
+  position: relative;
+  display: flex;
 }
 
-/* Add custom colors for each tag */
+/* Dropdown menu for priority and story points */
+.priority-dropdown-menu, .story-points-dropdown-menu, .tag-box {
+  position: absolute;
+  top: 100%; /* Position the menu right below the button */
+  z-index: 1000;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 5px;
+  box-shadow: 10px 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  padding: 10px;
+  flex-wrap: nowrap;
+}
+
+/* Each item in the dropdown */
+.priority-dropdown-item, .story-points-dropdown-item, .filter-button {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  border-bottom: none;
+  white-space: nowrap;
+}
+
+.priority-dropdown-item:hover, .story-points-dropdown-item:hover, .filter-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Custom colors for each tag */
 .filter-button.frontend { background-color: #FF5566; }  /* Frontend */
 .filter-button.backend { background-color: #F4A566; }   /* Backend */
 .filter-button.api { background-color: #6578FF; }       /* API */
@@ -33,46 +63,91 @@
 .filter-button.ui { background-color: #A6F1C8; }        /* UI */
 .filter-button.ux { background-color: #66BB77; }        /* UX */
 
-/* Dropdowns */
-.dropdown {
-  margin-bottom: 10px;
+/* Custom colors for each priority */
+/* Priority specific styles */
+.priority-dropdown-item.low {
+  background-color: #00FF00; /* Green for Low */
 }
 
-.dropdown-button {
-  background-color: #D9D9D9;
-  border: 1px black;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  text-align: left;
-  width: 100%;
+.priority-dropdown-item.medium {
+  background-color: #FFFF00; /* Yellow for Medium */
 }
 
-.dropdown-button:hover {
-  background-color: #b3b3b3;
+.priority-dropdown-item.important {
+  background-color: #FFA500; /* Orange for Important */
 }
 
-/* Updated dropdown menu to be horizontal */
-.dropdown-menu {
-  display: flex;
-  flex-direction: row;  /* Now the dropdown items are aligned in a row */
-  justify-content: space-around; /* Spread the items evenly */
-  background-color: white;
+.priority-dropdown-item.urgent {
+  background-color: #FF0000; /* Red for Urgent */
+}
+
+/* Priority Colors */
+.low {
+  background-color: #00FF00 !important; /* Green for Low */
+}
+
+.medium {
+  background-color: #FFFF00 !important; /* Yellow for Medium */
+}
+
+.important {
+  background-color: #FFA500 !important; /* Orange for Important */
+}
+
+.urgent {
+  background-color: #FF0000 !important; /* Red for Urgent */
+}
+
+.storypoint-1 {
+  background-color: #00FF00 !important;
+}
+
+.storypoint-2 {
+  background-color: #38FF00 !important;
+}
+
+.storypoint-3 {
+  background-color: #AAFF00 !important;
+}
+
+.storypoint-4 {
+  background-color: #AAFF00 !important;
+}
+
+.storypoint-5 {
+  background-color: #E2FF00 !important;
+}
+
+.storypoint-6 {
+  background-color: #FFE300 !important;
+}
+
+.storypoint-7 {
+  background-color: #FFAB00 !important;
+}
+
+.storypoint-8 {
+  background-color: #FF7200 !important;
+}
+
+.storypoint-9 {
+  background-color: #FF3900 !important;
+}
+
+.storypoint-10 {
+  background-color: #FF0000 !important;
+}
+
+/* Clear Button */
+.clear-button {
+  padding: 10px;
   border: 2px solid black;
-  border-radius: 5px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 5px;
-  width: 100%;
-}
-
-.dropdown-item {
-  padding: 10px 20px;
+  background-color: #D9D9D9;
   cursor: pointer;
-  font-size: 16px;
-  border-bottom: none; /* No border between horizontal items */
+  color: black;
+  font-size: 14px;
 }
 
-.dropdown-item:hover {
-  background-color: #f0f0f0;
+.clear-button:hover {
+  background-color: #ff4f4f;
 }
