@@ -46,7 +46,9 @@ export function EditFilesInDB(taskID) {
     }
 
     const changeTags = async (newTags) => {
-        setDoc(dbRef, { tags: newTags }, { merge: true });
+        if (newTags in availableTags) {
+            setDoc(dbRef, { tags: newTags }, { merge: true });
+        }
     }
 
     const changeAssignee = async (newAssignee) => {
