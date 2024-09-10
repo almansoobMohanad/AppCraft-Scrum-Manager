@@ -22,8 +22,8 @@ function App() {
   const docRef = doc(db, 'tasks', 'Yn7xWRHWqZlKgEiWTo0n');
 
   const getData = async () => {
-    const docSnap = await getDoc(docRef);
-    console.log(docSnap.data());
+    // const docSnap = await getDoc(docRef);
+    // console.log(docSnap.data());
   };
 
   useEffect(() => { getData() }, []);
