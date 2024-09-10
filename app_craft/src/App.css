@@ -3,7 +3,7 @@
 .app-container {
   display: flex;
   height: 100vh;
-  background-color: #d9d9d9; /* Light background for the content area */
+  background-color: #FAFAFA; /* Light background for the content area */
 }
 
 .content {
@@ -21,7 +21,6 @@
 
 .button-group {
   display: flex;
-  gap: 10px;
 }
 
 
