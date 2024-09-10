@@ -15,3 +15,15 @@ export const createTask = async (taskData) => {
 };
 
 //other task-related functions here
+
+// Function to update an existing task
+export const updateTask = async (taskId, updatedTaskData) => {
+  try {
+    const taskRef = doc(db, "tasks", taskId);
+    await updateDoc(taskRef, updatedTaskData);
+    console.log("Task updated successfully");
+  } catch (error) {
+    console.error("Error updating task: ", error);
+    throw new Error(error.message);
+  }
+};

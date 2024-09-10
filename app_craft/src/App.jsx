@@ -4,8 +4,6 @@ import AddTaskOverlay from './components/AddTaskOverlay.jsx';  // Import the ove
 import EditTaskOverlay from './components/EditTaskOverLay.jsx';
 import './App.css';
 import NavigationBar from './components/NavigationBar.jsx';
-import Home from './pages/home.jsx';
-import SaveButton from './components/SaveButton.jsx';
 import {doc, getDoc} from 'firebase/firestore';
 import {db} from './firebase/firebaseConfig.js';
 import { createTask } from "./services/tasksService"; //import task service
