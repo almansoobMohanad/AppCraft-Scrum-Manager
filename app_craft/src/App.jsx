@@ -17,7 +17,7 @@ function App() {
   // State to control overlay visibility
   const [isOverlayVisible, setOverlayVisible] = useState(false);
   const [isEditOverlayVisible, setEditOverlayVisible] = useState(false);
-const [selectedTask, setSelectedTask] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const docRef = doc(db, 'tasks', 'Yn7xWRHWqZlKgEiWTo0n')
 

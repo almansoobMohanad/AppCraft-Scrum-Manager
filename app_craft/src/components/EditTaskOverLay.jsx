@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import './EditTaskOverlay.css';
 import CancelButton from './CancelButton.jsx';
 import SaveButton from './SaveButton.jsx'; // Use SaveButton here
 import CrossButton from './CrossButton.jsx';
 import Dropdown from './Dropdown.jsx';
+import { EditFilesInDB } from './EditFilesInDB.jsx';
+
 
 function EditTaskOverlay({ task, onClose, onSave }) {
     const [taskName, setTaskName] = useState('');
-    const [taskType, setTaskType] = useState('Story');
+    const [taskType, setTaskType] = useState('Bug');
     const [taskStage, setTaskStage] = useState('Planning');
     const [storyPoints, setStoryPoints] = useState(1);
     const [priority, setPriority] = useState('Low');
@@ -23,12 +26,13 @@ function EditTaskOverlay({ task, onClose, onSave }) {
     // Load the existing task data into the form fields when the component mounts
     useEffect(() => {
         if (task) {
-            setTaskName(task.name);
+            console.log(task)
+            setTaskName(task.taskName);
             setTaskType(task.type);
             setTaskStage(task.stage);
             setStoryPoints(task.storyPoints);
             setPriority(task.priority);
-            setTags(task.tags || []);
+            setTags(task.tag || []);
             setAssignee(task.assignee || '');
             setDescription(task.description || '');
         }
@@ -53,8 +57,33 @@ function EditTaskOverlay({ task, onClose, onSave }) {
             assignee,
             description
         };
+
+        console.log(updatedTask)
+
+        console.log(updatedTask.stage)
+
+
+        EditFilesInDB(updatedTask.databaseID).changeName(updatedTask.name);
+        EditFilesInDB(updatedTask.databaseID).changeType(updatedTask.type); 
+        EditFilesInDB(updatedTask.databaseID).changeStage(updatedTask.st);
+        EditFilesInDB(updatedTask.databaseID).changeStoryPoints(updatedTask.storyPoints);
+        EditFilesInDB(updatedTask.databaseID).changePriority(updatedTask.priority);
+        EditFilesInDB(updatedTask.databaseID).changeTags(updatedTask.tags);
+        EditFilesInDB(updatedTask.databaseID).changeAssignee(updatedTask.assignee);
+        EditFilesInDB(updatedTask.databaseID).changeDescription(updatedTask.description);
+
+        // Use EditFilesInDB to update the task in the database
+
         onSave(updatedTask); // Call the onSave function with the updated task details
+
         onClose();  // Close the overlay after saving
+
+
+
+        
+
+
+
     };
 
     return (
@@ -172,5 +201,19 @@ function EditTaskOverlay({ task, onClose, onSave }) {
         </div>
     );
 }
+EditTaskOverlay.propTypes = {
+    task: PropTypes.shape({
+        taskName: PropTypes.string,
+        type: PropTypes.string,
+        stage: PropTypes.string,
+        storyPoints: PropTypes.number,
+        priority: PropTypes.string,
+        tags: PropTypes.arrayOf(PropTypes.string),
+        assignee: PropTypes.string,
+        description: PropTypes.string,
+    }),
+    onClose: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+};
 
 export default EditTaskOverlay;

@@ -15,21 +15,15 @@ export function EditFilesInDB(taskID) {
     }
 
     const changeType = async (newType) => {
-        if (newType in taskTypes) {
-            setDoc(dbRef, { type: newType }, { merge: true });
-        } else {
-            alert("Invalid task type");
-            console.error("Invalid task type");
-        }
+
+        setDoc(dbRef, { type: newType }, { merge: true });
+
     }
 
     const changeStage = async (newStage) => {
-        if (newStage in taskStages) {
-            setDoc(dbRef, { stage: newStage }, { merge: true });
-        } else {
-            alert("Invalid task stage");
-            console.error("Invalid task stage");
-        }
+
+  
+        setDoc(dbRef, { stage: newStage }, { merge: true });
     }
 
     const changeStoryPoints = async (newStoryPoints) => {
@@ -37,18 +31,15 @@ export function EditFilesInDB(taskID) {
     }
 
     const changePriority = async (newPriority) => {
-        if (newPriority in priorities) {
-            setDoc(dbRef, { priority: newPriority }, { merge: true });
-        } else {
-            alert("Invalid priority");
-            console.error("Invalid priority");
-        }
+
+        setDoc(dbRef, { priority: newPriority }, { merge: true });
+
     }
 
     const changeTags = async (newTags) => {
-        if (newTags in availableTags) {
-            setDoc(dbRef, { tags: newTags }, { merge: true });
-        }
+
+        setDoc(dbRef, { tags: newTags }, { merge: true });
+
     }
 
     const changeAssignee = async (newAssignee) => {
