@@ -26,16 +26,7 @@ function createData(taskName, tag, priority, storyPoint, databaseID) {
         tag,
         priority,
         storyPoint,
-        history: [
-            {
-                date: '2020-01-05',
-                changedBy: '11091700',
-            },
-            {
-                date: '2020-01-02',
-                changedBy: 'Anonymous',
-            },
-        ],
+        history: [],
         databaseID,
     };
 }
