@@ -1,8 +1,8 @@
 import React from "react";
 
-const CreateInOverlayButton = ({onClick, className}) => {
+const CreateInOverlayButton = ({ onClick, className }) => {
     return (
-        <button type="button" onClick={onClick} className={className}>
+        <button type="button" onClick={onClick} className={`create-button ${className}`}>
             Create
         </button>
     );

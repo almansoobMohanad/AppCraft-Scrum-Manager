@@ -2,11 +2,12 @@ import * as React from 'react';
 
 const CrossButton = ({ onClick, className }) => {
   return (
-    <div>
-      <button type="button" onClick={onClick} className = {className} style={{ fontSize: '20px', border: 'none', background: 'none', cursor: 'pointer' }}>
-        &times;
-      </button>
-    </div>
+    <button 
+      type="button" 
+      onClick={onClick} 
+      className={`cross-button ${className}`}>
+      &times; {/* Using &times; for the 'x' symbol */}
+    </button>
   );
 };
 
