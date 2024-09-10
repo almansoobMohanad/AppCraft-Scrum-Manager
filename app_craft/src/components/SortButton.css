@@ -1,0 +1,43 @@
+.sort-button-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .sort-button,
+  .priority-button {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .sort-button:hover,
+  .priority-button:hover {
+    background-color: #ddd;
+  }
+  
+  .sort-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .priority-options button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 5px;
+  }
+  
+  .priority-options button:hover {
+    background-color: #e0e0e0;
+  }
+  

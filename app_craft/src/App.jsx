@@ -4,56 +4,49 @@ import AddTaskOverlay from './components/AddTaskOverlay.jsx';  // Import the ove
 import EditTaskOverlay from './components/EditTaskOverLay.jsx';
 import './App.css';
 import NavigationBar from './components/NavigationBar.jsx';
-import {doc, getDoc} from 'firebase/firestore';
-import {db} from './firebase/firebaseConfig.js';
-import { createTask } from "./services/tasksService"; //import task service
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from './firebase/firebaseConfig.js';
+import { createTask } from "./services/tasksService"; 
 import CollapsibleTable from './components/TaskCardDetail.jsx';
-import TaskFilter from './components/TaskFilter.jsx'; 
-
+import TaskFilter from './components/TaskFilter.jsx';
+import SortButton from './components/SortButton.jsx';
+import { sortData } from './utils/sortUtils'; // Import the sortData function
 
 function App() {
-  // State to control overlay visibility
   const [isOverlayVisible, setOverlayVisible] = useState(false);
   const [isEditOverlayVisible, setEditOverlayVisible] = useState(false);
 const [selectedTask, setSelectedTask] = useState(null);
+  const [tasks, setTasks] = useState([]); // State to manage list of tasks
+  const [sortCriteria, setSortCriteria] = useState('');
 
-  const docRef = doc(db, 'tasks', 'Yn7xWRHWqZlKgEiWTo0n')
+  useEffect(() => {
+    const fetchData = async () => {
+      const docRef = doc(db, 'tasks', 'Yn7xWRHWqZlKgEiWTo0n');
+      const docSnap = await getDoc(docRef);
+      console.log(docSnap.data());
+    };
 
-  const getData = async () => {  
-    const docSnap = await getDoc(docRef);
+    fetchData();
+  }, []);
 
-    console.log(docSnap.data());
-  }
-
-  useEffect(() => {getData()}, [])
-
-
-  // Function to handle the "Create" button click
   const handleCreateButtonClick = () => {
-    setOverlayVisible(true);  // Show the overlay
+    setOverlayVisible(true);
   };
 
-  // Function to handle closing the overlay
   const handleOverlayClose = () => {
-    setOverlayVisible(false);  // Hide the overlay
+    setOverlayVisible(false);
   };
-  const handleFilterChange = (criteria) => { // Step 3: Create handler for filter changes
-    setFilterCriteria(criteria);
-  };
-  // Function to handle saving the task (example logic)
+
   const handleTaskSave = async (task) => {
     try {
-      // Call the createTask function from your task service
       const taskId = await createTask(task);
       console.log('Task created with ID:', taskId);
-
-      // Optionally handle UI updates here (e.g., showing success message or clearing the form)
+      setTasks([...tasks, task]);  // Add the new task to the list
     } catch (error) {
       console.error('Error saving task:', error);
-      // Optionally handle error states in UI
     }
 
-    setOverlayVisible(false);  // Hide the overlay after saving
+    setOverlayVisible(false); 
   };
 
   const handleDeleteTask = (taskIdToDelete) => {
@@ -83,6 +76,19 @@ const [selectedTask, setSelectedTask] = useState(null);
     };
 
   CollapsibleTable();
+  const handleSortTasks = (sortType) => {
+    let sortedTasks;
+    if (sortType === 'UrgentToLow') {
+      sortedTasks = sortData(tasks, 'priority', 'desc');
+    } else if (sortType === 'LowToUrgent') {
+      sortedTasks = sortData(tasks, 'priority', 'asc');
+    } else if (sortType === 'Oldest') {
+      sortedTasks = sortData(tasks, 'date', 'asc');
+    } else if (sortType === 'Recent') {
+      sortedTasks = sortData(tasks, 'date', 'desc');
+    }
+    setTasks(sortedTasks);
+  };
 
   return (
     <div className="app-container">
@@ -91,17 +97,14 @@ const [selectedTask, setSelectedTask] = useState(null);
       <div className="content">
         <h1 className="title">Product Backlog</h1>
         <div className="button-group">
-          {/* Pass the click handler to CreateTaskButton */}
           <CreateTaskButton onClick={handleCreateButtonClick} />
-              {/* Task Filter */}
-          <TaskFilter onFilterChange={handleFilterChange} /> 
+          <SortButton onSort={handleSortTasks} /> {/* Integrate SortButton */}
+          <TaskFilter onFilterChange={() => {}} />
         </div>
-        <CollapsibleTable />
-        
+
+        <CollapsibleTable tasks={tasks} />
       </div>
 
-
-      {/* Conditionally render the AddTaskOverlay */}
       {isOverlayVisible && (
         <AddTaskOverlay onClose={handleOverlayClose} onSave={handleTaskSave} />
       )}
