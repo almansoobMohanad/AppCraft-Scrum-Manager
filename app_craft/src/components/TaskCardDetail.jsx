@@ -14,7 +14,7 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { db } from '../firebase/firebaseConfig.js';
-import { getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection, onSnapshot, doc } from 'firebase/firestore';
 import './TaskCardDetail.css';
 import backEndDeleteTask from './backEndDeleteTask'; // Corrected import path
 import DeleteTaskButton from "./DeleteTaskButton.jsx";
@@ -126,13 +126,15 @@ export default function CollapsibleTable() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const querySnapshot = await getDocs(collection(db, "tasks"));
-            const fetchedRows = [];
-            querySnapshot.forEach((doc) => {
-                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id);
-                fetchedRows.push(data);
-            });
-            setRows(fetchedRows);
+            do {
+                const querySnapshot = await getDocs(collection(db, "tasks"));
+                const fetchedRows = [];
+                querySnapshot.forEach((doc) => {
+                    const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id);
+                    fetchedRows.push(data);
+                });
+                setRows(fetchedRows);
+            } while (true);
         };
 
         fetchData();
