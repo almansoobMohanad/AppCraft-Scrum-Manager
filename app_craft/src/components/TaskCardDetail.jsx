@@ -18,6 +18,7 @@ import { getDocs, collection } from 'firebase/firestore';
 import './TaskCardDetail.css';
 import backEndDeleteTask from './backEndDeleteTask'; // Corrected import path
 import DeleteTaskButton from "./DeleteTaskButton.jsx";
+import EditTaskOverlay from './EditTaskOverLay.jsx';
 
 function createData(taskName, tag, priority, storyPoint, databaseID) {
     return {
@@ -39,22 +40,31 @@ function createData(taskName, tag, priority, storyPoint, databaseID) {
     };
 }
 
-function Row({ row, onDelete }) {
+function Row({ row, onDelete, onTaskClick }) {
     const [open, setOpen] = useState(false);
 
-    const handleDelete = async () => {
+    const handleDelete = async (e) => {
+        e.stopPropagation(); // Prevent row click when clicking delete
         await backEndDeleteTask(row.databaseID);
         onDelete(row.databaseID);
     };
 
     return (
         <React.Fragment>
-            <TableRow className="custom-row" sx={{ '& > *': { borderBottom: 'unset' } }}>
+            <TableRow
+                className="custom-row"
+                sx={{ '& > *': { borderBottom: 'unset' } }}
+                onClick={() => onTaskClick(row)} // Make the row clickable
+                style={{ cursor: 'pointer' }}  // Change cursor to pointer to indicate it's clickable
+            >
                 <TableCell>
-                    <IconButton
+                <IconButton
                         aria-label="expand row"
                         size="small"
-                        onClick={() => setOpen(!open)}
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click when expanding
+                            setOpen(!open);
+                        }}
                     >
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
@@ -119,10 +129,13 @@ Row.propTypes = {
         databaseID: PropTypes.string.isRequired,
     }).isRequired,
     onDelete: PropTypes.func.isRequired,
+    onTaskClick: PropTypes.func.isRequired,  // Add prop validation for the new click handler
 };
 
 export default function CollapsibleTable() {
     const [rows, setRows] = useState([]);
+    const [isEditOverlayVisible, setEditOverlayVisible] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -140,6 +153,11 @@ export default function CollapsibleTable() {
 
     const handleDelete = (databaseID) => {
         setRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
+    };
+
+    const handleTaskClick = (task) => {
+        setSelectedTask(task);
+        setEditOverlayVisible(true);
     };
 
     return (
@@ -162,11 +180,20 @@ export default function CollapsibleTable() {
                     </TableHead>
                     <TableBody>
                         {rows.map((row) => (
-                            <Row key={row.databaseID} row={row} onDelete={handleDelete} />
+                            <Row key={row.databaseID} row={row} onDelete={handleDelete} onTaskClick={handleTaskClick}/>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+
+                        {/* Conditionally render the EditTaskOverlay */}
+                        {isEditOverlayVisible && selectedTask && (
+                <EditTaskOverlay
+                    task={selectedTask}
+                    onClose={() => setEditOverlayVisible(false)}
+                    onSave={(updatedTask) => { /* Handle save logic here */ }}
+                />
+            )}
         </div>
     );
 }
