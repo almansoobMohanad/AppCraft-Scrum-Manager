@@ -46,31 +46,37 @@ function EditTaskOverlay({ task, onClose, onSave }) {
         );
     };
 
-    const generateHistoryEntry = (field, newValue, oldValue) => {
-        if (newValue !== oldValue) {
-            return {
-                name: "name",
-                date: new Date().toLocaleDateString('en-GB'),
-            };
-        }
-        return null;
+    const generateHistoryEntry = () => {
+        return {
+            date: new Date().toLocaleDateString('en-GB'),
+            name: 'Task updated',
+        };
     };
 
     const handleSave = () => {
-        
-
-        const newHistoryEntries = [
-            generateHistoryEntry('task name', taskName, task.taskName),
-            generateHistoryEntry('type', taskType, task.type),
-            generateHistoryEntry('stage', taskStage, task.stage),
-            generateHistoryEntry('story points', storyPoints, task.storyPoints),
-            generateHistoryEntry('priority', priority, task.priority),
-            generateHistoryEntry('assignee', assignee, task.assignee),
-            generateHistoryEntry('description', description, task.description),
-        ].filter(entry => entry !== null); // Filter out null entries
-        
+        console.log('handleSave called');
+    
+        // Check if any field has changed
+        const hasChanges = (
+            taskName !== task.taskName ||
+            taskType !== task.type ||
+            taskStage !== task.stage ||
+            storyPoints !== task.storyPoints ||
+            priority !== task.priority ||
+            assignee !== task.assignee ||
+            description !== task.description
+        );
+    
+        let newHistoryEntries = [];
+        if (hasChanges) {
+            newHistoryEntries = [generateHistoryEntry()];
+        }
+    
+        console.log('New history entries:', newHistoryEntries);
+    
         const updatedHistory = [...history, ...newHistoryEntries]; // Merge new history
-
+        console.log('Updated history:', updatedHistory);
+    
         const updatedTask = {
             ...task,  // Keep the original task details
             taskName,
@@ -83,7 +89,9 @@ function EditTaskOverlay({ task, onClose, onSave }) {
             description,
             history: updatedHistory,  // Update history
         };
-
+    
+        console.log('Updated task:', updatedTask);
+    
         // Update the task in the database (example)
         const db = EditFilesInDB(updatedTask.databaseID);
         db.changeName(updatedTask.taskName);
@@ -94,14 +102,14 @@ function EditTaskOverlay({ task, onClose, onSave }) {
         db.changeTags(updatedTask.tags);
         db.changeAssignee(updatedTask.assignee);
         db.changeDescription(updatedTask.description);
-
+    
         // Trigger the onSave callback with the updated task
         console.log('onSave called with:', updatedTask);
         onSave(updatedTask);
-
+    
         // Update the history in the component state
         setHistory(updatedHistory); // <-- Ensure this is updated
-
+    
         // Close the overlay after saving
         //onClose();
     };
