@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
-import CancelButton from './components/CancelButton.jsx';
 import CreateTaskButton from './components/CreateTaskButton.jsx';
 import AddTaskOverlay from './components/AddTaskOverlay.jsx';  // Import the overlay component
 import './App.css';
 import NavigationBar from './components/NavigationBar.jsx';
-import CrossButton from './components/CrossButton.jsx';
-import Home from './pages/home.jsx';
 import {doc, getDoc} from 'firebase/firestore';
 import {db} from './firebase/firebaseConfig.js';
 import { createTask } from "./services/tasksService"; //import task service
@@ -52,10 +49,6 @@ function App() {
 
     setOverlayVisible(false);  // Hide the overlay after saving
   };
-
-  const handleDeleteTask = (taskIdToDelete) => {
-    backEndDeleteTask(taskIdToDelete);
-  }
 
   CollapsibleTable();
 
