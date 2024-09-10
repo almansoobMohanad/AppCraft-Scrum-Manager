@@ -6,6 +6,19 @@
     import CrossButton from './CrossButton.jsx';
     import Dropdown from './Dropdown.jsx';  // Import Dropdown if needed
 
+    function validateForm(value) {
+        // Validate the task object
+        if (!value.name) {
+            alert('Task name is required');
+            return false;
+        }
+        if (value.tags.length === 0) {
+            alert('Task type is required');
+            return false;
+        }
+        return true;
+    }
+
     function AddTaskOverlay({ onClose, onSave }) {
         const [taskName, setTaskName] = useState('');
         const [taskType, setTaskType] = useState('Story');
@@ -40,8 +53,10 @@
                 assignee,
                 description
             };
-            onSave(task);
-            onClose();  // Close the overlay after saving
+            if (validateForm(task)) {
+                onSave(task);
+                onClose();  // Close the overlay after saving
+            }
         };
 
         return (
