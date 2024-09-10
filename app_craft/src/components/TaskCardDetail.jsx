@@ -139,15 +139,13 @@ export default function CollapsibleTable() {
 
     useEffect(() => {
         const fetchData = async () => {
-            do {
-                const querySnapshot = await getDocs(collection(db, "tasks"));
-                const fetchedRows = [];
-                querySnapshot.forEach((doc) => {
-                    const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id);
-                    fetchedRows.push(data);
-                });
-                setRows(fetchedRows);
-            } while (true);
+            const querySnapshot = await getDocs(collection(db, "tasks"));
+            const fetchedRows = [];
+            querySnapshot.forEach((doc) => {
+                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id);
+                fetchedRows.push(data);
+            });
+            setRows(fetchedRows);
         };
 
         fetchData();
