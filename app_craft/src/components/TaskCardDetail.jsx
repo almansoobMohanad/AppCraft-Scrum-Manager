@@ -146,7 +146,7 @@ export default function CollapsibleTable() {
         <div className="TableContainer">
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
-                    <TableHead>
+                    <TableHead className="table-head">
                         <TableRow>
                             <TableCell />
                             <TableCell>Task Name</TableCell>
