@@ -50,7 +50,10 @@
   border-bottom: none; /* Remove bottom border */
 }
 
-.TableContainer {
-  border-top-left-radius: 25px; /* Curved top-left corner */
-  border-top-right-radius: 25px; /* Curved top-right corner */
-}
+
+
+/*ONLY COMMENTED FOR NOW
+/* .TableContainer {
+  /border-top-left-radius: 25px; /* Curved top-left corner */
+ /* border-top-right-radius: 25px; /* Curved top-right corner */
+/*} */
