@@ -64,14 +64,10 @@ function App() {
       <NavigationBar />
       
       <div className="content">
-      <Home /> {/* Add the Home component here */}
         <h1 className="title">Product Backlog</h1>
         <div className="button-group">
-          <CrossButton />
           {/* Pass the click handler to CreateTaskButton */}
           <CreateTaskButton onClick={handleCreateButtonClick} />
-          <CancelButton />
-          <button onClick={handleDeleteTask}>Delete Task</button>
         </div>
         <CollapsibleTable />
         
