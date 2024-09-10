@@ -14,17 +14,19 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { db } from '../firebase/firebaseConfig.js';
-import { getDocs, collection, onSnapshot, doc } from 'firebase/firestore';
+import { getDocs, collection } from 'firebase/firestore';
 import './TaskCardDetail.css';
 import backEndDeleteTask from './backEndDeleteTask'; // Corrected import path
 import DeleteTaskButton from "./DeleteTaskButton.jsx";
+import { sortData } from './SortFunctions'; // Import the sortData function from components folder
 
-function createData(taskName, tag, priority, storyPoint, databaseID) {
+function createData(taskName, tag, priority, storyPoint, databaseID, priorityNum) {
     return {
         taskName,
         tag,
         priority,
         storyPoint,
+        priorityNum,
         history: [
             {
                 date: '2020-01-05',
@@ -123,22 +125,39 @@ Row.propTypes = {
 
 export default function CollapsibleTable() {
     const [rows, setRows] = useState([]);
+    const [sortCriteria, setSortCriteria] = useState(null); // Add state to handle sorting criteria
 
     useEffect(() => {
         const fetchData = async () => {
-            do {
-                const querySnapshot = await getDocs(collection(db, "tasks"));
-                const fetchedRows = [];
-                querySnapshot.forEach((doc) => {
-                    const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id);
-                    fetchedRows.push(data);
-                });
-                setRows(fetchedRows);
-            } while (true);
+            const querySnapshot = await getDocs(collection(db, "tasks"));
+            const fetchedRows = [];
+            querySnapshot.forEach((doc) => {
+                // Assign a numeric value for sorting based on the priority string
+                const priorityNum = doc.data().priority === 'Urgent' ? 1 :
+                                    doc.data().priority === 'Important' ? 2 :
+                                    doc.data().priority === 'Medium' ? 3 : 4; // Default to 'Low' as 4
+                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, priorityNum);
+                fetchedRows.push(data);
+            });
+
+            // Sort initially based on default sortCriteria
+            const sortedRows = sortData(fetchedRows, sortCriteria === 'Date' ? 'history[0].date' : 'priorityNum', 'asc');
+            setRows(sortedRows);
         };
 
         fetchData();
-    }, []);
+    }, [sortCriteria]); // Re-run effect if sortCriteria changes
+
+    // Function to handle sorting
+    const handleSort = (criteria) => {
+        setSortCriteria(criteria);  // Set sorting criteria
+        const sortedRows = sortData(
+            rows,
+            'priorityNum',  // Always sort by priorityNum for these two cases
+            criteria === 'UrgentToLow' ? 'asc' : 'desc'  // Use 'asc' for UrgentToLow and 'desc' for LowToUrgent
+        );
+        setRows(sortedRows); // Update the sorted rows
+    };
 
     const handleDelete = (databaseID) => {
         setRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
