@@ -17,6 +17,7 @@ import { db } from '../firebase/firebaseConfig.js';
 import { getDocs, collection } from 'firebase/firestore';
 import './TaskCardDetail.css';
 import backEndDeleteTask from './backEndDeleteTask'; // Corrected import path
+import DeleteTaskButton from "./DeleteTaskButton.jsx";
 
 function createData(taskName, tag, priority, storyPoint, databaseID) {
     return {
@@ -66,7 +67,7 @@ function Row({ row, onDelete }) {
                         <span className="task-detail">{row.tag}</span>
                         <span className="task-detail">{row.priority}</span>
                         <span className="task-detail">{row.storyPoint}</span>
-                        <button className="delete-button" onClick={handleDelete}>Dlt</button>
+                        <DeleteTaskButton className="delete-button" onClick={handleDelete}></DeleteTaskButton>
                     </div>
                 </TableCell>
             </TableRow>

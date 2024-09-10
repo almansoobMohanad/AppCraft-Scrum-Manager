@@ -19,6 +19,12 @@
 
 .delete-button {
   justify-self: end; /* Align the delete button to the far right */
+  background: none; /* Remove background */
+  border: none; /* Remove border */
+  padding: 0; /* Remove padding */
+  margin: 0; /* Remove margin */
+  color: inherit; /* Inherit text color */
+  cursor: pointer; /* Change cursor to pointer */
 }
 
 
