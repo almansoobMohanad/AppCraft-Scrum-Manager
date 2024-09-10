@@ -27,6 +27,10 @@
   cursor: pointer; /* Change cursor to pointer */
 }
 
+.delete-button:hover {
+  color: red; /* Change text color to red on hover */
+}
+
 
 .TableContainer th, .TableContainer td {
   text-align: left; /* Ensure all table headers and cells are left-aligned */
