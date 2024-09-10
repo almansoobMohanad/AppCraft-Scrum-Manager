@@ -81,7 +81,7 @@ function App() {
           {/* Add Sort Button */}
           <SortButton tasks={tasks} setSortedTasks={setSortedTasks} />
         </div>
-        <CollapsibleTable tasks={sortedTasks.length ? sortedTasks : tasks} /> 
+        <CollapsibleTable tasks={sortedTasks ? sortedTasks : tasks} /> 
       </div>
 
       {/* Conditionally render the AddTaskOverlay */}

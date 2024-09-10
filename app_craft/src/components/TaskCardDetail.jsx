@@ -27,6 +27,7 @@ function createData(taskName, tag, priority, storyPoint, databaseID) {
         tag,
         priority,
         storyPoint,
+        priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4,
         history: [],
         databaseID,
     };
