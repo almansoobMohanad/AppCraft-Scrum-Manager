@@ -28,6 +28,8 @@ const TaskFilter = ({ onFilterChange }) => {
   // Toggle the visibility of the tag box
   const handleToggleTagBox = () => {
     setIsTagBoxVisible(!isTagBoxVisible);
+    setIsPriorityDropdownOpen(false);
+    setIsStoryPointDropdownOpen(false);
   };
 
   // Handle tag selection
@@ -37,7 +39,6 @@ const TaskFilter = ({ onFilterChange }) => {
       : [...selectedTags, tag]; // Add tag if not selected
     setSelectedTags(updatedTags);
     onFilterChange({ tags: updatedTags, priority: selectedPriority, storyPoints: selectedStoryPoint });
-    setIsTagBoxVisible(false); // Close tag box after selection
   };
 
   // Handle priority selection
@@ -79,17 +80,21 @@ const TaskFilter = ({ onFilterChange }) => {
       {/* Priority Filter */}
       <div className="filter-section dropdown">
         <button
-          className="dropdown-button"
-          onClick={() => setIsPriorityDropdownOpen(!isPriorityDropdownOpen)}
+          className="filter-button"
+          onClick={() => {
+            setIsPriorityDropdownOpen(!isPriorityDropdownOpen);
+            setIsTagBoxVisible(false);
+            setIsStoryPointDropdownOpen(false);
+          }}
         >
           {selectedPriority || 'Select Priority'}
         </button>
         {isPriorityDropdownOpen && (
-          <div className="dropdown-menu">
+          <div className="priority-dropdown-menu">
             {priorities.map((priority, i) => (
               <button
                 key={i}
-                className="dropdown-item"
+                className="priority-dropdown-item"
                 onClick={() => handlePriorityChange(priority)}
               >
                 {priority}
@@ -102,17 +107,21 @@ const TaskFilter = ({ onFilterChange }) => {
       {/* Story Points Filter */}
       <div className="filter-section dropdown">
         <button
-          className="dropdown-button"
-          onClick={() => setIsStoryPointDropdownOpen(!isStoryPointDropdownOpen)}
+          className="Storypoint-button"
+          onClick={() => {
+            setIsStoryPointDropdownOpen(!isStoryPointDropdownOpen);
+            setIsTagBoxVisible(false);
+            setIsPriorityDropdownOpen(false);
+          }}
         >
           {selectedStoryPoint !== null ? `Story Points: ${selectedStoryPoint}` : 'Select Story Points'}
         </button>
         {isStoryPointDropdownOpen && (
-          <div className="dropdown-menu">
+          <div className="story-points-dropdown-menu">
             {storyPoints.map((point, i) => (
               <button
                 key={i}
-                className="dropdown-item"
+                className="story-points-dropdown-item"
                 onClick={() => handleStoryPointChange(point)}
               >
                 {point}
