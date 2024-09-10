@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import TaskFilter from './TaskFilter';  // Adjust the import path
-import TaskCardDetail from './TaskCardDetail';  // Changed from 'CollapsibleTable' to 'TaskCardDetail'
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from './firebaseConfig'; // Adjust the import path
+import TaskCardDetail from './TaskCardDetail';  // Adjust the import path
+
+// Dummy tasks data
+const dummyTasks = [
+  { id: "1", taskName: "Task 1", tags: "Frontend", priority: "Low", storyPoints: 5 },
+  { id: "2", taskName: "Task 2", tags: "Backend", priority: "Urgent", storyPoints: 3 },
+  { id: "3", taskName: "Task 3", tags: "Testing", priority: "Medium", storyPoints: 8 },
+  { id: "4", taskName: "Task 4", tags: "Frontend", priority: "Important", storyPoints: 13 },
+  { id: "5", taskName: "Task 5", tags: "UI", priority: "Low", storyPoints: 2 }
+];
 
 export default function TaskFilterHandler() {
   const [filters, setFilters] = useState({
@@ -11,34 +18,19 @@ export default function TaskFilterHandler() {
     storyPoints: null // Filter for story points (null means no filter)
   });
 
-  const [tasks, setTasks] = useState([]);
-  const [filteredTasks, setFilteredTasks] = useState([]);
-
-  // Function to fetch data from Firestore
-  const fetchData = async () => {
-    const querySnapshot = await getDocs(collection(db, "tasks"));
-    const fetchedTasks = [];
-    querySnapshot.forEach((doc) => {
-      const data = {
-        id: doc.id,
-        ...doc.data()
-      };
-      fetchedTasks.push(data);
-    });
-    setTasks(fetchedTasks);
-  };
+  const [filteredTasks, setFilteredTasks] = useState(dummyTasks);
 
   // Function to update filters based on TaskFilter component's changes
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
   };
 
-  // Function to apply filters to the fetched data
+  // Function to apply filters to the dummy tasks
   const applyFilters = () => {
-    let filtered = tasks;
+    let filtered = dummyTasks;
 
     if (filters.tags.length > 0) {
-      filtered = filtered.filter(task => filters.tags.includes(task.tags));
+      filtered = filtered.filter(task => filters.tags.some(tag => task.tags.includes(tag)));
     }
 
     if (filters.priority) {
@@ -52,15 +44,10 @@ export default function TaskFilterHandler() {
     setFilteredTasks(filtered);
   };
 
-  // Fetch data when the component mounts
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // Apply filters whenever the filters or tasks change
+  // Apply filters whenever the filters change
   useEffect(() => {
     applyFilters();
-  }, [filters, tasks]);
+  }, [filters]);
 
   return (
     <div>
