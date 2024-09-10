@@ -42,10 +42,12 @@
     color: white;
     font-size: 14px; /* Font size for the labels */
     font-weight: 500;
-    width: 100%;
+    width: 85px; /* Same as the .header width */
+    box-sizing: border-box;
     padding: 10px 0;
     text-align: center;
     transition: background-color 0.3s;
+    
 }
 
 /* Style for the icon inside the navigation item */

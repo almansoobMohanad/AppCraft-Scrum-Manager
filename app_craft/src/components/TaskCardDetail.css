@@ -17,6 +17,8 @@
   text-align: left;
 }
 
+
+
 .delete-button {
   justify-self: end; /* Align the delete button to the far right */
   background: none; /* Remove background */
@@ -36,6 +38,8 @@
   text-align: left; /* Ensure all table headers and cells are left-aligned */
 }
 
+
+
 .custom-row {
   background-color: rgb(110, 178, 224); /* Light blue background */
   border-radius: 30px; /* Curved edges */
@@ -46,3 +50,7 @@
   border-bottom: none; /* Remove bottom border */
 }
 
+.TableContainer {
+  border-top-left-radius: 25px; /* Curved top-left corner */
+  border-top-right-radius: 25px; /* Curved top-right corner */
+}

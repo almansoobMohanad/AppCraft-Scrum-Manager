@@ -13,7 +13,11 @@
             return false;
         }
         if (value.tags.length === 0) {
-            alert('Task type is required');
+            alert('Tags are required at least one');
+            return false;
+        }
+        if (!value.description) {
+            alert('Description is required');
             return false;
         }
         return true;

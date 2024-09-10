@@ -1,0 +1,78 @@
+.button-container {
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+    gap: 10px; /* Space between buttons */
+}
+
+.create-button, .filter-buttons {
+    display: inline-flex;
+    align-items: center;
+}
+
+.filter-button {
+    background-color: #D9D9D9;
+    border: 2px solid black;
+    padding: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+.filter-button:hover {
+    background-color: #b3b3b3;
+}
+
+/* Add custom colors for each tag */
+.filter-button.frontend { background-color: #FF5566; }  /* Frontend */
+.filter-button.backend { background-color: #F4A566; }   /* Backend */
+.filter-button.api { background-color: #6578FF; }       /* API */
+.filter-button.database { background-color: #40FF00; }  /* Database */
+.filter-button.framework { background-color: #D76BFF; } /* Framework */
+.filter-button.testing { background-color: #FF9500; }   /* Testing */
+.filter-button.ui { background-color: #A6F1C8; }        /* UI */
+.filter-button.ux { background-color: #66BB77; }        /* UX */
+
+/* Dropdowns */
+.dropdown {
+  margin-bottom: 10px;
+}
+
+.dropdown-button {
+  background-color: #D9D9D9;
+  border: 1px black;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.dropdown-button:hover {
+  background-color: #b3b3b3;
+}
+
+/* Updated dropdown menu to be horizontal */
+.dropdown-menu {
+  display: flex;
+  flex-direction: row;  /* Now the dropdown items are aligned in a row */
+  justify-content: space-around; /* Spread the items evenly */
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 5px;
+  width: 100%;
+}
+
+.dropdown-item {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  border-bottom: none; /* No border between horizontal items */
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}

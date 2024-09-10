@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import CancelButton from './components/CancelButton.jsx';
 import CreateTaskButton from './components/CreateTaskButton.jsx';
 import AddTaskOverlay from './components/AddTaskOverlay.jsx';  // Import the overlay component
 import EditTaskOverlay from './components/EditTaskOverLay.jsx';
@@ -10,8 +9,9 @@ import SaveButton from './components/SaveButton.jsx';
 import {doc, getDoc} from 'firebase/firestore';
 import {db} from './firebase/firebaseConfig.js';
 import { createTask } from "./services/tasksService"; //import task service
-import backEndDeleteTask from './components/backEndDeleteTask.jsx';
 import CollapsibleTable from './components/TaskCardDetail.jsx';
+import TaskFilter from './components/TaskFilter.jsx'; 
+
 
 function App() {
   // State to control overlay visibility
@@ -39,7 +39,9 @@ const [selectedTask, setSelectedTask] = useState(null);
   const handleOverlayClose = () => {
     setOverlayVisible(false);  // Hide the overlay
   };
-
+  const handleFilterChange = (criteria) => { // Step 3: Create handler for filter changes
+    setFilterCriteria(criteria);
+  };
   // Function to handle saving the task (example logic)
   const handleTaskSave = async (task) => {
     try {
@@ -87,12 +89,14 @@ const [selectedTask, setSelectedTask] = useState(null);
   return (
     <div className="app-container">
       <NavigationBar />
-      
+
       <div className="content">
         <h1 className="title">Product Backlog</h1>
         <div className="button-group">
           {/* Pass the click handler to CreateTaskButton */}
           <CreateTaskButton onClick={handleCreateButtonClick} />
+              {/* Task Filter */}
+          <TaskFilter onFilterChange={handleFilterChange} /> 
         </div>
         <CollapsibleTable />
         
