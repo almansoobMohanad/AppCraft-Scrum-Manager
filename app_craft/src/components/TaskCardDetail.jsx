@@ -19,6 +19,7 @@ import './TaskCardDetail.css';
 import backEndDeleteTask from './backEndDeleteTask'; // Corrected import path
 import DeleteTaskButton from "./DeleteTaskButton.jsx";
 import EditTaskOverlay from './EditTaskOverLay.jsx';
+import TaskFilter from './TaskFilter'; // Import TaskFilter component
 
 function createData(taskName, tag, priority, storyPoint, databaseID) {
     return {
@@ -125,26 +126,25 @@ Row.propTypes = {
 
 export default function CollapsibleTable() {
     const [rows, setRows] = useState([]);
+    const [filteredRows, setFilteredRows] = useState([]);
+    const [filters, setFilters] = useState({
+        tags: [],         // Filter for tags (empty array means no filter)
+        priority: '',     // Filter for priority (empty string means no filter)
+        storyPoints: null // Filter for story points (null means no filter)
+    });
     const [isEditOverlayVisible, setEditOverlayVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
-            // const querySnapshot = await getDocs(collection(db, "tasks"));
             const fetchedRows = [];
             fetchedRows.push(createData("Task 1", "Frontend", "Low", 5, "1"));
             fetchedRows.push(createData("Task 2", "Backend", "Urgent", 3, "2"));
             fetchedRows.push(createData("Task 3", "Testing", "Medium", 8, "3"));
             fetchedRows.push(createData("Task 4", "Frontend", "Important", 13, "4"));
             fetchedRows.push(createData("Task 5", "UI", "Low", 2, "5"));
-
-            // Uncomment the following code to fetch data from Firestore
-
-            // querySnapshot.forEach((doc) => {
-            //     const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id);
-            //     fetchedRows.push(data);
-            // });
             setRows(fetchedRows);
+            setFilteredRows(fetchedRows); // Initialize filteredRows with all tasks
         };
 
         fetchData();
@@ -152,6 +152,7 @@ export default function CollapsibleTable() {
 
     const handleDelete = (databaseID) => {
         setRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
+        setFilteredRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
     };
 
     const handleTaskClick = (task) => {
@@ -159,8 +160,35 @@ export default function CollapsibleTable() {
         setEditOverlayVisible(true);
     };
 
+    const handleFilterChange = (newFilters) => {
+        setFilters(newFilters);
+    };
+
+    const applyFilters = () => {
+        let filtered = rows;
+
+        if (filters.tags.length > 0) {
+            filtered = filtered.filter(task => filters.tags.some(tag => task.tag.includes(tag)));
+        }
+
+        if (filters.priority) {
+            filtered = filtered.filter(task => task.priority === filters.priority);
+        }
+
+        if (filters.storyPoints !== null) {
+            filtered = filtered.filter(task => task.storyPoint === filters.storyPoints);
+        }
+
+        setFilteredRows(filtered);
+    };
+
+    useEffect(() => {
+        applyFilters();
+    }, [filters, rows]);
+
     return (
         <div className="TableContainer">
+            <TaskFilter onFilterChange={handleFilterChange} />
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead className="table-head">
@@ -178,15 +206,15 @@ export default function CollapsibleTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
-                            <Row key={row.databaseID} row={row} onDelete={handleDelete} onTaskClick={handleTaskClick}/>
+                        {filteredRows.map((row) => (
+                            <Row key={row.databaseID} row={row} onDelete={handleDelete} onTaskClick={handleTaskClick} />
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
 
-                        {/* Conditionally render the EditTaskOverlay */}
-                        {isEditOverlayVisible && selectedTask && (
+            {/* Conditionally render the EditTaskOverlay */}
+            {isEditOverlayVisible && selectedTask && (
                 <EditTaskOverlay
                     task={selectedTask}
                     onClose={() => setEditOverlayVisible(false)}

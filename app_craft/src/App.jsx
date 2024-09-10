@@ -78,7 +78,6 @@ function App() {
         <h1 className="title">Product Backlog</h1>
         <div className="button-group">
           <CreateTaskButton onClick={handleCreateButtonClick} />
-          <TaskFilter onFilterChange={handleFilterChange} /> 
           {/* Add Sort Button */}
           <SortButton tasks={tasks} setSortedTasks={setSortedTasks} />
         </div>
