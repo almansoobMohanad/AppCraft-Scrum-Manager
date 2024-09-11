@@ -139,13 +139,12 @@ export default function CollapsibleTable() {
     useEffect(() => {
         const fetchData = async () => {
             const fetchedRows = [];
-            fetchedRows.push(createData("Task 1", "Frontend", "Low", 5, "1"));
-            fetchedRows.push(createData("Task 2", "Backend", "Urgent", 3, "2"));
-            fetchedRows.push(createData("Task 3", "Testing", "Medium", 8, "3"));
-            fetchedRows.push(createData("Task 4", "Frontend", "Important", 13, "4"));
-            fetchedRows.push(createData("Task 5", "UI", "Low", 2, "5"));
+            const querySnapshot = await getDocs(collection(db, "tasks"));
+            querySnapshot.forEach((doc) => {
+                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id);
+                fetchedRows.push(data);
+            });
             setRows(fetchedRows);
-            setFilteredRows(fetchedRows); // Initialize filteredRows with all tasks
         };
 
         fetchData();
