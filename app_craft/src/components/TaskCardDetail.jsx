@@ -20,6 +20,7 @@ import backEndDeleteTask from './backEndDeleteTask'; // Corrected import path
 import DeleteTaskButton from "./DeleteTaskButton.jsx";
 import EditTaskOverlay from './EditTaskOverLay.jsx';
 import TaskFilter from './TaskFilter'; // Import TaskFilter component
+import localDB from '../LocalDatabase'; // Import the LocalDatabase module
 
 function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee) {
 
@@ -153,7 +154,16 @@ export default function CollapsibleTable() {
             setRows(fetchedRows);
         };
 
-        fetchData();
+        async function fetchDataFromDB() {
+            await localDB.updateData();
+            let data = localDB.getData();
+            setRows(data);
+            setFilteredRows(data);
+            console.log("content:", data, "length:", data.length);
+        }
+
+        // fetchData(); // this one is using the old Firebase module
+        fetchDataFromDB(); // this one is using the new LocalDatabase module
     }, []);
 
     const handleDelete = (databaseID) => {
