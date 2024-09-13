@@ -24,8 +24,6 @@ import localDB from '../LocalDatabase'; // Import the LocalDatabase module
 
 function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee) {
 
-    console.log('this is triggered');
-
     return {
         taskName,
         tags,
@@ -116,15 +114,10 @@ function Row({ row, onDelete, onTaskClick }) {
 
 Row.propTypes = {
     row: PropTypes.shape({
-        tags: PropTypes.string.isRequired,
+        tags: PropTypes.array.isRequired,
         storyPoints: PropTypes.number.isRequired,
         priority: PropTypes.string.isRequired,
-        history: PropTypes.arrayOf(
-            PropTypes.shape({
-                changedBy: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
-            }),
-        ).isRequired,
+        history: PropTypes.array.isRequired,
         taskName: PropTypes.string.isRequired,
         databaseID: PropTypes.string.isRequired,
     }).isRequired,
@@ -157,9 +150,9 @@ export default function CollapsibleTable() {
         async function fetchDataFromDB() {
             await localDB.updateData();
             let data = localDB.getData();
+            let filteredData = localDB.getFilteredData();
             setRows(data);
-            setFilteredRows(data);
-            console.log("content:", data, "length:", data.length);
+            setFilteredRows(filteredData);
         }
 
         // fetchData(); // this one is using the old Firebase module
