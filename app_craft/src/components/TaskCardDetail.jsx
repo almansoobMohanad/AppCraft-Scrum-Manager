@@ -21,15 +21,21 @@ import DeleteTaskButton from "./DeleteTaskButton.jsx";
 import EditTaskOverlay from './EditTaskOverLay.jsx';
 import TaskFilter from './TaskFilter'; // Import TaskFilter component
 
-function createData(taskName, tag, priority, storyPoint, databaseID) {
+function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee) {
+
+    console.log('this is triggered');
+
     return {
         taskName,
-        tag,
+        tags,
         priority,
-        storyPoint,
+        storyPoints,
         priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4,
-        history: [],
+        history,
         databaseID,
+        description,
+        type,
+        assignee
     };
 }
 
@@ -67,9 +73,9 @@ function Row({ row, onDelete, onTaskClick }) {
                 </TableCell>
                 <TableCell colSpan={4} className="task-details">
                     <div className="task-details-container">
-                        <span className="task-detail">{row.tag}</span>
+                        <span className="task-detail">{row.tags}</span>
                         <span className="task-detail">{row.priority}</span>
-                        <span className="task-detail">{row.storyPoint}</span>
+                        <span className="task-detail">{row.storyPoints}</span>
                         <DeleteTaskButton className="delete-button" onClick={handleDelete}></DeleteTaskButton>
                     </div>
                 </TableCell>
@@ -109,8 +115,8 @@ function Row({ row, onDelete, onTaskClick }) {
 
 Row.propTypes = {
     row: PropTypes.shape({
-        tag: PropTypes.string.isRequired,
-        storyPoint: PropTypes.number.isRequired,
+        tags: PropTypes.string.isRequired,
+        storyPoints: PropTypes.number.isRequired,
         priority: PropTypes.string.isRequired,
         history: PropTypes.arrayOf(
             PropTypes.shape({
@@ -141,7 +147,7 @@ export default function CollapsibleTable() {
             const fetchedRows = [];
             const querySnapshot = await getDocs(collection(db, "tasks"));
             querySnapshot.forEach((doc) => {
-                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id);
+                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, doc.data().description, doc.data().type, doc.data().history, doc.data().assignee);
                 fetchedRows.push(data);
             });
             setRows(fetchedRows);
