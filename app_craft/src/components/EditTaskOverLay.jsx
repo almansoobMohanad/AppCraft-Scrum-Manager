@@ -8,7 +8,28 @@ import Dropdown from './Dropdown.jsx';
 import { EditFilesInDB } from './EditFilesInDB.jsx';
 import ChangesHistoryTable from './ChangesHistoryTable.jsx';
 
+/*
+const mockTask = {
+    databaseID: 'hjxHrhQcXO2Ray9cskR9',
+    taskName: 'Implement Login Feature',
+    type: 'Bug',
+    stage: 'Development',
+    storyPoints: 5,
+    priority: 'High',
+    tags: ['API', 'Backend'],
+    assignee: 'John Doe',
+    description: 'Implement the login feature using React and Redux.',
+    history: [
+        { date: '2023-10-01', name: 'Task created' },
+        { date: '2023-10-02', name: 'Initial setup completed' },
+        { date: '2024-12-02', name: 'Bob'}
+    ],
+};
+*/
+
 function EditTaskOverlay({ task, onClose, onSave }) {
+
+    console.log('this ism me', task)
     const [taskName, setTaskName] = useState('');
     const [taskType, setTaskType] = useState('Bug');
     const [taskStage, setTaskStage] = useState('Planning');
@@ -46,36 +67,36 @@ function EditTaskOverlay({ task, onClose, onSave }) {
         );
     };
 
-    const generateHistoryEntry = () => {
+    const validateFields = () => {
+        if (!taskName || tags.length === 0 || !description) {
+            alert('Fields cannot be left empty');
+            return false;
+        }
+        return true;
+    };
+
+
+
+    const generateHistoryEntry = (name) => {
         return {
             date: new Date().toLocaleDateString('en-GB'),
-            name: 'Task updated',
+            name: name,
         };
     };
 
     const handleSave = () => {
+
+        if (validateFields()){
+
         console.log('handleSave called');
-    
-        // Check if any field has changed
-        const hasChanges = (
-            taskName !== task.taskName ||
-            taskType !== task.type ||
-            taskStage !== task.stage ||
-            storyPoints !== task.storyPoints ||
-            priority !== task.priority ||
-            assignee !== task.assignee ||
-            description !== task.description
-        );
-    
-        let newHistoryEntries = [];
-        if (hasChanges) {
-            newHistoryEntries = [generateHistoryEntry()];
-        }
-    
-        console.log('New history entries:', newHistoryEntries);
-    
-        const updatedHistory = [...history, ...newHistoryEntries]; // Merge new history
-        console.log('Updated history:', updatedHistory);
+
+        const newHistoryEntry = generateHistoryEntry('name');
+        console.log('new history entry', newHistoryEntry)
+
+        let newHistoryList = [...task.history, newHistoryEntry]
+
+        console.log('the new history list supposedly', newHistoryList)
+
     
         const updatedTask = {
             ...task,  // Keep the original task details
@@ -87,7 +108,7 @@ function EditTaskOverlay({ task, onClose, onSave }) {
             tags,
             assignee,
             description,
-            history: updatedHistory,  // Update history
+            history: newHistoryList// Update history
         };
     
         console.log('Updated task:', updatedTask);
@@ -102,16 +123,18 @@ function EditTaskOverlay({ task, onClose, onSave }) {
         db.changeTags(updatedTask.tags);
         db.changeAssignee(updatedTask.assignee);
         db.changeDescription(updatedTask.description);
+        db.changeHistory(updatedTask.history)
     
         // Trigger the onSave callback with the updated task
         console.log('onSave called with:', updatedTask);
         onSave(updatedTask);
     
         // Update the history in the component state
-        setHistory(updatedHistory); // <-- Ensure this is updated
+        //setHistory(updatedHistory); // <-- Ensure this is updated
     
         // Close the overlay after saving
-        //onClose();
+        onClose();
+    }
     };
 
     return (
