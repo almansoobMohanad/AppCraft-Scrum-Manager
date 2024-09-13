@@ -12,15 +12,19 @@ function dynamicSort(key, sortOrder = 'asc') {
     }
 }
 
-function createData(taskName, tag, priority, storyPoint, databaseID) {
+function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee) {
+
     return {
         taskName,
-        tag,
+        tags,
         priority,
-        storyPoint,
+        storyPoints,
         priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4,
-        history: [],
+        history,
         databaseID,
+        description,
+        type,
+        assignee
     };
 }
 
@@ -38,7 +42,7 @@ class LocalDatabase {
     async fetchData() {
         const querySnapshot = await getDocs(collection(db, 'tasks'));
         querySnapshot.forEach((doc) => {
-            this.data.push(createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id));
+            this.data.push(createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, doc.data().description, doc.data().type, doc.data().history, doc.data().assignee));
         });
     }
 
