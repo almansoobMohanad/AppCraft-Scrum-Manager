@@ -55,7 +55,8 @@
                 priority,
                 tags,
                 assignee,
-                description
+                description,
+                history: []
             };
             if (validateForm(task)) {
                 onSave(task);
