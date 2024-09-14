@@ -177,7 +177,7 @@ export default function CollapsibleTable() {
         let filtered = rows;
 
         if (filters.tags.length > 0) {
-            filtered = filtered.filter(task => filters.tags.some(tag => task.tag.includes(tag)));
+            filtered = filtered.filter(task => filters.tags.some(tags => task.tags.includes(tags)));
         }
 
         if (filters.priority) {
