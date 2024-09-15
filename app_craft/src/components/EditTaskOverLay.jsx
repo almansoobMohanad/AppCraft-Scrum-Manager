@@ -194,28 +194,43 @@ function EditTaskOverlay({ task, onClose, onSave }) {
                 {/* Priority */}
                 <div className="form-group">
                     <label htmlFor="priority" className="task-label">Priority</label>
-                    <Dropdown
-                        id="priority"
-                        options={priorities.map(priority => ({ value: priority, label: priority }))}
-                        selectedOption={priority}
-                        onChange={setPriority}
-                    />
+                    <div className="priority-container">
+                        {['Low', 'Medium', 'Important', 'Urgent'].map(priorityLevel => (
+                            <div key={priorityLevel} className="priority-checkbox-wrapper">
+                                <input
+                                    type="radio"  // Use radio buttons since only one priority can be selected
+                                    name="priority"
+                                    value={priorityLevel}
+                                    checked={priority === priorityLevel}
+                                    onChange={() => setPriority(priorityLevel)}
+                                    className={`priority-checkbox ${priorityLevel.toLowerCase()}`}
+                                />
+                                <label className={`priority-label ${priorityLevel.toLowerCase()}`}>
+                                    {priorityLevel}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
                 </div>
+
 
                 {/* Tags */}
                 <div className="form-group">
                     <label htmlFor="tags" className="task-label">Tags</label>
                     <div className="tags-container">
                         {availableTags.map(tag => (
-                            <label key={tag} className="tag-label">
+                            <div key={tag} className="tag-checkbox-wrapper">
                                 <input
                                     type="checkbox"
                                     value={tag}
                                     checked={tags.includes(tag)}
                                     onChange={handleTagChange}
+                                    className={`tag-checkbox ${tag.toLowerCase()}`}
                                 />
-                                {tag}
-                            </label>
+                                <label className={`tag-label ${tag.toLowerCase()}`}>
+                                    {tag}
+                                </label>
+                            </div>
                         ))}
                     </div>
                 </div>

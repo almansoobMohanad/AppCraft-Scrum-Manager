@@ -6,15 +6,49 @@
   overflow: auto;
 }
 
+/* Keep the same container layout */
 .task-details-container {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
+  grid-template-columns: 2fr 1fr 1fr auto; /* Allow the tag column to take more space */
   align-items: center;
-  gap: 20px; /* Adjust spacing as needed */
+  gap: 10px; /* Adjust spacing as needed */
 }
+
+/* New task-tags class to handle tag display */
+.task-tags {
+  display: flex;
+  flex-wrap: wrap; /* Allow tags to wrap if needed */
+  gap: 5px; /* Space between tags */
+  max-width: 100%; /* Ensure tags don't overflow their container */
+}
+
+/* Tag display styles */
+.tag-display {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: normal;
+  color: black; 
+}
+
+/* Custom colors for each tag */
+.tag-display.frontend { background-color: #FF5566; }  /* Frontend */
+.tag-display.backend { background-color: #F4A566; }   /* Backend */
+.tag-display.api { background-color: #6578FF; }       /* API */
+.tag-display.database { background-color: #40FF00; }  /* Database */
+.tag-display.framework { background-color: #D76BFF; } /* Framework */
+.tag-display.testing { background-color: #FF9500; }   /* Testing */
+.tag-display.ui { background-color: #A6F1C8; }        /* UI */
+.tag-display.ux { background-color: #66BB77; }        /* UX */
+
+
 
 .task-detail {
   text-align: left;
+}
+
+.TableContainer .task-name {
+  font-weight: bold;
 }
 
 
@@ -38,8 +72,6 @@
   text-align: left; /* Ensure all table headers and cells are left-aligned */
 }
 
-
-
 .custom-row {
   background-color: rgb(110, 178, 224); /* Light blue background */
   border-radius: 30px; /* Curved edges */
@@ -49,8 +81,6 @@
 .custom-row > * {
   border-bottom: none; /* Remove bottom border */
 }
-
-
 
 /*ONLY COMMENTED FOR NOW
 /* .TableContainer {

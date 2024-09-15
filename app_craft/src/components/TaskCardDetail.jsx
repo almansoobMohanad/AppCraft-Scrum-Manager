@@ -67,12 +67,16 @@ function Row({ row, onDelete, onTaskClick }) {
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                 </TableCell>
-                <TableCell component="th" scope="row">
+                <TableCell component="th" scope="row" className = "task-name">
                     {row.taskName}
                 </TableCell>
                 <TableCell colSpan={4} className="task-details">
                     <div className="task-details-container">
-                        <span className="task-detail">{row.tags}</span>
+                        <div className="task-tags">
+                            {row.tags.map(tag => (
+                                <span key={tag} className={`tag-display ${tag.toLowerCase()}`}>{tag}</span>
+                            ))}
+                        </div>
                         <span className="task-detail">{row.priority}</span>
                         <span className="task-detail">{row.storyPoints}</span>
                         <DeleteTaskButton className="delete-button" onClick={handleDelete}></DeleteTaskButton>
@@ -209,7 +213,7 @@ export default function CollapsibleTable() {
                                     <span className="task-detail">Tag</span>
                                     <span className="task-detail">Priority</span>
                                     <span className="task-detail">Story Point</span>
-                                    <span className="task-detail">_______</span> {/* Empty span for alignment */}
+                                    <span className="task-detail">Delete</span> {/* Empty span for alignment */}
                                 </div>
                             </TableCell>
                         </TableRow>
