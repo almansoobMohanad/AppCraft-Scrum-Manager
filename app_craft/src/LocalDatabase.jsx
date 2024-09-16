@@ -12,7 +12,7 @@ function dynamicSort(key, sortOrder = 'asc') {
     }
 }
 
-function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee) {
+function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date()) {
 
     return {
         taskName,
@@ -24,7 +24,9 @@ function createData(taskName, tags, priority, storyPoints, databaseID, descripti
         databaseID,
         description,
         type,
-        assignee
+        assignee,
+        stage,
+        dateCreated,
     };
 }
 
@@ -42,7 +44,7 @@ class LocalDatabase {
     async fetchData() {
         const querySnapshot = await getDocs(collection(db, 'tasks'));
         querySnapshot.forEach((doc) => {
-            this.data.push(createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, doc.data().description, doc.data().type, doc.data().history, doc.data().assignee));
+            this.data.push(createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, doc.data().description, doc.data().type, doc.data().history, doc.data().assignee, doc.data().stage, doc.data().dateCreated));
         });
     }
 
