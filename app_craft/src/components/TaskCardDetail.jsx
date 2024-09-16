@@ -95,7 +95,7 @@ Row.propTypes = {
     onTaskClick: PropTypes.func.isRequired,  // Add prop validation for the new click handler
 };
 
-export default function CollapsibleTable() {
+export default function CollapsibleTable({ updateFlag }) {
     const [rows, setRows] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
     const [filters, setFilters] = useState({
@@ -127,13 +127,15 @@ export default function CollapsibleTable() {
             setFilteredRows(filteredData);
         }
 
+        console.log('Fetching data...');
         // fetchData(); // this one is using the old Firebase module
         fetchDataFromDB(); // this one is using the new LocalDatabase module
-    }, []);
+    }, [updateFlag]);
 
     const handleDelete = (databaseID) => {
         setRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
         setFilteredRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
+        localDB.deleteData(databaseID);
     };
 
     const handleTaskClick = (task) => {

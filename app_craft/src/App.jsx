@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import CreateTaskButton from './components/CreateTaskButton.jsx';
-import AddTaskOverlay from './components/AddTaskOverlay.jsx';
+import AddTaskOverlay from './components/AddTaskOverLay.jsx';
 import EditTaskOverlay from './components/EditTaskOverLay.jsx';
 import './App.css';
 import NavigationBar from './components/NavigationBar.jsx';
@@ -10,6 +10,7 @@ import { createTask } from "./services/tasksService"; // import task service
 import CollapsibleTable from './components/TaskCardDetail.jsx';
 import TaskFilter from './components/TaskFilter.jsx';
 import SortButton from './components/SortButton.jsx';  // Import SortButton
+import localDB from './LocalDatabase.jsx';
 
 function App() {
   // State to control overlay visibility
@@ -18,15 +19,9 @@ function App() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [tasks, setTasks] = useState([]); // Manage all tasks
   const [sortedTasks, setSortedTasks] = useState([]); // Manage sorted tasks
+  const [updateFlag, setUpdateFlag] = useState(false);
 
   const docRef = doc(db, 'tasks', 'Yn7xWRHWqZlKgEiWTo0n');
-
-  const getData = async () => {
-    // const docSnap = await getDoc(docRef);
-    // console.log(docSnap.data());
-  };
-
-  useEffect(() => { getData() }, []);
 
   // Function to handle the "Create" button click
   const handleCreateButtonClick = () => {
@@ -36,6 +31,7 @@ function App() {
   // Function to handle closing the overlay
   const handleOverlayClose = () => {
     setOverlayVisible(false);  // Hide the overlay
+    setUpdateFlag(!updateFlag);  // Update the flag to refresh the task list
   };
 
   const handleFilterChange = (criteria) => { 
@@ -50,6 +46,7 @@ function App() {
       console.error('Error saving task:', error);
     }
     setOverlayVisible(false);
+    setUpdateFlag(!updateFlag);
   };
 
   const handleTaskClick = (task) => {
@@ -59,6 +56,7 @@ function App() {
 
   const handleEditOverlayClose = () => {
     setEditOverlayVisible(false);
+    setUpdateFlag(!updateFlag);
   };
 
   const handleTaskEditSave = async (updatedTask) => {
@@ -68,6 +66,7 @@ function App() {
       console.error('Error updating task:', error);
     }
     setEditOverlayVisible(false);
+    setUpdateFlag(!updateFlag);
   };
 
   return (
@@ -81,7 +80,7 @@ function App() {
           {/* Add Sort Button */}
           <SortButton tasks={tasks} setSortedTasks={setSortedTasks} />
         </div>
-        <CollapsibleTable tasks={sortedTasks ? sortedTasks : tasks} /> 
+        <CollapsibleTable updateFlag={updateFlag} /> 
       </div>
 
       {/* Conditionally render the AddTaskOverlay */}

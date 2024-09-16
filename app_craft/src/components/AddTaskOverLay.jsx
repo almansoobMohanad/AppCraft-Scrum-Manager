@@ -5,6 +5,7 @@ import CancelButton from './CancelButton.jsx';
 import CreateInOverlayButton from './CreateInOverlayButton.jsx';
 import CrossButton from './CrossButton.jsx';
 import Dropdown from './Dropdown.jsx';  // Import Dropdown if needed
+import localDB from '../LocalDatabase.jsx';
 
 function validateForm(value) {
     // Validate the task object
@@ -61,6 +62,7 @@ function AddTaskOverlay({ onClose, onSave }) {
         };
         if (validateForm(task)) {
             onSave(task);
+            localDB.addData(task);
             onClose();  // Close the overlay after saving
         }
     };

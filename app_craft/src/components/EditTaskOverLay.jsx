@@ -7,6 +7,7 @@ import CrossButton from './CrossButton.jsx';
 import Dropdown from './Dropdown.jsx';
 import { EditFilesInDB } from './EditFilesInDB.jsx';
 import ChangesHistoryTable from './ChangesHistoryTable.jsx';
+import localDB from '../LocalDatabase.jsx';
 
 /*
 const mockTask = {
@@ -124,7 +125,9 @@ function EditTaskOverlay({ task, onClose, onSave }) {
         db.changeAssignee(updatedTask.assignee);
         db.changeDescription(updatedTask.description);
         db.changeHistory(updatedTask.history)
-    
+
+        localDB.editData(updatedTask.databaseID, updatedTask);
+
         // Trigger the onSave callback with the updated task
         console.log('onSave called with:', updatedTask);
         onSave(updatedTask);

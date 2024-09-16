@@ -35,6 +35,7 @@ class LocalDatabase {
     constructor() {
         this.data = [];
         this.modifiedData = [];
+        this.updateCounter = 0; // Counter to track updates
     }
 
     async init() {
@@ -44,8 +45,20 @@ class LocalDatabase {
     async fetchData() {
         const querySnapshot = await getDocs(collection(db, 'tasks'));
         querySnapshot.forEach((doc) => {
-            this.data.push(createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, doc.data().description, doc.data().type, doc.data().history, doc.data().assignee, doc.data().stage, doc.data().dateCreated));
+            this.data.push(createData(
+                doc.data().name, 
+                doc.data().tags, 
+                doc.data().priority, 
+                doc.data().storyPoints, 
+                doc.id, 
+                doc.data().description, 
+                doc.data().type, 
+                doc.data().history, 
+                doc.data().assignee, 
+                doc.data().stage, 
+                doc.data().dateCreated));
         });
+        this.updateCounter++;
     }
 
     getData() {
@@ -54,19 +67,49 @@ class LocalDatabase {
 
     setData(data) {
         this.data = data;
+        this.updateCounter++;
+    }
+
+    editData(dataID, data) {
+        const dataToChangeIndex = this.data.findIndex(task => task.databaseID === dataID);
+        if (dataToChangeIndex !== -1) {
+            const dataToChange = this.data[dataToChangeIndex];
+            const updatedData = {
+                ...dataToChange,
+                taskName: data.taskName,
+                type: data.type,
+                stage: data.stage,
+                storyPoints: data.storyPoints,
+                priority: data.priority,
+                tags: data.tags,
+                assignee: data.assignee,
+                description: data.description,
+                history: data.history,
+                priorityNum: data.priority === 'Low' ? 1 : data.priority === 'Medium' ? 2 : data.priority === 'Important' ? 3 : 4,
+            };
+            this.data[dataToChangeIndex] = updatedData;
+            this.updateCounter++;
+        }
     }
 
     async updateData() {
         this.data = [];
         await this.fetchData();
+        this.updateCounter++;
     }
 
-    async addData(newData) {
+    addData(newData) {
         this.data.push(newData);
+        this.updateCounter++;
     }
 
-    async removeData(index) {
-        this.data.splice(index, 1);
+    deleteData(databaseID) {
+        this.data.filter(task => task.databaseID !== databaseID);
+        this.updateCounter++;
+    }
+
+    getUpdateCounter() {
+        return this.updateCounter;
     }
 
     filterTasks(tags, priority, storyPoints) {
