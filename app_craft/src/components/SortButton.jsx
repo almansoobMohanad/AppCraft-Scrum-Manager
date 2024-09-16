@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './SortButton.css';  // Import the CSS file
+import '../cssFiles/SortButton.css';  // Import the CSS file
 import { sortData } from './SortFunctions';
 
 const SortButton = ({ tasks, setSortedTasks }) => {

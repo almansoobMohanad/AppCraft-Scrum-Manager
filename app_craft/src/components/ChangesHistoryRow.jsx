@@ -1,6 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import './ChangesHistoryRow.css'; // Import the CSS file
+import '../cssFiles/ChangesHistoryRow.css'; // Import the CSS file
 
 const ChangesHistoryRow = ({ name, date }) => {
   return (

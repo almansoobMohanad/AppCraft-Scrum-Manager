@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import './NavigationBar.css';
+import '../cssFiles/NavigationBar.css';
 import accountIcon from '../assets/images/accountIcon.png'; // Adjust the path according to your file structure
 import backlogIcon from '../assets/images/backlogIcon.png'; // Adjust the path according to your file structure
 import kanbanIcon from '../assets/images/kanbanIcon.png'; // Adjust the path according to your file structure

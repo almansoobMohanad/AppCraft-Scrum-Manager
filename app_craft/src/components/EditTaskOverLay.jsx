@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import './EditTaskOverlay.css';
+import '../cssFiles/EditTaskOverlay.css';
 import CancelButton from './CancelButton.jsx';
 import SaveButton from './SaveButton.jsx';
 import CrossButton from './CrossButton.jsx';

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CreateTaskButton from './CreateTaskButton.jsx';
 import AddTaskOverlay from '/AddTaskOverlay.jsx';  // Corrected import path
+import '../cssFiles/TaskManager.css';
 
 const TaskManager = () => {
     const [isOverlayVisible, setOverlayVisible] = useState(false);

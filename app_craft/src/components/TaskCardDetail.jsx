@@ -15,7 +15,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { db } from '../firebase/firebaseConfig.js';
 import { getDocs, collection, onSnapshot, doc } from 'firebase/firestore';
-import './TaskCardDetail.css';
+import '../cssFiles/TaskCardDetail.css';
 import backEndDeleteTask from './backEndDeleteTask'; // Corrected import path
 import DeleteTaskButton from "./DeleteTaskButton.jsx";
 import EditTaskOverlay from './EditTaskOverLay.jsx';
