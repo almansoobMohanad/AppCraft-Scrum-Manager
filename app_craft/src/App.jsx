@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import CreateTaskButton from './components/CreateTaskButton.jsx';
 import AddTaskOverlay from './components/AddTaskOverLay.jsx';
 import EditTaskOverlay from './components/EditTaskOverLay.jsx';
-import './App.css';
+import './cssFiles/App.css';
 import NavigationBar from './components/NavigationBar.jsx';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './firebase/firebaseConfig.js';
