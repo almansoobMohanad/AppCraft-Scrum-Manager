@@ -16,6 +16,10 @@
   text-align: center;
 }
 
+.filter-button{
+  border:2px solid black;
+}
+
 .filter-button:hover, .dropdown-button:hover, .Storypoint-button:hover {
   background-color: #b3b3b3;
 }
@@ -41,7 +45,7 @@
 }
 
 /* Each item in the dropdown */
-.priority-dropdown-item, .story-points-dropdown-item, .filter-button {
+.priority-dropdown-item, .story-points-dropdown-item{
   padding: 10px 20px;
   cursor: pointer;
   font-size: 16px;
@@ -49,8 +53,10 @@
   white-space: nowrap;
 }
 
-.priority-dropdown-item:hover, .story-points-dropdown-item:hover, .filter-button:hover {
-  background-color: #f0f0f0;
+.priority-dropdown-item:hover, .story-points-dropdown-item:hover {
+  /* background-color: #f0f0f0; */
+  filter: brightness(0.7); /* Darkens the color by 10% */
+
 }
 
 /* Custom colors for each tag */
@@ -63,80 +69,56 @@
 .filter-button.ui { background-color: #A6F1C8; }        /* UI */
 .filter-button.ux { background-color: #66BB77; }        /* UX */
 
+/* Darken the background color on hover */
+.filter-button.frontend:hover, .filter-button.frontend.active { filter: brightness(0.6); }
+.filter-button.backend:hover, .filter-button.backend.active { filter: brightness(0.6); }
+.filter-button.api:hover, .filter-button.api.active { filter: brightness(0.6); }
+.filter-button.database:hover, .filter-button.database.active { filter: brightness(0.6); }
+.filter-button.framework:hover, .filter-button.framework.active { filter: brightness(0.6); }
+.filter-button.testing:hover, .filter-button.testing.active { filter: brightness(0.6); }
+.filter-button.ui:hover, .filter-button.ui.active { filter: brightness(0.6); }
+.filter-button.ux:hover, .filter-button.ux.active { filter: brightness(0.6); }
+
 /* Custom colors for each priority */
 /* Priority specific styles */
-.priority-dropdown-item.low {
-  background-color: #00FF00; /* Green for Low */
-}
+.priority-dropdown-item.low { background-color: #00FF00; /* Green for Low */ }
 
-.priority-dropdown-item.medium {
-  background-color: #FFFF00; /* Yellow for Medium */
-}
+.priority-dropdown-item.medium { background-color: #FFFF00; /* Yellow for Medium */}
 
-.priority-dropdown-item.important {
-  background-color: #FFA500; /* Orange for Important */
-}
+.priority-dropdown-item.important { background-color: #FFA500; /* Orange for Important */}
 
-.priority-dropdown-item.urgent {
-  background-color: #FF0000; /* Red for Urgent */
-}
+.priority-dropdown-item.urgent { background-color: #FF0000; /* Red for Urgent */ }
 
 /* Priority Colors */
-.low {
-  background-color: #00FF00 !important; /* Green for Low */
-}
+.low { background-color: #00FF00 !important; /* Green for Low */ }
 
-.medium {
-  background-color: #FFFF00 !important; /* Yellow for Medium */
-}
+.medium { background-color: #FFFF00 !important; /* Yellow for Medium */ }
 
-.important {
-  background-color: #FFA500 !important; /* Orange for Important */
-}
+.important { background-color: #FFA500 !important; /* Orange for Important */ }
 
-.urgent {
-  background-color: #FF0000 !important; /* Red for Urgent */
-}
+.urgent { background-color: #FF0000 !important; /* Red for Urgent */ }
 
-.storypoint-1 {
-  background-color: #00FF00 !important;
-}
 
-.storypoint-2 {
-  background-color: #38FF00 !important;
-}
+/* this whole section is for story points */
+/* .storypoint-1 { background-color: #00FF00 !important; }
 
-.storypoint-3 {
-  background-color: #AAFF00 !important;
-}
+.storypoint-2 { background-color: #38FF00 !important; }
 
-.storypoint-4 {
-  background-color: #AAFF00 !important;
-}
+.storypoint-3 { background-color: #AAFF00 !important; }
 
-.storypoint-5 {
-  background-color: #E2FF00 !important;
-}
+.storypoint-4 { background-color: #AAFF00 !important; }
 
-.storypoint-6 {
-  background-color: #FFE300 !important;
-}
+.storypoint-5 { background-color: #E2FF00 !important; }
 
-.storypoint-7 {
-  background-color: #FFAB00 !important;
-}
+.storypoint-6 { background-color: #FFE300 !important; }
 
-.storypoint-8 {
-  background-color: #FF7200 !important;
-}
+.storypoint-7 { background-color: #FFAB00 !important; }
 
-.storypoint-9 {
-  background-color: #FF3900 !important;
-}
+.storypoint-8 { background-color: #FF7200 !important; }
 
-.storypoint-10 {
-  background-color: #FF0000 !important;
-}
+.storypoint-9 { background-color: #FF3900 !important; }
+
+.storypoint-10 { background-color: #FF0000 !important; } */
 
 /* Clear Button */
 .clear-button {
