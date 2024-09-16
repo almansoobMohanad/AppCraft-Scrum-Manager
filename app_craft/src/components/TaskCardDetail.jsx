@@ -22,7 +22,7 @@ import EditTaskOverlay from './EditTaskOverLay.jsx';
 import TaskFilter from './TaskFilter'; // Import TaskFilter component
 import localDB from '../LocalDatabase'; // Import the LocalDatabase module
 
-function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee) {
+function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date()) {
 
     return {
         taskName,
@@ -34,7 +34,9 @@ function createData(taskName, tags, priority, storyPoints, databaseID, descripti
         databaseID,
         description,
         type,
-        assignee
+        assignee,
+        stage,
+        dateCreated,
     };
 }
 
@@ -103,13 +105,15 @@ export default function CollapsibleTable() {
     });
     const [isEditOverlayVisible, setEditOverlayVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
+    const [sortCriteria, setSortCriteria] = useState('');
+    const [sortOrder, setSortOrder] = useState('asc');
 
     useEffect(() => {
         const fetchData = async () => {
             const fetchedRows = [];
             const querySnapshot = await getDocs(collection(db, "tasks"));
             querySnapshot.forEach((doc) => {
-                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, doc.data().description, doc.data().type, doc.data().history, doc.data().assignee);
+                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, doc.data().description, doc.data().type, doc.data().history, doc.data().assignee, doc.data().stage, doc.date().dateCreated);
                 fetchedRows.push(data);
             });
             setRows(fetchedRows);
@@ -141,6 +145,30 @@ export default function CollapsibleTable() {
         setFilters(newFilters);
     };
 
+    const applySort = (tasks) => {
+        let sorted = [...tasks];
+        sorted.sort((a, b) => {
+            if (sortCriteria === 'priority') {
+                if (sortOrder === 'asc') {
+                    return a.priorityNum - b.priorityNum;
+                } else {
+                    return b.priorityNum - a.priorityNum;
+                }
+            } else if (sortCriteria === 'date') {
+                const dateA = a.dateCreated instanceof Date ? a.dateCreated : new Date(a.dateCreated.seconds * 1000 + a.dateCreated.nanoseconds / 1000000);
+                const dateB = b.dateCreated instanceof Date ? b.dateCreated : new Date(b.dateCreated.seconds * 1000 + b.dateCreated.nanoseconds / 1000000);
+                if (sortOrder === 'asc') {
+                    return dateA - dateB;
+                } else {
+                    return dateB - dateA;
+                }
+            }
+            return 0;
+        });
+        console.log(sorted);
+        return sorted;
+    };
+
     const applyFilters = () => {
         let filtered = rows;
 
@@ -155,17 +183,38 @@ export default function CollapsibleTable() {
         if (filters.storyPoints !== null) {
             filtered = filtered.filter(task => task.storyPoint === filters.storyPoints);
         }
-
-        setFilteredRows(filtered);
+        //added this so that u still can sort the filtered ones :D
+        const sorted = applySort(filtered)
+        setFilteredRows(sorted);
     };
 
     useEffect(() => {
         applyFilters();
-    }, [filters, rows]);
+    }, [filters, rows, sortOrder, sortCriteria]);
+
+    const handleSortByPriority = () => {
+        setSortCriteria('priority');
+        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    };
+
+    const handleSortByDate = () => {
+        setSortCriteria('date');
+        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    };
 
     return (
         <div className="TableContainer">
-            <TaskFilter onFilterChange={handleFilterChange} />
+            <div className="filter-sort-container">
+                <TaskFilter onFilterChange={handleFilterChange} />
+                <div className="sort-buttons">
+                    <button onClick={handleSortByPriority}>
+                        Sort by Priority {sortCriteria === 'priority' && (sortOrder === 'asc' ? '▲' : '▼')}
+                    </button>
+                    <button onClick={handleSortByDate}>
+                        Sort by Date {sortCriteria === 'date' && (sortOrder === 'asc' ? '▲' : '▼')}
+                    </button>
+                </div>
+            </div>
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead className="table-head">
