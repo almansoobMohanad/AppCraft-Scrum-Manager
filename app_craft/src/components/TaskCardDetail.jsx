@@ -55,18 +55,7 @@ function Row({ row, onDelete, onTaskClick }) {
                 onClick={() => onTaskClick(row)} // Make the row clickable
                 style={{ cursor: 'pointer' }}  // Change cursor to pointer to indicate it's clickable
             >
-                <TableCell>
-                <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={(e) => {
-                            e.stopPropagation(); // Prevent row click when expanding
-                            setOpen(!open);
-                        }}
-                    >
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
+                
                 <TableCell component="th" scope="row" className = "task-name">
                     {row.taskName}
                 </TableCell>
@@ -85,31 +74,6 @@ function Row({ row, onDelete, onTaskClick }) {
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
-                            <Typography variant="h6" gutterBottom component="div">
-                                History
-                            </Typography>
-                            <Table size="small" aria-label="purchases">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Date</TableCell>
-                                        <TableCell>Changed By</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {row.history.map((historyRow) => (
-                                        <TableRow key={historyRow.date}>
-                                            <TableCell component="th" scope="row">
-                                                {historyRow.date}
-                                            </TableCell>
-                                            <TableCell>{historyRow.changedBy}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </Box>
-                    </Collapse>
                 </TableCell>
             </TableRow>
         </React.Fragment>
@@ -206,7 +170,6 @@ export default function CollapsibleTable() {
                 <Table aria-label="collapsible table">
                     <TableHead className="table-head">
                         <TableRow>
-                            <TableCell />
                             <TableCell>Task Name</TableCell>
                             <TableCell colSpan={4} className="task-details">
                                 <div className="task-details-container">
