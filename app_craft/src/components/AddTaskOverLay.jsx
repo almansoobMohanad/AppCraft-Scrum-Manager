@@ -56,7 +56,8 @@ function AddTaskOverlay({ onClose, onSave }) {
             tags,
             assignee,
             description,
-            history: []
+            history: [],
+            dateCreated: new Date()
         };
         if (validateForm(task)) {
             onSave(task);
