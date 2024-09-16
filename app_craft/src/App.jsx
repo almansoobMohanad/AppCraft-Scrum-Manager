@@ -78,7 +78,6 @@ function App() {
         <div className="button-group">
           <CreateTaskButton onClick={handleCreateButtonClick} />
           {/* Add Sort Button */}
-          <SortButton tasks={tasks} setSortedTasks={setSortedTasks} />
         </div>
         <CollapsibleTable updateFlag={updateFlag} /> 
       </div>
