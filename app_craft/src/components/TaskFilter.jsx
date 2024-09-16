@@ -21,7 +21,7 @@ const TaskFilter = ({ onFilterChange }) => {
   ];
 
   const priorities = ['Low', 'Medium', 'Important', 'Urgent'];
-  const storyPoints = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  // const storyPoints = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   // Function to toggle the visibility of the tag box
   const handleToggleTagBox = () => {
@@ -46,19 +46,19 @@ const TaskFilter = ({ onFilterChange }) => {
     setIsPriorityDropdownOpen(false);
   };
 
-  // Function to handle story point selection
-  const handleStoryPointChange = (storyPoint) => {
-    setSelectedStoryPoint(storyPoint);
-    onFilterChange({ tags: selectedTags, priority: selectedPriority, storyPoints: storyPoint });
-    setIsStoryPointDropdownOpen(false);
-  };
+  // // Function to handle story point selection
+  // const handleStoryPointChange = (storyPoint) => {
+  //   setSelectedStoryPoint(storyPoint);
+  //   onFilterChange({ tags: selectedTags, priority: selectedPriority, storyPoints: storyPoint });
+  //   setIsStoryPointDropdownOpen(false);
+  // };
 
   // Function to clear all filters
   const handleClearFilters = () => {
     setSelectedTags([]);
     setSelectedPriority('');
-    setSelectedStoryPoint(null);
-    onFilterChange({ tags: [], priority: '', storyPoints: null });
+    // setSelectedStoryPoint(null);
+    onFilterChange({ tags: [], priority: '' });
   };
 
   return (
@@ -108,31 +108,7 @@ const TaskFilter = ({ onFilterChange }) => {
         )}
       </div>
 
-      <div className="dropdown-container">
-        <button
-          className={`Storypoint-button ${selectedStoryPoint !== null ? `storypoint-${selectedStoryPoint}` : ''}`}
-          onClick={() => {
-            setIsStoryPointDropdownOpen(!isStoryPointDropdownOpen);
-            setIsTagBoxVisible(false);
-            setIsPriorityDropdownOpen(false);
-          }}
-        >
-          {selectedStoryPoint !== null ? `Story Points: ${selectedStoryPoint}` : 'Select Story Points'}
-        </button>
-        {isStoryPointDropdownOpen && (
-          <div className="story-points-dropdown-menu">
-            {storyPoints.map((point, i) => (
-              <button
-                key={i}
-                className={`story-points-dropdown-item storypoint-${point}`}
-                onClick={() => handleStoryPointChange(point)}
-              >
-                {point}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+        
 
       {/* Clear Filter Button */}
       <div className="dropdown-container">
