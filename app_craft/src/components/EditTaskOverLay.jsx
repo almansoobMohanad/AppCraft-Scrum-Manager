@@ -29,7 +29,7 @@ const mockTask = {
 
 function EditTaskOverlay({ task, onClose, onSave }) {
 
-    console.log('this ism me', task)
+    // console.log('this ism me', task)
     const [taskName, setTaskName] = useState('');
     const [taskType, setTaskType] = useState('Bug');
     const [taskStage, setTaskStage] = useState('Planning');
