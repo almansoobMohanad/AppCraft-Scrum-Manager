@@ -68,7 +68,7 @@ function Row({ row, onDelete, onTaskClick }) {
                                 <span key={tag} className={`tag-display ${tag.toLowerCase()}`}>{tag}</span>
                             ))}
                         </div>
-                        <span className="task-detail">{row.priority}</span>
+                        <span className={`priority-display ${row.priority.toLowerCase()}`}>{row.priority}</span>
                         <span className="task-detail">{row.storyPoints}</span>
                         <DeleteTaskButton className="delete-button" onClick={handleDelete}></DeleteTaskButton>
                     </div>

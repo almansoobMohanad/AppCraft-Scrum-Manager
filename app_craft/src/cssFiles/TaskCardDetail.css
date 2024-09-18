@@ -41,6 +41,21 @@
 .tag-display.ui { background-color: #A6F1C8; }        /* UI */
 .tag-display.ux { background-color: #66BB77; }        /* UX */
 
+/* Priority display styles */
+.priority-display {
+  display: inline-block;  /* Ensure it's inline with text */
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: black;
+  max-width: fit-content;
+}
+
+/* Custom colors for each priority */
+.priority-display.low { background-color: #00FF00; }       /* Low */
+.priority-display.medium { background-color: #FFFF00; }    /* Medium */
+.priority-display.important { background-color: #FFA500; } /* Important */
+.priority-display.urgent { background-color: #FF0000; }    /* Urgent */
+
 
 
 .task-detail {
