@@ -1,8 +1,9 @@
 .create-task-button {
-    background-color: #D9D9D9;
+    background-color: #28a745;
+    color: white;
     border: none;
-    padding: 10px 20px; /* Same padding as the tags */
-    font-size: 16px;    /* Same font size as the tags */
+    border-radius: 5px;
+    padding: 8px 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     width: auto; /* You can also use a fixed width if you want it to be exactly the same size as a tag */
@@ -10,10 +11,6 @@
 }
 
 .create-task-button:hover {
-    background-color: #b3b3b3; /* Hover effect same as the tags */
+    background-color: #0056b3;
 }
 
-.create-task-button:focus {
-    outline: none;
-    border: 2px solid black; /* Add an outline when focused */
-}
