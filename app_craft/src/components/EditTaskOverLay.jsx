@@ -8,6 +8,7 @@ import Dropdown from './Dropdown.jsx';
 import { EditFilesInDB } from './EditFilesInDB.jsx';
 import ChangesHistoryTable from './ChangesHistoryTable.jsx';
 import localDB from '../LocalDatabase.jsx';
+import { updateTask } from '../services/tasksService.js';
 
 /*
 const mockTask = {
@@ -28,7 +29,8 @@ const mockTask = {
 };
 */
 
-function EditTaskOverlay({ task, onClose, onSave }) {
+function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
+    console.log('Props received:', { task, onClose, onSave, onUpdate });
 
     // console.log('this ism me', task)
     const [taskName, setTaskName] = useState('');
@@ -76,8 +78,6 @@ function EditTaskOverlay({ task, onClose, onSave }) {
         return true;
     };
 
-
-
     const generateHistoryEntry = (name) => {
         return {
             date: new Date().toLocaleDateString('en-GB'),
@@ -85,7 +85,7 @@ function EditTaskOverlay({ task, onClose, onSave }) {
         };
     };
 
-    const handleSave = () => {
+    const handleSave = (updateHandler) => {
 
         if (validateFields()){
 
@@ -98,7 +98,8 @@ function EditTaskOverlay({ task, onClose, onSave }) {
 
         console.log('the new history list supposedly', newHistoryList)
 
-    
+        onUpdate();
+
         const updatedTask = {
             ...task,  // Keep the original task details
             taskName,
@@ -295,6 +296,7 @@ EditTaskOverlay.propTypes = {
     }),
     onClose: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
+    handleUpdate: PropTypes.func.isRequired,
 };
 
 export default EditTaskOverlay

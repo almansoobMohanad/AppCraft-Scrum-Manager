@@ -107,6 +107,7 @@ export default function CollapsibleTable({ updateFlag }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const [sortCriteria, setSortCriteria] = useState('');
     const [sortOrder, setSortOrder] = useState('asc');
+    const [updateFlag2, setUpdateFlag2] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -128,9 +129,17 @@ export default function CollapsibleTable({ updateFlag }) {
         }
 
         console.log('Fetching data...');
+        if (rows.length === 0) {
+            console.log('Fetching data from DB...');
+            fetchDataFromDB();
+        } else {
+            console.log('Updating Data...')
+            setRows([])
+            fetchDataFromDB();
+        }
         // fetchData(); // this one is using the old Firebase module
-        fetchDataFromDB(); // this one is using the new LocalDatabase module
-    }, [updateFlag]);
+        // fetchDataFromDB(); // this one is using the new LocalDatabase module
+    }, [updateFlag, updateFlag2]);
 
     const handleDelete = (databaseID) => {
         setRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
@@ -206,6 +215,10 @@ export default function CollapsibleTable({ updateFlag }) {
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     };
 
+    const handleUpdate = () => {
+        setUpdateFlag2(!updateFlag2);
+    }
+
     return (
         <div className="TableContainer">
             <div className="filter-sort-container">
@@ -248,6 +261,7 @@ export default function CollapsibleTable({ updateFlag }) {
                     task={selectedTask}
                     onClose={() => setEditOverlayVisible(false)}
                     onSave={(updatedTask) => { /* Handle save logic here */ }}
+                    onUpdate={handleUpdate}
                 />
             )}
         </div>
