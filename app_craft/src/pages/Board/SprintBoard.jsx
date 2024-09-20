@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import CreateSprintOverlay from './components/createSprint.jsx';
 import NavigationBar from "../../components/NavigationBar";
 import './SprintBoard.css'; 
+import { createSprint } from './components/backendCreateLogic.jsx'; //import the createSprint function
 
 const SprintBoard = () => {
     const [sprints, setSprints] = useState([]);
@@ -9,6 +10,7 @@ const SprintBoard = () => {
 
     const handleCreateSprint = (newSprint) => {
         setSprints([...sprints, { ...newSprint, id: sprints.length + 1 }]);
+        createSprint(newSprint); // Call the createSprint function
     };
 
     return (
