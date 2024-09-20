@@ -1,9 +1,8 @@
 import React from "react";
-import { addDoc, collection, getFirestore } from "firebase/firestore"; 
-import { db } from '../firebase/firebaseConfig'; //import Firebase config
-
+import { addDoc, collection, getFirestore, doc, setDoc } from "firebase/firestore";
+import { db } from "../../../firebase/firebaseConfig.js";
 //function to create a new sprint
-export default createSprint = async (sprintData) => {
+export default async function createSprint(sprintData) {
     try {
         const docRef = await addDoc(collection(db, "sprints"), sprintData);
         console.log("Sprint created with ID: ", docRef.id);
