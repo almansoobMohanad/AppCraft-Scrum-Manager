@@ -6,6 +6,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [productOwner, setProductOwner] = useState('');
+    const [scrumMaster, setScrumMaster] = useState(''); // New state for Scrum Master
     const [members, setMembers] = useState('');
     const [error, setError] = useState('');
 
@@ -32,6 +33,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
             startDate,
             endDate,
             productOwner,
+            scrumMaster, // Include Scrum Master in the created sprint
             members: members.split(',').map((member) => member.trim()), // Convert members into an array
         });
         onClose(); // Close overlay after creating the sprint
@@ -75,6 +77,15 @@ const CreateSprint = ({ onCreate, onClose }) => {
                             value={productOwner}
                             onChange={(e) => setProductOwner(e.target.value)}
                             placeholder="Enter Product Owner"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Scrum Master</label>
+                        <input
+                            type="text"
+                            value={scrumMaster}
+                            onChange={(e) => setScrumMaster(e.target.value)}
+                            placeholder="Enter Scrum Master"
                         />
                     </div>
                     <div className="form-group">
