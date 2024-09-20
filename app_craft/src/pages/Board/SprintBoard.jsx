@@ -4,7 +4,7 @@ import NavigationBar from "../../components/NavigationBar";
 import './SprintBoard.css'; 
 import createSprint from './components/backendCreateLogic.jsx'; //import the createSprint function
 
-const SprintBoard = () => {
+const SprintBoard = () => { 
     const [sprints, setSprints] = useState([]);
     const [showOverlay, setShowOverlay] = useState(false);
 
