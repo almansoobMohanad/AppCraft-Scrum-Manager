@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CreateSprintOverlay from './components/createSprint.jsx';
+import EditSprintOverlay from './components/editSprint.jsx';
 import NavigationBar from "../../components/NavigationBar";
 import './SprintBoard.css'; 
 import createSprint from './components/sprintDatabaseLogic.jsx'; //import the createSprint function
@@ -7,6 +8,10 @@ import createSprint from './components/sprintDatabaseLogic.jsx'; //import the cr
 const SprintBoard = () => { 
     const [sprints, setSprints] = useState([]);
     const [showOverlay, setShowOverlay] = useState(false);
+
+    const [showEditOverlay, setShowEditOverlay] = useState(false);
+    const [selectedSprint, setSelectedSprint] = useState(null); // Track sprint being edited
+
 
     const handleCreateSprint = async (newSprint) => {
         try {
@@ -20,24 +25,11 @@ const SprintBoard = () => {
 
     //takes in a sprintID (already inside the sprint) and updatedSprint (should be from the edit overlay)
     const handleEditSprint = (sprintID, updatedSprint) => {
-        //takes in the updatedSprint places it on the old sprint
         const updatedSprints = sprints.map(sprint => 
             sprint.id === sprintID ? { ...sprint, ...updatedSprint } : sprint
         );
         setSprints(updatedSprints);
-        
-        console.log('sprint id from handle sprint', sprintID)
-
-        //EDITING the sprint data on database should be here
-
-    }
-
-    const mockUpdatedSprint = {
-        name: 'Updated Mock Sprint',
-        startDate: '2024-09-05',
-        endDate: '2024-09-20',
-        productOwner: 'Jane Smith',
-        members: ['Charlie', 'Dave'],
+        setShowEditOverlay(false); // Close overlay after saving changes
     };
 
 
@@ -48,12 +40,24 @@ const SprintBoard = () => {
                 <h1 className="title">Sprint Board</h1>
                 <button className='create-sprint-button'
                 onClick={() => setShowOverlay(true)}>Create Sprint</button>
+                
+                {/* Create Sprint Overlay */}
                 {showOverlay && (
                     <CreateSprintOverlay 
                         onCreate={handleCreateSprint} 
                         onClose={() => setShowOverlay(false)} 
                     />
                 )}
+
+                {/* Edit Sprint Overlay */}
+                {showEditOverlay && selectedSprint && (
+                    <EditSprintOverlay 
+                        sprintDetails={selectedSprint}
+                        onEdit={(updatedSprint) => handleEditSprint(selectedSprint.id, updatedSprint)} 
+                        onClose={() => setShowEditOverlay(false)} 
+                    />
+                )}
+
                 <div className="sprints-list">
                     {sprints.map((sprint) => (
                         <div key={sprint.id} className="sprint-item">
@@ -62,7 +66,11 @@ const SprintBoard = () => {
                             <p><strong>End Date:</strong> {sprint.endDate}</p>
                             <p><strong>Product Owner:</strong> {sprint.productOwner}</p>
                             <p><strong>Members:</strong> {sprint.members.join(', ')}</p>
-                            <button onClick={() => handleEditSprint(sprint.id, mockUpdatedSprint)}>Temp Edit</button>
+                            {/* Button to trigger the Edit Sprint Overlay */}
+                            <button className="edit-sprint-button" onClick={() => {
+                                setSelectedSprint(sprint); // Set the sprint for editing
+                                setShowEditOverlay(true);  // Open the edit overlay
+                            }}>Edit Sprint Details</button>
                         </div>
                     ))}
                 </div>
