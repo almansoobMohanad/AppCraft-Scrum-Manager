@@ -28,6 +28,22 @@ export default async function createSprint(sprintData) {
 };
 
 /**
+ * Deletes a sprint document from the "sprints" collection.
+ * 
+ * @param {string} sprintId - The ID of the sprint to delete.
+ * @throws {Error} - Throws an error if the sprint deletion fails.
+ */
+export async function deleteSprint(sprintId) {
+    try {
+        const sprintDocRef = doc(db, "sprints", sprintId);  // Locate the sprint by ID
+        await deleteDoc(sprintDocRef);  // Delete the document
+        console.log(`Sprint with ID ${sprintId} deleted successfully.`);
+    } catch (error) {
+        console.error("Error deleting sprint:", error);
+    }
+}
+
+/**
  * Provides functions to edit various details of an existing sprint document.
  * 
  * @param {string} sprintID - The ID of the sprint document to edit.
