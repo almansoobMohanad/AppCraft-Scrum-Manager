@@ -36,72 +36,36 @@ export default async function createSprint(sprintData) {
 export function editSprintDetails(sprintID) {
     const sprintRef = doc(db, 'sprints', sprintID);
 
-    /**
-     * Changes the name of the sprint.
-     * 
-     * @param {string} newName - The new name for the sprint.
-     */
     const changeName = async (newName) => {
-        setDoc(sprintRef, { name: newName }, { merge: true });
-    }
+        await setDoc(sprintRef, { name: newName }, { merge: true });
+    };
 
-    /**
-     * Changes the start date of the sprint.
-     * 
-     * @param {string} newStartDate - The new start date for the sprint.
-     */
     const changeStartDate = async (newStartDate) => {
-        setDoc(sprintRef, { startDate: newStartDate }, { merge: true });
-    }
+        await setDoc(sprintRef, { startDate: newStartDate }, { merge: true });
+    };
 
-
-    /**
-     * Changes the end date of the sprint.
-     * 
-     * @param {string} newEndDate - The new end date for the sprint.
-     */
     const changeEndDate = async (newEndDate) => {
-        setDoc(sprintRef, { endDate: newEndDate }, { merge: true });
-    }
+        await setDoc(sprintRef, { endDate: newEndDate }, { merge: true });
+    };
 
-    //change the status of the sprint
-    // i forgot the 3 things... please change this line to the correct me :)
-    /**
-     * Changes the status of the sprint.
-     * 
-     * @param {string} newStatus - The new status for the sprint.
-     */
     const changeStatus = async (newStatus) => {
-        setDoc(sprintRef, { description: newStatus }, { merge: true });
-    }
+        await setDoc(sprintRef, { status: newStatus }, { merge: true });
+    };
 
-    //change the reference or add the reference of the task within the sprint
-    // must use reference the taskID or else it'll mess with the database
-    /**
-     * Changes the task reference of the sprint.
-     * 
-     * @param {string} newReference - The new task reference for the sprint.
-     */
     const changeReference = async (newReference) => {
-        setDoc(sprintRef, { history: newReference}, { merge: true });
-    }
+        await setDoc(sprintRef, { reference: newReference }, { merge: true });
+    };
 
-    /**
-     * Changes the product owner of the sprint.
-     * 
-     * @param {string} newOwner - The new product owner for the sprint.
-     */
     const changeOwner = async (newOwner) => {
-        setDoc(sprintRef, { owner: newOwner }, { merge: true });
-    }
+        await setDoc(sprintRef, { productOwner: newOwner }, { merge: true });
+    };
 
-    /**
-     * Changes the scrum master of the sprint.
-     * 
-     * @param {string} newMaster - The new scrum master for the sprint.
-     */
     const changeMaster = async (newMaster) => {
-        setDoc(sprintRef, { master: newMaster }, { merge: true });
+        await setDoc(sprintRef, { scrumMaster: newMaster }, { merge: true });
+    };
+
+    const changeMembers = async (newMembers) => {
+        await setDoc(sprintRef, { members: newMembers}, { merge: true })
     }
 
     return {
@@ -112,5 +76,6 @@ export function editSprintDetails(sprintID) {
         changeReference,
         changeOwner,
         changeMaster,
+        changeMembers
     }
 }
