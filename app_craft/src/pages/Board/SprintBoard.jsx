@@ -4,8 +4,10 @@ import EditSprintOverlay from './components/editSprint.jsx';
 import NavigationBar from "../../components/NavigationBar";
 import './SprintBoard.css'; 
 import createSprint from './components/sprintDatabaseLogic.jsx'; //import the createSprint function
+import { editSprintDetails }  from './components/sprintDatabaseLogic.jsx';
 
 const SprintBoard = () => { 
+    //all sprints in this page are stored here
     const [sprints, setSprints] = useState([]);
     const [showOverlay, setShowOverlay] = useState(false);
 
@@ -23,13 +25,31 @@ const SprintBoard = () => {
         }
     };
 
-    //takes in a sprintID (already inside the sprint) and updatedSprint (should be from the edit overlay)
-    const handleEditSprint = (sprintID, updatedSprint) => {
+    // Takes in a sprintID (already inside the sprint) and updatedSprint (should be from the edit overlay)
+    const handleEditSprint = async (sprintID, updatedSprint) => {
         const updatedSprints = sprints.map(sprint => 
             sprint.id === sprintID ? { ...sprint, ...updatedSprint } : sprint
         );
+        //update the local sprints array/list
         setSprints(updatedSprints);
         setShowEditOverlay(false); // Close overlay after saving changes
+
+        //find the sprint on the db using the sprintID
+        const databaseSprint = editSprintDetails(sprintID);
+
+        //update the sprint on the cloud database
+        try {
+            if (updatedSprint.name) await databaseSprint.changeName(updatedSprint.name);
+            if (updatedSprint.startDate) await databaseSprint.changeStartDate(updatedSprint.startDate);
+            if (updatedSprint.endDate) await databaseSprint.changeEndDate(updatedSprint.endDate);
+            if (updatedSprint.status) await databaseSprint.changeStatus(updatedSprint.status);
+            if (updatedSprint.reference) await databaseSprint.changeReference(updatedSprint.reference);
+            if (updatedSprint.productOwner) await databaseSprint.changeOwner(updatedSprint.productOwner);
+            if (updatedSprint.scrumMaster) await databaseSprint.changeMaster(updatedSprint.scrumMaster);
+            if (updatedSprint.members) await databaseSprint.changeMembers(updatedSprint.members)
+        } catch (error) {
+            console.error("Error updating sprint:", error);
+        }
     };
 
 
