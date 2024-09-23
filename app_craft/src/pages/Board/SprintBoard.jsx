@@ -43,7 +43,7 @@ const SprintBoard = () => {
         fetchedSprints();
     }, []);
     useEffect(() => {
-        setSprints(sprints);
+        console.log("Table Updated")
     }, [sprints]);
 
     const handleCreateSprint = async (newSprint) => {
