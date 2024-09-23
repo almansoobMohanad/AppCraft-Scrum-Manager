@@ -1,7 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../css/sprintTable.css'; // Style specific for the table
 
+
 const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
+
+  const navigate = useNavigate();
+
   return (
     <table className="sprint-table">
       <thead>
@@ -24,7 +29,10 @@ const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
                 </span>
               </td>
               <td className="actions-column">
-                <button className="view-sprint-btn" onClick={() => console.log(`View Sprint ${sprint.id}`)}>
+              <button
+                  className="view-sprint-btn"
+                  onClick={() => navigate('/sprintbacklog/', { state: { sprintName: sprint.name } })}  // Pass sprint name
+                >
                   View Sprint
                 </button>
                 <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>

@@ -5,6 +5,7 @@ import './cssFiles/index.css';
 import SprintBoard from './pages/Board/SprintBoard.jsx';
 import AccountPage from './pages/Account/AccountPage.jsx';
 import AdminView from './pages/Admin/AdminView.jsx';
+import SprintBacklogPage from './pages/SprintBacklog/SprintBacklogPage.jsx';
 import {
     createBrowserRouter,
     RouterProvider,
@@ -26,6 +27,10 @@ import {
     {
       path: "/admin",
       element: <AdminView/>, 
+    },
+    {
+      path: "/sprintbacklog",
+      element: <SprintBacklogPage/>,
     },
   ]);
 
