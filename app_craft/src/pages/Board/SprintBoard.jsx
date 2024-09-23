@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect , useState } from 'react';
 import CreateSprintOverlay from './components/createSprint.jsx';
 import EditSprintOverlay from './components/editSprint.jsx';
 import NavigationBar from "../../components/NavigationBar";
@@ -6,6 +6,7 @@ import './SprintBoard.css';
 import createSprint from './components/sprintDatabaseLogic.jsx'; //import the createSprint function
 import { editSprintDetails }  from './components/sprintDatabaseLogic.jsx';
 import SprintTable from './components/sprintTable'; // Import the SprintTable component
+import { fetchSprints } from './components/sprintDatabaseLogic.jsx';
 
 const dummySprints = [
     {
@@ -27,13 +28,22 @@ const dummySprints = [
 
 const SprintBoard = () => { 
     //all sprints in this page are stored here
-    // const [sprints, setSprints] = useState([]);
-    const [sprints, setSprints] = useState(dummySprints);  // Use dummy data here
+    const [sprints, setSprints] = useState([]);
     const [showOverlay, setShowOverlay] = useState(false);
 
     const [showEditOverlay, setShowEditOverlay] = useState(false);
     const [selectedSprint, setSelectedSprint] = useState(null); // Track sprint being edited
-
+    useEffect(() => {
+        // Fetch sprints from the server
+        const fetchedSprints = () => {
+            fetchSprints().then((sprints) => {
+                setSprints(sprints);
+            });
+        };
+        // setSprints(dummySprints); // Use dummy data here
+        fetchedSprints();
+        // will update the sprints if the dependency has changes e.g. something is added or removed
+    }, [sprints]);
 
     const handleCreateSprint = async (newSprint) => {
         try {

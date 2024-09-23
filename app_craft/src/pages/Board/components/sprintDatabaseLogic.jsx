@@ -1,5 +1,5 @@
 import React from "react";
-import { addDoc, collection, getFirestore, doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, getFirestore, doc, setDoc, getDocs } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig.js";
 
 /** 
@@ -94,4 +94,14 @@ export function editSprintDetails(sprintID) {
         changeMaster,
         changeMembers
     }
+}
+
+// fetching sprints from the server
+export async function fetchSprints() {
+    const sprintsList = [];
+    const sprintsSnapshot = await getDocs(collection(db, 'sprints'));
+    sprintsSnapshot.forEach((doc) => {
+        sprintsList.push({ id: doc.id, ...doc.data() });
+    });
+    return sprintsList;
 }
