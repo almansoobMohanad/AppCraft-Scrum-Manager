@@ -84,6 +84,10 @@ export function editSprintDetails(sprintID) {
         await setDoc(sprintRef, { members: newMembers}, { merge: true })
     }
 
+    const changeTasks = async (newTasks) => {
+        await setDoc(sprintRef, { tasks: newTasks }, { merge: true });
+    }
+
     return {
         changeName,
         changeStartDate,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../css/createSprint.css'; // Ensure you import the CSS file
+import { TaskSharp } from '@mui/icons-material';
 
 const CreateSprint = ({ onCreate, onClose }) => {
     const [sprintName, setSprintName] = useState('');
@@ -35,6 +36,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
             productOwner,
             scrumMaster, // Include Scrum Master in the created sprint
             members: members.split(',').map((member) => member.trim()), // Convert members into an array
+            tasks: [], // Initialize tasks as an empty array
         });
         onClose(); // Close overlay after creating the sprint
     };

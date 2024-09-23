@@ -30,6 +30,7 @@ const SprintBoard = () => {
     //all sprints in this page are stored here
     const [sprints, setSprints] = useState([]);
     const [showOverlay, setShowOverlay] = useState(false);
+    const [tasksInSprint, setTasksInSprint] = useState([]);
 
     const [showEditOverlay, setShowEditOverlay] = useState(false);
     const [selectedSprint, setSelectedSprint] = useState(null); // Track sprint being edited
@@ -45,6 +46,17 @@ const SprintBoard = () => {
     useEffect(() => {
         console.log("Table Updated")
     }, [sprints]);
+
+    const handleViewTasksInSprint = (sprintID) => {
+        console.log("View tasks in sprint with ID:", sprintID);
+        setSelectedSprint(sprintID); // Set the selected sprint
+
+        // Fetch tasks in the selected sprint
+        const taskInSprint = sprints.tasks.array.forEach(element => { // Get the tasks array from the selected sprint
+            console.log(element);
+            setTasksInSprint([...tasksInSprint, element]);
+        });
+    };
 
     const handleCreateSprint = async (newSprint) => {
         try {
