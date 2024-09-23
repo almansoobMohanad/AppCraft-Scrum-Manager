@@ -40,9 +40,10 @@ const SprintBoard = () => {
                 setSprints(sprints);
             });
         };
-        // setSprints(dummySprints); // Use dummy data here
         fetchedSprints();
-        // will update the sprints if the dependency has changes e.g. something is added or removed
+    }, []);
+    useEffect(() => {
+        setSprints(sprints);
     }, [sprints]);
 
     const handleCreateSprint = async (newSprint) => {
