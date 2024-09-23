@@ -1,0 +1,73 @@
+.sprint-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.sprint-table th, .sprint-table td {
+    padding: 10px;
+    border-right: none; /* Remove the right-side border */
+    border-left: none; 
+    border-bottom: 2px solid white;
+    text-align: left;
+}
+
+/* THIS IS THE HEADER*/ 
+.sprint-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.sprint-table tbody tr {
+    background-color: rgb(110, 178, 224); /* Blue color */
+}
+
+/* Set specific width for the column containing buttons */
+.sprint-table td.actions-column {
+    width: 300px; /* Adjust the width as needed */
+}
+
+/* THIS WHOLE SECTION IS FOR THE BUTTON COLOUR*/
+
+.view-sprint-btn,
+.edit-sprint-btn {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+
+/* THIS WHOLE SECTION IS FOR THE BUTTON COLOUR*/
+.view-sprint-btn {
+    background-color: #5dade2; /* Blue for View */
+}
+
+.edit-sprint-btn {
+    background-color: #FF8800; /* Orange for Edit */
+}
+
+.view-sprint-btn:hover,
+.edit-sprint-btn:hover {
+    opacity: 0.8;
+}
+
+
+/* THIS WHOLE SECTION IS FOR THE STATUS TEXT COLOUR*/
+.status-text {
+    font-weight: bold;
+}
+
+.status-finished {
+    color: #f0b27a; /* Orange for finished */
+}
+
+.status-active {
+    color: #82e0aa; /* Green for active */
+}
+
+.status-not-active {
+    color: #f1948a; /* Red for not active */
+}
