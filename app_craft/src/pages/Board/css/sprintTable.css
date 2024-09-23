@@ -19,7 +19,7 @@
 }
 
 .sprint-table tbody tr {
-    background-color: rgb(110, 178, 224); /* Blue color */
+    background-color: #5080CE; /* Blue color */
 }
 
 /* Set specific width for the column containing buttons */
@@ -42,7 +42,7 @@
 
 /* THIS WHOLE SECTION IS FOR THE BUTTON COLOUR*/
 .view-sprint-btn {
-    background-color: #5dade2; /* Blue for View */
+    background-color: #1d33dd; /* Blue for View */
 }
 
 .edit-sprint-btn {
@@ -58,16 +58,18 @@
 /* THIS WHOLE SECTION IS FOR THE STATUS TEXT COLOUR*/
 .status-text {
     font-weight: bold;
+    color: white;
+    -webkit-text-stroke: 1px; /* Default stroke width */
 }
 
 .status-finished {
-    color: #f0b27a; /* Orange for finished */
+    -webkit-text-stroke-color: #f0b27a; /* Orange outline */
 }
 
 .status-active {
-    color: #82e0aa; /* Green for active */
+    -webkit-text-stroke-color: #00FF09; /* Green outline */
 }
 
 .status-not-active {
-    color: #f1948a; /* Red for not active */
+    -webkit-text-stroke-color: #EF15CA; /* Red outline */
 }
