@@ -1,7 +1,7 @@
 import React from 'react';
 import '../css/sprintTable.css'; // Style specific for the table
 
-const SprintTable = ({ sprints, onEditSprint }) => {
+const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
   return (
     <table className="sprint-table">
       <thead>
@@ -29,6 +29,9 @@ const SprintTable = ({ sprints, onEditSprint }) => {
                 </button>
                 <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
                   Edit Sprint
+                </button>
+                <button className="delete-sprint-btn" onClick={() => onDeleteSprint(sprint.id)}>
+                  Delete Sprint
                 </button>
               </td>
             </tr>

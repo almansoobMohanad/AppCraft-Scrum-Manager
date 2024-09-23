@@ -58,14 +58,25 @@ const SprintBoard = () => {
         });
     };
 
+        // Frontend-only deletion logic
+        const handleDeleteSprint = (sprintID) => {
+            // Filter out the sprint with the given ID
+            const updatedSprints = sprints.filter(sprint => sprint.id !== sprintID);
+            setSprints(updatedSprints);
+            console.log(`Sprint with ID ${sprintID} deleted (frontend only).`);
+        };
+
     const handleCreateSprint = async (newSprint) => {
-        try {
+        /*try {
             const sprintID = await createSprint(newSprint); // Get the Firestore document ID
             setSprints([...sprints, { ...newSprint, id: sprintID }]); // Save the sprint with the Firestore document ID
             console.log(sprints, newSprint);
         } catch (error) {
             console.error("Error creating sprint:", error);
-        }
+        }*/
+
+            setSprints([...sprints, { ...newSprint, id: Date.now().toString() }]); 
+            console.log(sprints, newSprint);
     };
 
     // Takes in a sprintID (already inside the sprint) and updatedSprint (should be from the edit overlay)
@@ -128,6 +139,7 @@ const SprintBoard = () => {
                         setSelectedSprint(sprint);
                         setShowEditOverlay(true);
                     }}
+                    onDeleteSprint={handleDeleteSprint}
                 />
             </div>
         </div>

@@ -30,7 +30,8 @@
 /* THIS WHOLE SECTION IS FOR THE BUTTON COLOUR*/
 
 .view-sprint-btn,
-.edit-sprint-btn {
+.edit-sprint-btn,
+.delete-sprint-btn {
     margin: 0 5px;
     padding: 5px 10px;
     border: none;
@@ -49,8 +50,13 @@
     background-color: #FF8800; /* Orange for Edit */
 }
 
+.delete-sprint-btn {
+    background-color: red; /* Red for Delete */
+}
+
 .view-sprint-btn:hover,
-.edit-sprint-btn:hover {
+.edit-sprint-btn:hover,
+.delete-sprint-btn:hover {
     opacity: 0.8;
 }
 
