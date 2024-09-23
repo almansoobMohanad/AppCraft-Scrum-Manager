@@ -16,7 +16,7 @@ const NavigationBar = () => {
             setActiveItem("Account");
         } else if (path === "/") {
             setActiveItem("Backlog");
-        } else if (path.includes("sprintBoard")) {
+        } else if (path.includes("sprintboard")) {
             setActiveItem("Board");
         } else if (path.includes("admin")) {
             setActiveItem("Admin");
