@@ -85,6 +85,7 @@
 
 .TableContainer th, .TableContainer td {
   text-align: left; /* Ensure all table headers and cells are left-aligned */
+  background-color: rgb(110, 178, 224);
 }
 
 .custom-row {
