@@ -109,7 +109,7 @@ function SprintBacklogPage() {
                         </div>
                     </DragDropContext>
                 ) : (
-                    <ListView tasks={Object.values(state.tasks)} />
+                    <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
                 )}
             </div>
         </div>
@@ -150,7 +150,7 @@ function Column({ column, tasks }) {
     );
 }
 
-function ListView({ tasks }) {
+function ListView({ tasks, columns }) {
     return (
         <table className="list-view-table">
             <thead>
@@ -159,20 +159,34 @@ function ListView({ tasks }) {
                     <th>Tags</th>
                     <th>Priority</th>
                     <th>Story Points</th>
+                    <th>Status</th> {/* New Status column */}
                 </tr>
             </thead>
             <tbody>
-                {tasks.map((task) => (
-                    <tr key={task.id}>
-                        <td>{task.content}</td>
-                        <td>{task.tags}</td>
-                        <td>{task.priority}</td>
-                        <td>{task.storyPoints}</td>
-                    </tr>
-                ))}
+                {tasks.map((task) => {
+                    // Find the status of the task by checking which column it's in
+                    let status = '';
+                    for (const columnId in columns) {
+                        if (columns[columnId].taskIds.includes(task.id)) {
+                            status = columns[columnId].title; // Get the column title (status)
+                            break;
+                        }
+                    }
+
+                    return (
+                        <tr key={task.id}>
+                            <td>{task.content}</td>
+                            <td>{task.tags}</td>
+                            <td>{task.priority}</td>
+                            <td>{task.storyPoints}</td>
+                            <td>{status}</td> {/* Display status */}
+                        </tr>
+                    );
+                })}
             </tbody>
         </table>
     );
 }
+
 
 export default SprintBacklogPage;
