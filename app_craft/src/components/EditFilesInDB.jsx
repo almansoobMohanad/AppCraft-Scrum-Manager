@@ -54,6 +54,10 @@ export function EditFilesInDB(taskID) {
         setDoc(dbRef, { history: newHistory}, { merge: true });
     }
 
+    const changeStatus = async (newStatus) => {
+        setDoc(dbRef, { status: newStatus }, { merge: true });
+    }
+
     return {
         changeName,
         changeType,
@@ -64,5 +68,6 @@ export function EditFilesInDB(taskID) {
         changeAssignee,
         changeDescription,
         changeHistory,
+        changeStatus,
     };
 }

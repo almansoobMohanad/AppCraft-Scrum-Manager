@@ -27,6 +27,7 @@ function createData(taskName, tags, priority, storyPoints, databaseID, descripti
         assignee,
         stage,
         dateCreated,
+        status: null,
     };
 }
 
@@ -56,7 +57,9 @@ class LocalDatabase {
                 doc.data().history, 
                 doc.data().assignee, 
                 doc.data().stage, 
-                doc.data().dateCreated));
+                doc.data().dateCreated,
+                doc.data().status
+            ));
         });
         this.updateCounter++;
     }
@@ -86,6 +89,7 @@ class LocalDatabase {
                 description: data.description,
                 history: data.history,
                 priorityNum: data.priority === 'Low' ? 1 : data.priority === 'Medium' ? 2 : data.priority === 'Important' ? 3 : 4,
+                status: data.status,
             };
             this.data[dataToChangeIndex] = updatedData;
             this.updateCounter++;
