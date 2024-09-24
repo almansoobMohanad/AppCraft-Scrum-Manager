@@ -68,11 +68,11 @@ function SprintBacklogPage() {
     useEffect(() => {
         // Filter tasks from localDB that are in the current sprint
         const filteredTasksFromLDB = localDB.getData().filter(task => sprintTasks.includes(task.id));
-        // const editDataInCloud = EditFilesInDB();
-
+        
         // Check if the task status is null, if so, change it to 'Not Started'
         filteredTasksFromLDB.forEach(task => {
             if (task.status === null) {
+                const editDataInCloud = EditFilesInDB(task.id);
                 localDB.editData(task.id, { ...task, status: 'Not Started' });
                 editDataInCloud.changeStatus('Not Started');
             } 
@@ -144,7 +144,6 @@ function SprintBacklogPage() {
         const editDataInCloud = EditFilesInDB();
         localDB.editData(task.id, { ...task, status: finish.id });
         editDataInCloud.changeStatus(finish.id);
-
     };
 
     return (
