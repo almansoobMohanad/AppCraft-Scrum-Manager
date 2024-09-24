@@ -6,7 +6,7 @@ import './SprintBoard.css';
 import createSprint from './components/sprintDatabaseLogic.jsx'; //import the createSprint function
 import { editSprintDetails }  from './components/sprintDatabaseLogic.jsx';
 import SprintTable from './components/sprintTable'; // Import the SprintTable component
-import { fetchSprints } from './components/sprintDatabaseLogic.jsx';
+import { fetchedSprints } from './components/sprintDatabaseLogic.jsx';
 
 const dummySprints = [
     {
@@ -36,16 +36,12 @@ const SprintBoard = () => {
     const [selectedSprint, setSelectedSprint] = useState(null); // Track sprint being edited
     useEffect(() => {
         // Fetch sprints from the server
-        const fetchedSprints = () => {
-            fetchSprints().then((sprints) => {
-                setSprints(sprints);
-            });
-        };
-        fetchedSprints();
+        console.log("Fetching sprints...");
+        console.log(fetchedSprints);
     }, []);
-    useEffect(() => {
-        console.log("Table Updated")
-    }, [sprints]);
+    // useEffect(() => {
+    //     console.log("Table Updated")
+    // }, [sprints]);
 
     const handleViewTasksInSprint = (sprintID) => {
         console.log("View tasks in sprint with ID:", sprintID);

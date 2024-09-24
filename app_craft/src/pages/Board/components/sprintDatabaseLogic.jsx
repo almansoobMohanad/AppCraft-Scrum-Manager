@@ -101,7 +101,7 @@ export function editSprintDetails(sprintID) {
 }
 
 // fetching sprints from the server
-export async function fetchSprints() {
+async function fetchSprints() {
     const sprintsList = [];
     const sprintsSnapshot = await getDocs(collection(db, 'sprints'));
     sprintsSnapshot.forEach((doc) => {
@@ -109,3 +109,7 @@ export async function fetchSprints() {
     });
     return sprintsList;
 }
+
+const fetchedSprints = fetchSprints();
+console.log(fetchedSprints);
+export { fetchedSprints };
