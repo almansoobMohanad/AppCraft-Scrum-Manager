@@ -109,3 +109,28 @@ export async function fetchSprints() {
     });
     return sprintsList;
 }
+
+
+/**
+ * Fetch tasks from a specific sprint
+ * 
+ * @param {string} sprintId - The ID of the sprint
+ * @returns {Array} - The tasks within the sprint
+ */
+async function fetchTasksInSprint(sprintId) {
+    try {
+        const sprintRef = doc(db, "sprints", sprintId);
+        const sprintSnap = await getDoc(sprintRef);
+
+        if (sprintSnap.exists()) {
+            const sprintData = sprintSnap.data();
+            const tasks = sprintData.tasks || []; //tasks are stored in an array right...?
+            console.log("Tasks in sprint:", tasks);
+            return tasks;
+        } else {
+            console.log("No such sprint found!");
+        }
+    } catch (error) {
+        console.error("Error fetching tasks in sprint:", error);
+    }
+}
