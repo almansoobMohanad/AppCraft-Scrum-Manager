@@ -38,10 +38,8 @@ const SprintBoard = () => {
         // Fetch sprints from the server
         console.log("Fetching sprints...");
         console.log(fetchedSprints);
+        setSprints(dummySprints);
     }, []);
-    // useEffect(() => {
-    //     console.log("Table Updated")
-    // }, [sprints]);
 
     const handleViewTasksInSprint = (sprintID) => {
         console.log("View tasks in sprint with ID:", sprintID);
