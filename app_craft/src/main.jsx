@@ -6,6 +6,7 @@ import SprintBoard from './pages/Board/SprintBoard.jsx';
 import AccountPage from './pages/Account/AccountPage.jsx';
 import AdminView from './pages/Admin/AdminView.jsx';
 import SprintBacklogPage from './pages/SprintBacklog/SprintBacklogPage.jsx';
+import SprintPlanPage from './pages/SprintPlan/SprintPlanPage.jsx';
 import {
     createBrowserRouter,
     RouterProvider,
@@ -31,6 +32,10 @@ import {
     {
       path: "/sprintbacklog",
       element: <SprintBacklogPage/>,
+    },
+    {
+      path: "/sprintplan", // Add route for SprintPlanPage
+      element: <SprintPlanPage />,
     },
   ]);
 
