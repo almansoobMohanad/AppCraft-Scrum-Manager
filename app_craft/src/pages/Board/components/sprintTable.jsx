@@ -43,6 +43,13 @@ const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
                 <button className="delete-sprint-btn" onClick={() => onDeleteSprint(sprint.id)} >
                 <i className="fas fa-trash-alt"></i>
                 </button>
+
+                <button
+                  className="temp-view-sprint-plan-btn"
+                  onClick={() => navigate('/sprintplan/', { state: { sprint } })}  // Navigate to SprintPlanPage with sprint object
+                >
+                  Temp sprint plan
+                </button>
               </td>
             </tr>
           );
