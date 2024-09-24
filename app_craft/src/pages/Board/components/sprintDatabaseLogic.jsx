@@ -1,5 +1,5 @@
 import React from "react";
-import { addDoc, collection, getFirestore, doc, setDoc, getDocs } from "firebase/firestore";
+import { addDoc, collection, getFirestore, doc, setDoc, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig.js";
 
 /** 
