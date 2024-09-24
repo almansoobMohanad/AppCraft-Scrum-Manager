@@ -32,7 +32,7 @@ const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
               <td className="actions-column">
               <button
                   className="view-sprint-btn"
-                  onClick={() => navigate('/sprintbacklog/', { state: { sprintName: sprint.name } })}  // Pass sprint name
+                  onClick={() => navigate('/sprintbacklog/', { state: { sprintName: sprint.name, sprintTask: sprint.tasks } })}  // Pass sprint name
                 >
                   View Sprint
                 </button>

@@ -5,7 +5,7 @@ import './SprintBacklogPage.css';
 import NavigationBar from "../../components/NavigationBar";
 import { Link } from "react-router-dom";
 
-const initialData = {
+const DummyData = {
     tasks: {
         'task-1': { id: 'task-1', content: 'Task 1', storyPoints: '5', priority: 'Important', tags: 'API' },
         'task-2': { id: 'task-2', content: 'Task 2', storyPoints: '8', priority: 'Medium', tags: 'Database' },
@@ -32,12 +32,61 @@ const initialData = {
     columnOrder: ['not-started', 'in-progress', 'completed'],
 };
 
+const KanbanTemplate = {
+    tasks: {},
+    columns: {
+        'not-started': {
+            id: 'not-started',
+            title: 'Not Started',
+            taskIds: [],
+        },
+        'in-progress': {
+            id: 'in-progress',
+            title: 'In Progress',
+            taskIds: [],
+        },
+        'completed': {
+            id: 'completed',
+            title: 'Completed',
+            taskIds: [],
+        },
+    },
+    columnOrder: ['not-started', 'in-progress', 'completed'],
+};
+
 function SprintBacklogPage() {
     const location = useLocation();
     const sprintName = location.state?.sprintName || "Current Sprint";
+    const sprintTasks = location.state?.sprintTasks || [];
 
-    const [state, setState] = useState(initialData);
+    const [state, setState] = useState(KanbanTemplate);
     const [view, setView] = useState('kanban'); // Add state to track view mode (kanban or list)
+    console.log("SprintBacklogPage state:", state);
+
+    useEffect(() => {
+        if (view === 'list') {
+            console.log("Switched to List view");
+        } else {
+            console.log("Switched to Kanban view");
+
+            const data = (sprintTasks) => {
+                const newData = { ...KanbanTemplate };
+                sprintTasks.forEach((task, index) => {
+                    const taskIndex = `task-${index + 1}`; // assigning the id for the task in the template
+                    newData.tasks[taskIndex] = { // assign the tasks with ref ID of the task index
+                        id: task.Id, content: task.name,
+                        storyPoints: task.storyPoints,
+                        priority: task.priority,
+                        tags: task.tags };
+                    newData.columns['not-started'].taskIds.push(taskIndex); // place the task in the not-started column
+                });
+
+                return newData
+            };
+
+            setState(data(sprintTasks));
+        }
+    }, []);
 
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
