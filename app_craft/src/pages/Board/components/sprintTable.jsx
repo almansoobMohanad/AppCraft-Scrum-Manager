@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/sprintTable.css'; // Style specific for the table
+import DeleteSprintButton from './deleteSprintButton';
 
 
 const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
@@ -38,8 +39,9 @@ const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
                 <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
                   Edit Sprint
                 </button>
-                <button className="delete-sprint-btn" onClick={() => onDeleteSprint(sprint.id)}>
-                  Delete Sprint
+
+                <button className="delete-sprint-btn" onClick={() => onDeleteSprint(sprint.id)} >
+                <i className="fas fa-trash-alt"></i>
                 </button>
               </td>
             </tr>

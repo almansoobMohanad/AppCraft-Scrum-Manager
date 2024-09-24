@@ -25,6 +25,8 @@
 /* Set specific width for the column containing buttons */
 .sprint-table td.actions-column {
     width: 300px; /* Adjust the width as needed */
+    text-align: right; /* Align buttons to the right */
+    vertical-align: middle; /* Ensure vertical alignment */
 }
 
 /* THIS WHOLE SECTION IS FOR THE BUTTON COLOUR*/
@@ -38,8 +40,9 @@
     border-radius: 5px;
     cursor: pointer;
     color: white;
+    display: inline-flex; /* Ensure buttons are inline-flex */
+    align-items: center; /* Center align items vertically */
 }
-
 
 /* THIS WHOLE SECTION IS FOR THE BUTTON COLOUR*/
 .view-sprint-btn {
@@ -51,15 +54,24 @@
 }
 
 .delete-sprint-btn {
-    background-color: red; /* Red for Delete */
+    background: none; /* Remove background */
+    border: none; /* Remove border */
+    padding: 5px 10px; /* Ensure consistent padding */
+    margin: 0 5px; /* Ensure consistent margin */
+    color: inherit; /* Inherit text color */
+    cursor: pointer; /* Change cursor to pointer */
+    display: inline-flex; /* Ensure buttons are inline-flex */
+    align-items: center; /* Center align items vertically */
+}
+
+.delete-sprint-btn:hover {
+    color: red; /* Change text color to red on hover */
 }
 
 .view-sprint-btn:hover,
-.edit-sprint-btn:hover,
-.delete-sprint-btn:hover {
+.edit-sprint-btn:hover {
     opacity: 0.8;
 }
-
 
 /* THIS WHOLE SECTION IS FOR THE STATUS TEXT COLOUR*/
 .status-text {
