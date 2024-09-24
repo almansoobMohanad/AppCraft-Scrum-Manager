@@ -6,7 +6,7 @@ import './SprintBoard.css';
 import createSprint from './components/sprintDatabaseLogic.jsx'; //import the createSprint function
 import { editSprintDetails }  from './components/sprintDatabaseLogic.jsx';
 import SprintTable from './components/sprintTable'; // Import the SprintTable component
-import { fetchedSprints } from './components/sprintDatabaseLogic.jsx';
+import { fetchSprints } from './components/sprintDatabaseLogic.jsx';
 
 const dummySprints = [
     {
@@ -34,12 +34,16 @@ const SprintBoard = () => {
 
     const [showEditOverlay, setShowEditOverlay] = useState(false);
     const [selectedSprint, setSelectedSprint] = useState(null); // Track sprint being edited
+
+
     useEffect(() => {
         // Fetch sprints from the server
-        console.log("Fetching sprints...");
-        console.log(fetchedSprints);
-        setSprints(dummySprints);
-    }, []);
+        const fetchAndSetSprints = async () => {
+            const fetchedSprints = await fetchSprints();
+            setSprints(fetchedSprints);
+        };
+        fetchAndSetSprints();
+    }, []); // Empty dependency array ensures this runs only once   
 
     const handleViewTasksInSprint = (sprintID) => {
         console.log("View tasks in sprint with ID:", sprintID);
