@@ -4,6 +4,8 @@ import { useLocation } from 'react-router-dom';
 import './SprintBacklogPage.css';
 import NavigationBar from "../../components/NavigationBar";
 import { Link } from "react-router-dom";
+import localDB from '../../LocalDatabase';
+import { EditFilesInDB } from '../../components/EditFilesInDB';
 
 const DummyData = {
     tasks: {
@@ -64,6 +66,18 @@ function SprintBacklogPage() {
     console.log("SprintBacklogPage state:", state);
 
     useEffect(() => {
+        // Filter tasks from localDB that are in the current sprint
+        const filteredTasksFromLDB = localDB.getData().filter(task => sprintTasks.includes(task.id));
+        const editDataInCloud = EditFilesInDB();
+
+        // Check if the task status is null, if so, change it to 'Not Started'
+        filteredTasksFromLDB.forEach(task => {
+            if (task.status === null) {
+                localDB.editData(task.id, { ...task, status: 'Not Started' });
+                editDataInCloud.changeStatus('Not Started');
+            } 
+        });
+
         if (view === 'list') {
             console.log("Switched to List view");
         } else {
@@ -74,7 +88,8 @@ function SprintBacklogPage() {
                 sprintTasks.forEach((task, index) => {
                     const taskIndex = `task-${index + 1}`; // assigning the id for the task in the template
                     newData.tasks[taskIndex] = { // assign the tasks with ref ID of the task index
-                        id: task.Id, content: task.name,
+                        id: task.Id,
+                        content: task.name,
                         storyPoints: task.storyPoints,
                         priority: task.priority,
                         tags: task.tags };
@@ -87,6 +102,9 @@ function SprintBacklogPage() {
             setState(data(sprintTasks));
         }
     }, []);
+
+    useEffect(() => {
+    }, [state]);
 
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
@@ -120,6 +138,13 @@ function SprintBacklogPage() {
 
         const newState = { ...state, columns: { ...state.columns, [newStart.id]: newStart, [newFinish.id]: newFinish } };
         setState(newState);
+
+        // Update the status of the task in the localDB and in the cloud
+        const task = state.tasks[draggableId];
+        const editDataInCloud = EditFilesInDB();
+        localDB.editData(task.id, { ...task, status: finish.id });
+        editDataInCloud.changeStatus(finish.id);
+
     };
 
     return (
