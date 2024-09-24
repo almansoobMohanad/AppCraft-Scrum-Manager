@@ -182,3 +182,91 @@
     transform: translateY(-2px); /* Slight lift on hover */
     transition: all 0.4s ease-in-out;
 }
+/* Container for toggle button */
+.toggle-buttons {
+    display: inline-flex;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    margin-left: 1100px; 
+    font-family: Arial, sans-serif;
+}
+
+/* Common styles for buttons */
+.toggle-buttons button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #f0f0f0;
+    color: black;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    outline: none;
+    border-radius: 0;
+}
+
+/* Active button */
+.toggle-buttons button.active {
+    background-color: #b3d1ff; /* Light blue background */
+    color: black;
+    border-radius: 25px; /* Make the active button rounded */
+    border: 1px solid #000; /* Add a black outline */
+    transition: background-color 0.3s ease, border-radius 0.3s ease;
+}
+
+/* First button styles (left button) */
+.toggle-buttons button:first-child {
+    border-radius: 25px 0 0 25px; /* Left-rounded corners */
+}
+
+/* Last button styles (right button) */
+.toggle-buttons button:last-child {
+    border-radius: 0 25px 25px 0; /* Right-rounded corners */
+}
+
+/* Hover effect */
+.toggle-buttons button:hover {
+    background-color: #e0e0e0;
+}
+
+/* List view table styling */
+.list-view-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: Arial, sans-serif; /* Ensure consistency with Kanban view font */
+    color: rgb(41, 41, 41); /* Same font color as the Kanban view */
+}
+
+.list-view-table th,
+.list-view-table td {
+    padding: 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 16px; /* Consistent font size */
+    background-color: #fdfdfd; /* Light background similar to Kanban task cards */
+}
+
+.list-view-table th {
+    background-color: #f4f4f4; /* Light gray background for headers */
+    font-weight: bold; /* Bold header text */
+    text-transform: uppercase; /* Uppercase for header consistency */
+}
+
+.list-view-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row background colors */
+}
+
+.list-view-table tr:hover {
+    background-color: #f1f1f1; /* Subtle hover effect for rows, similar to task hover in Kanban */
+    transition: background-color 0.3s ease;
+}
+
+/* Task field consistency in List view */
+.list-view-table td {
+    background-color: #eeeeee; /* Light bubble effect, similar to Kanban task fields */
+    border-radius: 5px; /* Rounded edges for a consistent look */
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for consistency */
+}

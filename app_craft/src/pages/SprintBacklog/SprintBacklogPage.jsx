@@ -37,6 +37,7 @@ function SprintBacklogPage() {
     const sprintName = location.state?.sprintName || "Current Sprint";
 
     const [state, setState] = useState(initialData);
+    const [view, setView] = useState('kanban'); // Add state to track view mode (kanban or list)
 
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
@@ -78,16 +79,38 @@ function SprintBacklogPage() {
             <div className="content">
                 <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
                 <h2 className="sprint-name">{sprintName}</h2>
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <div className="kanban-board">
-                        {state.columnOrder.map((columnId) => {
-                            const column = state.columns[columnId];
-                            const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
 
-                            return <Column key={column.id} column={column} tasks={tasks} />;
-                        })}
-                    </div>
-                </DragDropContext>
+                {/* Toggle Button for Kanban/List View */}
+                <div className="toggle-buttons">
+                    <button
+                        className={view === 'kanban' ? 'active' : ''}
+                        onClick={() => setView('kanban')}
+                    >
+                        Kanban
+                    </button>
+                    <button
+                        className={view === 'list' ? 'active' : ''}
+                        onClick={() => setView('list')}
+                    >
+                        List
+                    </button>
+                </div>
+
+                {/* Conditionally render Kanban or List view */}
+                {view === 'kanban' ? (
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <div className="kanban-board">
+                            {state.columnOrder.map((columnId) => {
+                                const column = state.columns[columnId];
+                                const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
+
+                                return <Column key={column.id} column={column} tasks={tasks} />;
+                            })}
+                        </div>
+                    </DragDropContext>
+                ) : (
+                    <ListView tasks={Object.values(state.tasks)} />
+                )}
             </div>
         </div>
     );
@@ -102,28 +125,53 @@ function Column({ column, tasks }) {
                     <div className="task-list" {...provided.droppableProps} ref={provided.innerRef}>
                         {tasks.map((task, index) => (
                             <Draggable key={task.id} draggableId={task.id} index={index}>
-                            {(provided) => (
-                                <div
-                                    className={`task ${column.id}`}
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                >
-                                    <div className="task-name">{task.content}</div>  {/* Task name bubble */}
-                                    <div className="task-field story-points">{task.storyPoints}</div>
-                                    <div className={`task-field priority-${task.priority.toLowerCase()}`}>{task.priority}</div>
-                                    <div className={`task-field tags-${task.tags.toLowerCase()}`}>
-                                    {task.tags}
+                                {(provided) => (
+                                    <div
+                                        className={`task ${column.id}`}
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                    >
+                                        <div className="task-name">{task.content}</div>  {/* Task name bubble */}
+                                        <div className="task-field story-points">{task.storyPoints}</div>
+                                        <div className={`task-field priority-${task.priority.toLowerCase()}`}>{task.priority}</div>
+                                        <div className={`task-field tags-${task.tags.toLowerCase()}`}>
+                                            {task.tags}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </Draggable>                        
+                                )}
+                            </Draggable>
                         ))}
                         {provided.placeholder}
                     </div>
                 )}
             </Droppable>
         </div>
+    );
+}
+
+function ListView({ tasks }) {
+    return (
+        <table className="list-view-table">
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Tags</th>
+                    <th>Priority</th>
+                    <th>Story Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {tasks.map((task) => (
+                    <tr key={task.id}>
+                        <td>{task.content}</td>
+                        <td>{task.tags}</td>
+                        <td>{task.priority}</td>
+                        <td>{task.storyPoints}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
     );
 }
 
