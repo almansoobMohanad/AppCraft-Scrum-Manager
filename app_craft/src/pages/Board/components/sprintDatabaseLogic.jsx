@@ -110,21 +110,20 @@ export async function fetchSprints() {
     return sprintsList;
 }
 
-
 /**
  * Fetch tasks from a specific sprint
  * 
  * @param {string} sprintId - The ID of the sprint
  * @returns {Array} - The tasks within the sprint
  */
-async function fetchTasksInSprint(sprintId) {
+export async function fetchTasksInSprint(sprintId) {
     try {
         const sprintRef = doc(db, "sprints", sprintId);
         const sprintSnap = await getDoc(sprintRef);
 
         if (sprintSnap.exists()) {
             const sprintData = sprintSnap.data();
-            const tasks = sprintData.tasks || []; //tasks are stored in an array right...?
+            const tasks = sprintData.tasks || []; //tasks are stored in an array right...? yes... yes they are
             console.log("Tasks in sprint:", tasks);
             return tasks;
         } else {
