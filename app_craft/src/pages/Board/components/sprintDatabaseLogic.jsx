@@ -64,10 +64,6 @@ export function editSprintDetails(sprintID) {
         await setDoc(sprintRef, { endDate: newEndDate }, { merge: true });
     };
 
-    const changeStatus = async (newStatus) => {
-        await setDoc(sprintRef, { status: newStatus }, { merge: true });
-    };
-
     const changeReference = async (newReference) => {
         await setDoc(sprintRef, { reference: newReference }, { merge: true });
     };
@@ -88,15 +84,25 @@ export function editSprintDetails(sprintID) {
         await setDoc(sprintRef, { tasks: newTasks }, { merge: true });
     }
 
+    const changeStatus = async (newStatus) => {
+        const validStatuses = ['Not Active', 'Active', 'Finished'];
+        if (!validStatuses.includes(newStatus)) {
+            throw new Error(`Invalid status: ${newStatus}. Status must be one of ${validStatuses.join(', ')}.`);
+        }
+        await setDoc(sprintRef, { status: newStatus }, { merge: true });
+    };
+
     return {
         changeName,
         changeStartDate,
         changeEndDate,
-        changeStatus,
         changeReference,
         changeOwner,
         changeMaster,
-        changeMembers
+        changeMembers,
+        changeTasks,
+        changeStatus,
+
     }
 }
 
