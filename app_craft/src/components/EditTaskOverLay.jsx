@@ -42,6 +42,10 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     const [assignee, setAssignee] = useState('');
     const [description, setDescription] = useState('');
     const [history, setHistory] = useState([]);
+    const [status, setStatus] = useState('Not Started');
+    const [logTimeSpent, setLogTimeSpent] = useState(0);
+    const [totalLogTime, setTotalLogTime] = useState(0); // To display total logged time
+
 
     const taskTypes = ['Story', 'Bug'];
     const taskStages = ['Planning', 'Development', 'Testing', 'Integration'];
@@ -60,6 +64,11 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
             setAssignee(task.assignee || '');
             setDescription(task.description || '');
             setHistory(task.history || []); // Set existing history
+            setStatus(task.status || 'Not Started');
+            setLogTimeSpent(task.logTimeSpent || 0); // Set initial log time
+            setTotalLogTime(task.logTimeSpent || 0); // Set initial total log time
+            console.log('Total log time from task:', task.logTimeSpent); // Debug log
+
         }
     }, [task]);
 
@@ -68,6 +77,13 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
         setTags(prevTags => 
             prevTags.includes(value) ? prevTags.filter(tag => tag !== value) : [...prevTags, value]
         );
+    };
+
+    const handleAddTime = () => {
+        const updatedTotalLogTime = totalLogTime + Number(logTimeSpent);
+        setTotalLogTime(updatedTotalLogTime); // Update the total log time
+        setLogTimeSpent(0); // Reset the input after adding time
+        console.log(`New Total Log Time: ${updatedTotalLogTime} hours`);
     };
 
     const validateFields = () => {
@@ -110,7 +126,10 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
             tags,
             assignee,
             description,
-            history: newHistoryList// Update history
+            history: newHistoryList,    // Update history
+            logTimeSpent: totalLogTime, // Update the logged time
+
+            
         };
     
         console.log('Updated task:', updatedTask);
@@ -126,6 +145,9 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
         db.changeAssignee(updatedTask.assignee);
         db.changeDescription(updatedTask.description);
         db.changeHistory(updatedTask.history)
+        db.changeStatus(updatedTask.status);
+        db.changeLogtimeSpent(updatedTask.logTimeSpent);
+    
 
         localDB.editData(updatedTask.databaseID, updatedTask);
 
@@ -266,6 +288,25 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
                 <div className="change-history-section">
                     <h3>Changes History</h3>
                     <ChangesHistoryTable changes={history} />
+                </div>
+
+                {/* New Activity Section */}
+                <div className="activity-section">
+                    <h3>Activity</h3>
+                    <div className="log-info">
+                        <p>Total Log Time: <span>{totalLogTime} Hours</span></p>
+                    </div>
+                    <div className="log-input-container">
+                        <label>Log Time Spent</label>
+                        <input
+                            type="number"
+                            value={logTimeSpent}
+                            onChange={(e) => setLogTimeSpent(e.target.value)
+                            }
+                            className="log-input"
+                        />
+                        <button className="add-time-button" onClick={handleAddTime}>+</button>
+                    </div>
                 </div>
 
                 {/* Save and Cancel */}

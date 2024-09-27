@@ -58,6 +58,9 @@ export function EditFilesInDB(taskID) {
         setDoc(dbRef, { status: newStatus }, { merge: true });
     }
 
+    const changeLogtimeSpent = async (newLogtimeSpent) => {
+        setDoc(dbRef, { logtimeSpent: newLogtimeSpent }, { merge: true });
+    }
     return {
         changeName,
         changeType,
@@ -69,5 +72,6 @@ export function EditFilesInDB(taskID) {
         changeDescription,
         changeHistory,
         changeStatus,
+        changeLogtimeSpent,
     };
 }

@@ -12,7 +12,7 @@ function dynamicSort(key, sortOrder = 'asc') {
     }
 }
 
-function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date()) {
+function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date(), status = "Not Started", logtimeSpent = 0) {
 
     return {
         taskName,
@@ -27,7 +27,8 @@ function createData(taskName, tags, priority, storyPoints, databaseID, descripti
         assignee,
         stage,
         dateCreated,
-        status: null,
+        status, // Force fallback here,
+        logtimeSpent,
     };
 }
 
@@ -58,7 +59,8 @@ class LocalDatabase {
                 doc.data().assignee, 
                 doc.data().stage, 
                 doc.data().dateCreated,
-                doc.data().status
+                doc.data().status,
+                doc.data().logtimeSpent
             ));
         });
         this.updateCounter++;
@@ -90,6 +92,7 @@ class LocalDatabase {
                 history: data.history,
                 priorityNum: data.priority === 'Low' ? 1 : data.priority === 'Medium' ? 2 : data.priority === 'Important' ? 3 : 4,
                 status: data.status,
+                logtimeSpent: data.logtimeSpent,
             };
             this.data[dataToChangeIndex] = updatedData;
             this.updateCounter++;
