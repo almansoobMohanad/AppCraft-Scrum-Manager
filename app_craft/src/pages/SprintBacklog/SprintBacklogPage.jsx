@@ -228,11 +228,11 @@ function ListView({ tasks, columns }) {
         <table className="list-view-table">
             <thead>
                 <tr>
-                    <th>Task</th>
+                    <th class = "task-name"> Task </th>
+                    <th class="story-points">Story Points</th>
                     <th>Tags</th>
                     <th>Priority</th>
                     <th>Story Points</th>
-                    <th>Status</th> {/* New Status column */}
                 </tr>
             </thead>
             <tbody>
@@ -249,10 +249,10 @@ function ListView({ tasks, columns }) {
                     return (
                         <tr key={task.id}>
                             <td>{task.content}</td>
+                            <td>{status}</td> {/* Display status */}
                             <td>{task.tags}</td>
                             <td>{task.priority}</td>
                             <td>{task.storyPoints}</td>
-                            <td>{status}</td> {/* Display status */}
                         </tr>
                     );
                 })}

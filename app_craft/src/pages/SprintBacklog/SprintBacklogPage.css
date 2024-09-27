@@ -249,6 +249,14 @@
     background-color: #fdfdfd; /* Light background similar to Kanban task cards */
 }
 
+.list-view-table .task-name {
+    width: 60%; /* Make the task column wider */
+}
+
+.list-view-table .story-points {
+    width: 10%; /* Make the story points column narrower */
+}
+
 .list-view-table th {
     background-color: #f4f4f4; /* Light gray background for headers */
     font-weight: bold; /* Bold header text */
