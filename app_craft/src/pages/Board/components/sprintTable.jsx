@@ -8,6 +8,19 @@ const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
 
   const navigate = useNavigate();
 
+  const handleViewSprint = (sprint) => {
+
+    console.log('the handle status issue', sprint)
+
+    if (sprint.status === 'Not Active') {
+        navigate('/sprintplan/', { state: { sprint } });
+    } else if (sprint.status === 'Active' || sprint.status === 'Finished') {
+        navigate('/sprintbacklog/', { state: { sprintName: sprint.name, sprintTask: sprint.tasks } });
+    }
+};
+
+
+
   return (
     <table className="sprint-table">
       <thead>
@@ -32,7 +45,7 @@ const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
               <td className="actions-column">
               <button
                   className="view-sprint-btn"
-                  onClick={() => navigate('/sprintbacklog/', { state: { sprintName: sprint.name, sprintTask: sprint.tasks } })}  // Pass sprint name
+                  onClick={() => handleViewSprint(sprint) }  // Pass sprint name
                 >
                   View Sprint
                 </button>
@@ -44,12 +57,6 @@ const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
                 <i className="fas fa-trash-alt"></i>
                 </button>
 
-                <button
-                  className="temp-view-sprint-plan-btn"
-                  onClick={() => navigate('/sprintplan/', { state: { sprint } })}  // Navigate to SprintPlanPage with sprint object
-                >
-                  Temp sprint plan
-                </button>
               </td>
             </tr>
           );
