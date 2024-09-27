@@ -369,30 +369,33 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
                     <ChangesHistoryTable changes={history} />
                 </div>
 
-                {/* New Activity Section */}
-                <div className="activity-section">
-                    <h3>Activity</h3>
-                    <div className="log-info">
-                        <p>Total Log Time: <span>{totalLogTime} Hours</span></p>
-                    </div>
-                    <div className="log-input-container">
-                        <label>Log Time Spent</label>
-                        <input
-                            type="number"
-                            value={logTimeSpent}
-                            onChange={(e) => setLogTimeSpent(e.target.value)
-                            }
-                            className="log-input"
-                        />
-                        <button className="add-time-button" onClick={handleAddTime}>+</button>
-                    </div>
-                </div>
+                {task.status && (
+                    <>
+                        {/* New Activity Section */}
+                        <div className="activity-section">
+                            <h3>Activity</h3>
+                            <div className="log-info">
+                                <p>Total Log Time: <span>{totalLogTime} Hours</span></p>
+                            </div>
+                            <div className="log-input-container">
+                                <label>Log Time Spent</label>
+                                <input
+                                    type="number"
+                                    value={logTimeSpent}
+                                    onChange={(e) => setLogTimeSpent(e.target.value)}
+                                    className="log-input"
+                                />
+                                <button className="add-time-button" onClick={handleAddTime}>+</button>
+                            </div>
+                        </div>
 
-                {/* Chart Section */}
-                <div className="chart-section">
-                    <h3>Log Time History</h3>
-                    <Line data={chartData} options={chartOptions} />
-                </div>
+                        {/* Chart Section */}
+                        <div className="chart-section">
+                            <h3>Log Time History</h3>
+                            <Line data={chartData} options={chartOptions} />
+                        </div>
+                    </>
+                )}
 
                 {/* Save and Cancel */}
                 <div className="overlay-actions">
