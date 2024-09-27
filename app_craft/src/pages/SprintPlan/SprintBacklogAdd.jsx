@@ -1,0 +1,75 @@
+import { collection, query, where, getDocs } from "firebase/firestore"; 
+import { db } from "../../firebase/firebaseConfig";
+import { doc, updateDoc } from "firebase/firestore";
+
+
+/**
+ * Fetch non-started sprints
+ * 
+ * @returns {Array} - A list of sprints that are not yet started
+ */
+export async function fetchNonStartedSprints() {
+    try {
+        const sprintsCollection = collection(db, "sprints");
+        const nonStartedQuery = query(sprintsCollection, where("status", "==", "non-started")); //i actually forgot the status client mentioned will double check
+        const snapshot = await getDocs(nonStartedQuery);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error("Error fetching non-started sprints:", error);
+    }
+}
+
+
+/**
+ * Fetch tasks in the product backlog (not assigned to any sprint)
+ * 
+ * @returns {Array} - A list of tasks not assigned to any sprint
+ */
+export async function fetchProductBacklogTasks() {
+    try {
+        const tasksCollection = collection(db, "tasks");
+        const backlogQuery = query(tasksCollection, where("sprintId", "==", null));
+        const snapshot = await getDocs(backlogQuery);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error("Error fetching product backlog tasks:", error);
+    }
+}
+
+
+/**
+ * Add a task to a sprint backlog
+ * 
+ * @param {string} taskId - The ID of the task to add to the sprint
+ * @param {string} sprintId - The ID of the sprint to add the task to
+ * @throws {Error} - Throws an error if the task update fails
+ */
+export async function addTaskToSprintBacklog(taskId, sprintId) {
+    try {
+        //reference to the task document
+        const taskRef = doc(db, "tasks", taskId);
+
+        //update the task's sprintId to associate it with the sprint
+        await updateDoc(taskRef, { sprintId });
+
+        console.log(`Task ${taskId} added to sprint ${sprintId} backlog successfully.`);
+    } catch (error) {
+        console.error("Error adding task to sprint backlog:", error);
+    }
+}
+
+
+
+//NOT SURE IF WANNA VALIDATE OR NOT but i think we should?? will check for other validations
+export async function addValidatedTaskToSprint(taskId, sprintId) {
+    //fetch the sprint to check its status
+    const sprint = (await getDoc(doc(db, "sprints", sprintId))).data();
+
+    if (sprint.status !== "non-started") {
+        console.error("Cannot add task to a sprint that has already started.");
+        return;
+    }
+
+    //add the task to the sprint backlog if valid
+    await addTaskToSprintBacklog(taskId, sprintId);
+}
