@@ -37,6 +37,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
             scrumMaster, // Include Scrum Master in the created sprint
             members: members.split(',').map((member) => member.trim()), // Convert members into an array
             tasks: [], // Initialize tasks as an empty array
+            status: 'Not Active' // Set the status to 'non-started' by default
         });
         onClose(); // Close overlay after creating the sprint
     };
