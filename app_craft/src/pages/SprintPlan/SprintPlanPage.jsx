@@ -1,16 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NavigationBar from "../../components/NavigationBar"; // Adjust the path as necessary
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { getFirestore, doc, updateDoc } from 'firebase/firestore';
+import DraggableTask from './Components/DraggableTask'; // Adjust the path as necessary
 import './SprintPlanPage.css'; // Ensure this import is correct
 
-/**
- * SprintPlanPage component
- * This component displays the tasks in a sprint and the product backlog for a not started sprint.
- * It allows the user to drag and drop tasks between the sprint and the product backlog.
- */
-
-// Mock data
 const initialBacklog = [
     { id: 'task-1', name: 'Task 1', priority: 'High', tags: ['UI', 'Bug'], storypoint: 3 },
     { id: 'task-2', name: 'Task 2', priority: 'Medium', tags: ['Backend'], storypoint: 5 },
@@ -28,27 +23,27 @@ const initialSprint = {
 };
 
 const SprintPlanPage = () => {
-
     const location = useLocation();
-    // Retrieve the sprint object from location state if available (from table)
     const sprintFromState = location.state?.sprint; // Retrieve the sprint object from location state if available
-    console.log('the sprint taken form table', sprintFromState);
-    // Check if the sprint object is available
-    sprintFromState ? console.log(sprintFromState.name) : console.log("No sprint object found");
 
-    // Still need to get product backlog tasks and filter out the tasks that are already in the sprint (most likely you will need to fetch this from the server)
-    // Filtering could be done by checking if status is null, because if it is not null, it means the task is already in a sprint (logic could be chaneged based on your implementation)
-
-    // Currently using mock backlog
     const [backlog, setBacklog] = useState(initialBacklog);
-    // Currently still using mock data, but you can replace this with the sprint object from location state
-    const [sprint, setSprint] = useState(initialSprint);
+    const [sprint, setSprint] = useState(sprintFromState || initialSprint); // Use sprintFromState if available, otherwise use initialSprint
 
-    const onDragEnd = (result) => {
+    useEffect(() => {
+        // Log the sprint object to the console
+        console.log('Sprint object passed to SprintPlanPage:', sprint);
+    }, [sprint]);
+
+    const db = getFirestore();
+
+    const onDragEnd = async (result) => {
         const { source, destination } = result;
 
         // Dropped outside the list
         if (!destination) return;
+
+        let updatedSprintTasks = [...sprint.tasks];
+        let updatedBacklog = [...backlog];
 
         // Reordering within the same list
         if (source.droppableId === destination.droppableId) {
@@ -62,6 +57,7 @@ const SprintPlanPage = () => {
                 setBacklog(items);
             } else {
                 setSprint({ ...sprint, tasks: items });
+                updatedSprintTasks = items;
             }
         } else {
             // Moving between lists
@@ -74,7 +70,24 @@ const SprintPlanPage = () => {
 
             setBacklog(result.backlog);
             setSprint({ ...sprint, tasks: result.sprint });
+            updatedSprintTasks = result.sprint;
+            updatedBacklog = result.backlog;
         }
+
+        // Update Firebase
+        try {
+            const sprintDocRef = doc(db, 'sprints', sprint.id); // Adjust the path as necessary
+            await updateDoc(sprintDocRef, {
+                tasks: updatedSprintTasks,
+            });
+        } catch (error) {
+            console.error('Error updating sprint tasks in Firebase:', error);
+        }
+    };
+
+    const handleTaskClick = (task) => {
+        // Define the action to be taken when a task is clicked
+        console.log('Task clicked:', task);
     };
 
     return (
@@ -92,25 +105,7 @@ const SprintPlanPage = () => {
                                     <div ref={provided.innerRef} {...provided.droppableProps}>
                                         {sprint.tasks && sprint.tasks.map((task, index) => (
                                             task && (
-                                                <Draggable key={task.id} draggableId={task.id} index={index}>
-                                                    {(provided) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            className="task"
-                                                        >
-                                                            <h3 className='task-name-h3'>{task.name}</h3>
-                                                            <p className={`priority-display ${task.priority.toLowerCase()}`}>{task.priority}</p>
-                                                            <div className="task-tags">
-                                                                {task.tags.map(tag => (
-                                                                    <span key={tag} className={`tag-display ${tag.toLowerCase()}`}>{tag}</span>
-                                                                ))}
-                                                            </div>
-                                                            <p className="storypoint-circle">{task.storypoint}</p>
-                                                        </div>
-                                                    )}
-                                                </Draggable>
+                                                <DraggableTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
                                             )
                                         ))}
                                         {provided.placeholder}
@@ -125,25 +120,7 @@ const SprintPlanPage = () => {
                                     <div ref={provided.innerRef} {...provided.droppableProps}>
                                         {backlog && backlog.map((task, index) => (
                                             task && (
-                                                <Draggable key={task.id} draggableId={task.id} index={index}>
-                                                    {(provided) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            className="task"
-                                                        >
-                                                            <h3>{task.name}</h3>
-                                                            <p className={`priority-display ${task.priority.toLowerCase()}`}>{task.priority}</p>
-                                                            <div className="task-tags">
-                                                                {task.tags.map(tag => (
-                                                                    <span key={tag} className={`tag-display ${tag.toLowerCase()}`}>{tag}</span>
-                                                                ))}
-                                                            </div>
-                                                            <p className="storypoint-circle">{task.storypoint}</p>
-                                                        </div>
-                                                    )}
-                                                </Draggable>
+                                                <DraggableTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
                                             )
                                         ))}
                                         {provided.placeholder}
@@ -166,14 +143,6 @@ const reorder = (list, startIndex, endIndex) => {
     return result;
 };
 
-/**
- * Moves an item from one list to another list
- * @param {Array} source - The source list
- * @param {Array} destination - The destination list
- * @param {Object} droppableSource - The source object
- * @param {Object} droppableDestination - The destination object
- * @returns {Object} - The updated lists
- */
 const move = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source);
     const destClone = Array.from(destination);
