@@ -22,7 +22,7 @@ import EditTaskOverlay from './EditTaskOverLay.jsx';
 import TaskFilter from './TaskFilter'; // Import TaskFilter component
 import localDB from '../LocalDatabase'; // Import the LocalDatabase module
 
-function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date(), status = "Not Started",logTimeSpent = 0) {
+function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date()) {
 
     return {
         taskName,
@@ -37,8 +37,6 @@ function createData(taskName, tags, priority, storyPoints, databaseID, descripti
         assignee,
         stage,
         dateCreated,
-        status : "Not Started", // Force fallback here,
-        logTimeSpent,
     };
 }
 
@@ -92,8 +90,6 @@ Row.propTypes = {
         history: PropTypes.array.isRequired,
         taskName: PropTypes.string.isRequired,
         databaseID: PropTypes.string.isRequired,
-        status: PropTypes.string.isRequired, // Add prop validation for status
-        logTimeSpent: PropTypes.number.isRequired,
 
     }).isRequired,
     onDelete: PropTypes.func.isRequired,
@@ -119,7 +115,7 @@ export default function CollapsibleTable({ updateFlag }) {
             const fetchedRows = [];
             const querySnapshot = await getDocs(collection(db, "tasks"));
             querySnapshot.forEach((doc) => {
-                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, doc.data().description, doc.data().type, doc.data().history, doc.data().assignee, doc.data().stage, doc.date().dateCreated, doc.data().status, doc.data().logTimeSpent);
+                const data = createData(doc.data().name, doc.data().tags, doc.data().priority, doc.data().storyPoints, doc.id, doc.data().description, doc.data().type, doc.data().history, doc.data().assignee, doc.data().stage, doc.date().dateCreated);
                 fetchedRows.push(data);
             });
             setRows(fetchedRows);

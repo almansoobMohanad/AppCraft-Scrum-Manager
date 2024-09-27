@@ -1,3 +1,4 @@
+import { Line } from 'react-chartjs-2';
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import '../cssFiles/EditTaskOverlay.css';
@@ -9,6 +10,27 @@ import { EditFilesInDB } from './EditFilesInDB.jsx';
 import ChangesHistoryTable from './ChangesHistoryTable.jsx';
 import localDB from '../LocalDatabase.jsx';
 import { updateTask } from '../services/tasksService.js';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import 'chart.js/auto';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 /*
 const mockTask = {
@@ -45,12 +67,47 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     const [status, setStatus] = useState('Not Started');
     const [logTimeSpent, setLogTimeSpent] = useState(0);
     const [totalLogTime, setTotalLogTime] = useState(0); // To display total logged time
+    const [logTimeHistory, setLogTimeHistory] = useState([]); // New state for log time by date
 
 
     const taskTypes = ['Story', 'Bug'];
     const taskStages = ['Planning', 'Development', 'Testing', 'Integration'];
     const priorities = ['Low', 'Medium', 'Important', 'Urgent'];
     const availableTags = ['Frontend', 'Backend', 'API', 'Database', 'Framework', 'Testing', 'UI', 'UX'];
+
+    const chartData = {
+        labels: logTimeHistory.map(entry => entry.date), // X-axis labels (dates)
+        datasets: [
+            {
+                label: 'Log Time Spent (hours)',
+                data: logTimeHistory.map(entry => entry.logTime), // Y-axis data (log times)
+                fill: false,
+                borderColor: 'rgba(75,192,192,1)',
+                tension: 0.1, // Smooth line
+            },
+        ],
+    };
+    
+    const chartOptions = {
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Date',
+                },
+            },
+            y: {
+                min: 0, // Set the minimum value for the y-axis
+                max: 10, // Set the maximum value for the y-axis
+                title: {
+                    display: true,
+                    text: 'Log Time (hours)',
+                },
+                beginAtZero: true,
+            },
+        },
+    };
+    
 
     // Load the existing task data into the form fields when the component mounts
     useEffect(() => {
@@ -65,7 +122,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
             setDescription(task.description || '');
             setHistory(task.history || []); // Set existing history
             setStatus(task.status || 'Not Started');
-            setLogTimeSpent(task.logTimeSpent || 0); // Set initial log time
+            setLogTimeSpent(task.logTimeSpent); // Set initial log time
             setTotalLogTime(task.logTimeSpent || 0); // Set initial total log time
             console.log('Total log time from task:', task.logTimeSpent); // Debug log
 
@@ -80,11 +137,33 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     };
 
     const handleAddTime = () => {
+        if (!logTimeSpent || logTimeSpent <= 0) return; // Skip if invalid input
+    
+        const currentDate = new Date().toLocaleDateString('en-GB'); // Use today's date
+        
         const updatedTotalLogTime = totalLogTime + Number(logTimeSpent);
         setTotalLogTime(updatedTotalLogTime); // Update the total log time
+    
+        // Update the log time history with the new log
+        const updatedLogTimeHistory = [...logTimeHistory];
+        
+        // Check if an entry for the current date already exists
+        const existingEntry = updatedLogTimeHistory.find(entry => entry.date === currentDate);
+        
+        if (existingEntry) {
+            // If there's already an entry for today, update the log time
+            existingEntry.logTime += Number(logTimeSpent);
+        } else {
+            // If there's no entry for today, create a new one
+            updatedLogTimeHistory.push({ date: currentDate, logTime: Number(logTimeSpent) });
+        }
+        
+        setLogTimeHistory(updatedLogTimeHistory); // Update state with new history
         setLogTimeSpent(0); // Reset the input after adding time
+    
         console.log(`New Total Log Time: ${updatedTotalLogTime} hours`);
     };
+    
 
     const validateFields = () => {
         if (!taskName || tags.length === 0 || !description) {
@@ -307,6 +386,12 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
                         />
                         <button className="add-time-button" onClick={handleAddTime}>+</button>
                     </div>
+                </div>
+
+                {/* Chart Section */}
+                <div className="chart-section">
+                    <h3>Log Time History</h3>
+                    <Line data={chartData} options={chartOptions} />
                 </div>
 
                 {/* Save and Cancel */}
