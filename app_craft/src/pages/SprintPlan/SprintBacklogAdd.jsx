@@ -1,6 +1,6 @@
 import { collection, query, where, getDocs } from "firebase/firestore"; 
 import { db } from "../../firebase/firebaseConfig";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 
 
 /**
@@ -48,11 +48,21 @@ export async function addTaskToSprintBacklog(taskId, sprintId) {
     try {
         //reference to the task document
         const taskRef = doc(db, "tasks", taskId);
+            
+        // Reference to the sprint document
+        const sprintRef = doc(db, "sprints", sprintId);
+        console.log(taskId)
 
         await updateDoc(taskRef, { 
             sprintId: sprintId,
             status: "not started"  //vhange status from null to not started
         });
+
+        // Add the task ID to the sprint's tasks array
+        await updateDoc(sprintRef, {
+            tasks: arrayUnion(taskId) // Add the taskId to the sprint's tasks array using arrayUnion
+        });
+
 
         console.log(`Task ${taskId} added to sprint ${sprintId} backlog successfully.`);
     } catch (error) {
