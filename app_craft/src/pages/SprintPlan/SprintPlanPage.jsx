@@ -2,50 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NavigationBar from "../../components/NavigationBar"; // Adjust the path as necessary
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 import DraggableTask from './Components/DraggableTask'; // Adjust the path as necessary
+import localDB from '../../LocalDatabase'; // Adjust the path as necessary
 import './SprintPlanPage.css'; // Ensure this import is correct
-
-const initialBacklog = [
-    { id: 'task-1', name: 'Task 1', priority: 'High', tags: ['UI', 'Bug'], storypoint: 3 },
-    { id: 'task-2', name: 'Task 2', priority: 'Medium', tags: ['Backend'], storypoint: 5 },
-    { id: 'task-3', name: 'Task 3', priority: 'Low', tags: ['UI', 'Enhancement'], storypoint: 2 },
-];
-
-const initialSprint = {
-    name: 'Sprint 1',
-    startDate: '2023-10-01',
-    endDate: '2023-10-15',
-    scrumMaster: 'John Doe',
-    tasks: [
-        { id: 'task-4', name: 'Task 4', priority: 'High', tags: ['API'], storypoint: 8 },
-    ],
-};
 
 const SprintPlanPage = () => {
     const location = useLocation();
     const sprintFromState = location.state?.sprint; // Retrieve the sprint object from location state if available
 
-    const [backlog, setBacklog] = useState(initialBacklog);
-    const [sprint, setSprint] = useState(sprintFromState || initialSprint); // Use sprintFromState if available, otherwise use initialSprint
+    const [backlog, setBacklog] = useState([]); // Initialize an empty backlog
+    const [sprint, setSprint] = useState(sprintFromState || { name: '', tasks: [] }); // Initialize sprint
+
+    // Fetch product backlog tasks from localDB
+    const fetchBacklogTasks = async () => {
+        try {
+            await localDB.init(); // Initialize localDB and fetch the data
+            const tasks = localDB.getData(); // Get the tasks from the localDB
+            setBacklog(tasks.filter(task => task.status === null)); // Filter backlog tasks
+        } catch (error) {
+            console.error('Error fetching product backlog tasks:', error);
+        }
+    };
 
     useEffect(() => {
-        // Log the sprint object to the console
         console.log('Sprint object passed to SprintPlanPage:', sprint);
+
+        // Fetch backlog tasks on component mount
+        fetchBacklogTasks();
     }, [sprint]);
 
-    const db = getFirestore();
-
-    const onDragEnd = async (result) => {
+    const onDragEnd = (result) => {
         const { source, destination } = result;
 
-        // Dropped outside the list
         if (!destination) return;
 
         let updatedSprintTasks = [...sprint.tasks];
         let updatedBacklog = [...backlog];
 
-        // Reordering within the same list
         if (source.droppableId === destination.droppableId) {
             const items = reorder(
                 source.droppableId === 'backlog' ? backlog : sprint.tasks,
@@ -60,7 +53,6 @@ const SprintPlanPage = () => {
                 updatedSprintTasks = items;
             }
         } else {
-            // Moving between lists
             const result = move(
                 source.droppableId === 'backlog' ? backlog : sprint.tasks,
                 source.droppableId === 'backlog' ? sprint.tasks : backlog,
@@ -74,19 +66,13 @@ const SprintPlanPage = () => {
             updatedBacklog = result.backlog;
         }
 
-        // Update Firebase
-        try {
-            const sprintDocRef = doc(db, 'sprints', sprint.id); // Adjust the path as necessary
-            await updateDoc(sprintDocRef, {
-                tasks: updatedSprintTasks,
-            });
-        } catch (error) {
-            console.error('Error updating sprint tasks in Firebase:', error);
-        }
+        // Add or update the tasks in the localDB
+        updatedSprintTasks.forEach((task) => {
+            localDB.editData(task.databaseID, task); // Update in the localDB
+        });
     };
 
     const handleTaskClick = (task) => {
-        // Define the action to be taken when a task is clicked
         console.log('Task clicked:', task);
     };
 
@@ -104,9 +90,7 @@ const SprintPlanPage = () => {
                                 {(provided) => (
                                     <div ref={provided.innerRef} {...provided.droppableProps}>
                                         {sprint.tasks && sprint.tasks.map((task, index) => (
-                                            task && (
-                                                <DraggableTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
-                                            )
+                                            <DraggableTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
                                         ))}
                                         {provided.placeholder}
                                     </div>
@@ -119,9 +103,7 @@ const SprintPlanPage = () => {
                                 {(provided) => (
                                     <div ref={provided.innerRef} {...provided.droppableProps}>
                                         {backlog && backlog.map((task, index) => (
-                                            task && (
-                                                <DraggableTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
-                                            )
+                                            <DraggableTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
                                         ))}
                                         {provided.placeholder}
                                     </div>
