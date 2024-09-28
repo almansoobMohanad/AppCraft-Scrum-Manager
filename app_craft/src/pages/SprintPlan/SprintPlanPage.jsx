@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NavigationBar from "../../components/NavigationBar"; // Adjust the path as necessary
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import DraggableTask from './Components/DraggableTask'; // Adjust the path as necessary
 import localDB from '../../LocalDatabase'; // Adjust the path as necessary
+import TaskBoard from './Components/TaskBoard';
 import './SprintPlanPage.css'; // Ensure this import is correct
 
 const SprintPlanPage = () => {
@@ -18,125 +17,38 @@ const SprintPlanPage = () => {
         try {
             await localDB.init(); // Initialize localDB and fetch the data
             const tasks = localDB.getData(); // Get the tasks from the localDB
-            setBacklog(tasks.filter(task => task.status === null)); // Filter backlog tasks
+            const filteredTasks = tasks.filter(task => task.status === null); // Filter backlog tasks
+            setBacklog(filteredTasks);
         } catch (error) {
             console.error('Error fetching product backlog tasks:', error);
         }
     };
 
     useEffect(() => {
-        console.log('Sprint object passed to SprintPlanPage:', sprint);
-
-        // Fetch backlog tasks on component mount
         fetchBacklogTasks();
-    }, [sprint]);
+    }, []); // Empty dependency array means this effect runs once when the component mounts
 
-    const onDragEnd = (result) => {
-        const { source, destination } = result;
+    useEffect(() => {
+        console.log('Backlog', backlog);
+    }, [backlog]); // This effect runs whenever the backlog state changes
 
-        if (!destination) return;
-
-        let updatedSprintTasks = [...sprint.tasks];
-        let updatedBacklog = [...backlog];
-
-        if (source.droppableId === destination.droppableId) {
-            const items = reorder(
-                source.droppableId === 'backlog' ? backlog : sprint.tasks,
-                source.index,
-                destination.index
-            );
-
-            if (source.droppableId === 'backlog') {
-                setBacklog(items);
-            } else {
-                setSprint({ ...sprint, tasks: items });
-                updatedSprintTasks = items;
-            }
-        } else {
-            const result = move(
-                source.droppableId === 'backlog' ? backlog : sprint.tasks,
-                source.droppableId === 'backlog' ? sprint.tasks : backlog,
-                source,
-                destination
-            );
-
-            setBacklog(result.backlog);
-            setSprint({ ...sprint, tasks: result.sprint });
-            updatedSprintTasks = result.sprint;
-            updatedBacklog = result.backlog;
-        }
-
-        // Add or update the tasks in the localDB
-        updatedSprintTasks.forEach((task) => {
-            localDB.editData(task.databaseID, task); // Update in the localDB
-        });
-    };
-
-    const handleTaskClick = (task) => {
-        console.log('Task clicked:', task);
-    };
-
-    return (
-        <div className="sprintPlanPage-container">
-            <NavigationBar />
-            <div className="content">
-                <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
-                <h1>{sprint.name}</h1>
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <div className="columns">
-                        <div className="column">
-                            <h2 className="column-header">Sprint Tasks</h2>
-                            <Droppable droppableId="sprint">
-                                {(provided) => (
-                                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                                        {sprint.tasks && sprint.tasks.map((task, index) => (
-                                            <DraggableTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
-                                        ))}
-                                        {provided.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
-                        </div>
-                        <div className="column">
-                            <h2 className="column-header">Product Backlog</h2>
-                            <Droppable droppableId="backlog">
-                                {(provided) => (
-                                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                                        {backlog && backlog.map((task, index) => (
-                                            <DraggableTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
-                                        ))}
-                                        {provided.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
-                        </div>
-                    </div>
-                </DragDropContext>
+        return (
+            <div className="sprintPlanPage-container">
+                <NavigationBar />
+                <div className="content">
+                    <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
+                    <h1>{sprint.name}</h1>
+                    {console.log('Backlog passed to TaskBoard:', backlog)}
+                    {console.log('Sprint tasks passed to TaskBoard:', sprint.tasks)}
+                    <TaskBoard
+                        backlog={backlog}
+                        sprintTasks={sprint.tasks}
+                        setBacklog={setBacklog}
+                        setSprint={setSprint}
+                    />
+                </div>
             </div>
-        </div>
-    );
-};
-
-// Helper functions to reorder and move tasks
-const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-};
-
-const move = (source, destination, droppableSource, droppableDestination) => {
-    const sourceClone = Array.from(source);
-    const destClone = Array.from(destination);
-    const [removed] = sourceClone.splice(droppableSource.index, 1);
-
-    destClone.splice(droppableDestination.index, 0, removed);
-
-    const result = {};
-    result[droppableSource.droppableId] = sourceClone;
-    result[droppableDestination.droppableId] = destClone;
-
-    return result;
-};
+        );
+    };
 
 export default SprintPlanPage;
