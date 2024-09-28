@@ -14,7 +14,7 @@ const DragTask = ({ task, index, onClick }) => {
                     onClick={() => onClick(task)}
                 >
                     <div className={styles['drag-task-details']}>
-                        <div className={styles['drag-task-title']}>{task.taskName}</div>
+                        <div className={styles['drag-task-title']}>{task.name}</div>
                         <div className={styles['drag-task-tags']}>
                             {task.tags.map((tag, idx) => (
                                 <span key={idx} className={`${styles['drag-tag']} ${styles[tag.toLowerCase()]}`}>{tag}</span>

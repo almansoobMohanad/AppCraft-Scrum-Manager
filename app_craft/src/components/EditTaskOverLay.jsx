@@ -55,7 +55,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     console.log('Props received:', { task, onClose, onSave, onUpdate });
 
     // console.log('this ism me', task)
-    const [taskName, setTaskName] = useState('');
+    const [name, setTaskName] = useState('');
     const [taskType, setTaskType] = useState('Bug');
     const [taskStage, setTaskStage] = useState('Planning');
     const [storyPoints, setStoryPoints] = useState(1);
@@ -112,7 +112,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     // Load the existing task data into the form fields when the component mounts
     useEffect(() => {
         if (task) {
-            setTaskName(task.taskName);
+            setTaskName(task.name);
             setTaskType(task.type);
             setTaskStage(task.stage);
             setStoryPoints(task.storyPoints);
@@ -166,7 +166,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     
 
     const validateFields = () => {
-        if (!taskName || tags.length === 0 || !description) {
+        if (!name || tags.length === 0 || !description) {
             alert('Fields cannot be left empty');
             return false;
         }
@@ -197,7 +197,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
 
         const updatedTask = {
             ...task,  // Keep the original task details
-            taskName,
+            name,
             type: taskType,
             stage: taskStage,
             storyPoints,
@@ -215,7 +215,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     
         // Update the task in the database (example)
         const db = EditFilesInDB(updatedTask.databaseID);
-        db.changeName(updatedTask.taskName);
+        db.changeName(updatedTask.name);
         db.changeType(updatedTask.type);
         db.changeStage(updatedTask.stage);
         db.changeStoryPoints(updatedTask.storyPoints);
@@ -255,7 +255,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
                         type="text"
                         id="task-name"
                         className="task-input"
-                        value={taskName}
+                        value={name}
                         onChange={(e) => setTaskName(e.target.value)}
                     />
                 </div>
@@ -409,7 +409,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
 
 EditTaskOverlay.propTypes = {
     task: PropTypes.shape({
-        taskName: PropTypes.string,
+        name: PropTypes.string,
         type: PropTypes.string,
         stage: PropTypes.string,
         storyPoints: PropTypes.number,

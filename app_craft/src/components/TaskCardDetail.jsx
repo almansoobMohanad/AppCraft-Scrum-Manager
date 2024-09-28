@@ -22,10 +22,10 @@ import EditTaskOverlay from './EditTaskOverLay.jsx';
 import TaskFilter from './TaskFilter'; // Import TaskFilter component
 import localDB from '../LocalDatabase'; // Import the LocalDatabase module
 
-function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date()) {
+function createData(name, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date()) {
 
     return {
-        taskName,
+        name,
         tags,
         priority,
         storyPoints,
@@ -59,7 +59,7 @@ function Row({ row, onDelete, onTaskClick }) {
             >
                 
                 <TableCell component="th" scope="row" className = "task-name">
-                    {row.taskName}
+                    {row.name}
                 </TableCell>
                 <TableCell colSpan={4} className="task-details">
                     <div className="task-details-container">
@@ -88,7 +88,7 @@ Row.propTypes = {
         storyPoints: PropTypes.number.isRequired,
         priority: PropTypes.string.isRequired,
         history: PropTypes.array.isRequired,
-        taskName: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
         databaseID: PropTypes.string.isRequired,
 
     }).isRequired,
@@ -197,6 +197,9 @@ export default function CollapsibleTable({ updateFlag }) {
         if (filters.storyPoints !== null) {
             filtered = filtered.filter(task => task.storyPoint === filters.storyPoints);
         }
+
+        filtered = filtered.filter(task => task.status === null);
+
         //added this so that u still can sort the filtered ones :D
         const sorted = applySort(filtered)
         setFilteredRows(sorted);

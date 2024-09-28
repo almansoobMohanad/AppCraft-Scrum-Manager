@@ -12,10 +12,10 @@ function dynamicSort(key, sortOrder = 'asc') {
     }
 }
 
-function createData(taskName, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date(), status = "Not Started", logtimeSpent = 0) {
+function createData(name, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date(), status = "Not Started", logtimeSpent = 0) {
 
     return {
-        taskName,
+        name,
         tags,
         priority,
         storyPoints,
@@ -82,7 +82,7 @@ class LocalDatabase {
             const dataToChange = this.data[dataToChangeIndex];
             const updatedData = {
                 ...dataToChange,
-                taskName: data.taskName,
+                name: data.name,
                 type: data.type,
                 stage: data.stage,
                 storyPoints: data.storyPoints,
