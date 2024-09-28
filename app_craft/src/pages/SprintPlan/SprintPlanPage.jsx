@@ -31,8 +31,8 @@ const SprintPlanPage = () => {
         fetchBacklogTasks();
     }, [sprint]);
 
-    const onDragEnd = (result) => {
-        const { source, destination } = result;
+    const onDragEnd = async (result) => {
+        const { source, destination, draggableId } = result;
 
         if (!destination) return;
 
@@ -64,11 +64,35 @@ const SprintPlanPage = () => {
             setSprint({ ...sprint, tasks: result.sprint });
             updatedSprintTasks = result.sprint;
             updatedBacklog = result.backlog;
+
+            // Check if moving from Sprint Backlog to Product Backlog
+            if (source.droppableId === 'sprint' && destination.droppableId === 'backlog') {
+                // Remove the task from the sprint array in the frontend state
+                const newSprintTasks = updatedSprintTasks.filter(task => task.id !== draggableId);
+                setSprint({ ...sprint, tasks: newSprintTasks });
+
+                // Add the task to the product backlog array in the frontend state
+                const task = sprint.tasks.find(task => task.id === draggableId);
+                setBacklog([...backlog, task]);
+
+                // update the task in the database
+                try {
+                    await removeTaskFromSprintBacklog(draggableId, sprint.id);
+                } catch (error) {
+                    console.error('Error removing task from sprint backlog:', error);
+                }
+            }
         }
+
+        
 
         // Add or update the tasks in the localDB
         updatedSprintTasks.forEach((task) => {
             localDB.editData(task.databaseID, task); // Update in the localDB
+        });
+
+        updatedBacklog.forEach((task) => {
+            localDB.editData(task.databaseID, task);
         });
     };
 
