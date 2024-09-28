@@ -22,7 +22,7 @@ import EditTaskOverlay from './EditTaskOverLay.jsx';
 import TaskFilter from './TaskFilter'; // Import TaskFilter component
 import localDB from '../LocalDatabase'; // Import the LocalDatabase module
 
-function createData(name, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date()) {
+function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date()) {
 
     return {
         name,
@@ -31,7 +31,7 @@ function createData(name, tags, priority, storyPoints, databaseID, description, 
         storyPoints,
         priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4,
         history,
-        databaseID,
+        id,
         description,
         type,
         assignee,
@@ -45,8 +45,8 @@ function Row({ row, onDelete, onTaskClick }) {
 
     const handleDelete = async (e) => {
         e.stopPropagation(); // Prevent row click when clicking delete
-        await backEndDeleteTask(row.databaseID);
-        onDelete(row.databaseID);
+        await backEndDeleteTask(row.id);
+        onDelete(row.id);
     };
 
     return (
@@ -89,7 +89,7 @@ Row.propTypes = {
         priority: PropTypes.string.isRequired,
         history: PropTypes.array.isRequired,
         name: PropTypes.string.isRequired,
-        databaseID: PropTypes.string.isRequired,
+        id: PropTypes.string.isRequired,
 
     }).isRequired,
     onDelete: PropTypes.func.isRequired,
@@ -142,10 +142,10 @@ export default function CollapsibleTable({ updateFlag }) {
         // fetchDataFromDB(); // this one is using the new LocalDatabase module
     }, [updateFlag, updateFlag2]);
 
-    const handleDelete = (databaseID) => {
-        setRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
-        setFilteredRows((prevRows) => prevRows.filter((row) => row.databaseID !== databaseID));
-        localDB.deleteData(databaseID);
+    const handleDelete = (id) => {
+        setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+        setFilteredRows((prevRows) => prevRows.filter((row) => row.id !== id));
+        localDB.deleteData(id);
     };
 
     const handleTaskClick = (task) => {
@@ -253,7 +253,7 @@ export default function CollapsibleTable({ updateFlag }) {
                     </TableHead>
                     <TableBody>
                         {filteredRows.map((row) => (
-                            <Row key={row.databaseID} row={row} onDelete={handleDelete} onTaskClick={handleTaskClick} />
+                            <Row key={row.id} row={row} onDelete={handleDelete} onTaskClick={handleTaskClick} />
                         ))}
                     </TableBody>
                 </Table>

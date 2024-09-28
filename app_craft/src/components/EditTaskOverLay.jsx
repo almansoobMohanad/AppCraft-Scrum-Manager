@@ -214,7 +214,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
         console.log('Updated task:', updatedTask);
     
         // Update the task in the database (example)
-        const db = EditFilesInDB(updatedTask.databaseID);
+        const db = EditFilesInDB(updatedTask.id);
         db.changeName(updatedTask.name);
         db.changeType(updatedTask.type);
         db.changeStage(updatedTask.stage);
@@ -228,7 +228,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
         db.changeLogtimeSpent(updatedTask.logTimeSpent);
     
 
-        localDB.editData(updatedTask.databaseID, updatedTask);
+        localDB.editData(updatedTask.id, updatedTask);
 
         // Trigger the onSave callback with the updated task
         console.log('onSave called with:', updatedTask);

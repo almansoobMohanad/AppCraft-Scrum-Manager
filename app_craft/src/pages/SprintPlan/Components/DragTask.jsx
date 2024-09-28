@@ -4,7 +4,7 @@ import styles from '../css/DragTask.module.css';
 
 const DragTask = ({ task, index, onClick }) => {
     return (
-        <Draggable key={task.databaseID} draggableId={task.databaseID} index={index}>
+        <Draggable key={task.id} draggableId={task.id} index={index}>
             {(provided) => (
                 <div
                     ref={provided.innerRef}

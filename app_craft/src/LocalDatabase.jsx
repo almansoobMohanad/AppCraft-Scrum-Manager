@@ -12,7 +12,7 @@ function dynamicSort(key, sortOrder = 'asc') {
     }
 }
 
-function createData(name, tags, priority, storyPoints, databaseID, description, type, history, assignee, stage, dateCreated = new Date(), status = "Not Started", logtimeSpent = 0) {
+function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date(), status = "Not Started", logtimeSpent = 0) {
 
     return {
         name,
@@ -21,7 +21,7 @@ function createData(name, tags, priority, storyPoints, databaseID, description, 
         storyPoints,
         priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4,
         history,
-        databaseID,
+        id,
         description,
         type,
         assignee,
@@ -77,7 +77,7 @@ class LocalDatabase {
     }
 
     editData(dataID, data) {
-        const dataToChangeIndex = this.data.findIndex(task => task.databaseID === dataID);
+        const dataToChangeIndex = this.data.findIndex(task => task.id === dataID);
         if (dataToChangeIndex !== -1) {
             const dataToChange = this.data[dataToChangeIndex];
             const updatedData = {
@@ -111,8 +111,8 @@ class LocalDatabase {
         this.updateCounter++;
     }
 
-    deleteData(databaseID) {
-        this.data.filter(task => task.databaseID !== databaseID);
+    deleteData(id) {
+        this.data.filter(task => task.id !== id);
         this.updateCounter++;
     }
 

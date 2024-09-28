@@ -4,6 +4,7 @@ import DragTask from './DragTask';
 import EditTaskOverlay from '../../../components/EditTaskOverLay';
 import '../css/TaskBoard.css';
 import { addTaskToSprintBacklog } from '../SprintBacklogAdd';
+import { removeTaskFromSprintBacklog } from '../SprintBacklogRemove';
 
 
 const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) => {
@@ -31,10 +32,10 @@ const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) =>
             const [movedTask] = updatedBacklog.splice(source.index, 1);
             updatedSprintTasks.splice(destination.index, 0, movedTask);
 
-            console.log(movedTask.databaseID);
+            console.log(movedTask.id);
 
             // Add the task to the sprint backlog
-            addTaskToSprintBacklog(movedTask.databaseID, sprintID); // Replace 'sprintID' with the actual sprint ID
+            addTaskToSprintBacklog(movedTask.id, sprintID); // Replace 'sprintID' with the actual sprint ID
 
         }
 
@@ -42,6 +43,8 @@ const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) =>
         if (source.droppableId === 'sprintTasks' && destination.droppableId === 'backlog') {
             const [movedTask] = updatedSprintTasks.splice(source.index, 1);
             updatedBacklog.splice(destination.index, 0, movedTask);
+            
+            removeTaskFromSprintBacklog(movedTask.id,sprintID);
         }
 
         setBacklog(updatedBacklog);
@@ -60,8 +63,8 @@ const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) =>
 
     const handleUpdate = (updatedTask) => {
         const updateTasks = (tasks) => tasks.map(task => {
-            if (!task || !task.databaseID) return task; // If task is undefined or has no databaseID, return it as is
-            return task.databaseID === updatedTask.databaseID ? updatedTask : task;
+            if (!task || !task.id) return task; // If task is undefined or has no databaseID, return it as is
+            return task.id === updatedTask.id ? updatedTask : task;
         });
 
         const updatedBacklog = updateTasks(backlog);
@@ -84,7 +87,7 @@ const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) =>
                             <div className="sprint-tasks" ref={provided.innerRef} {...provided.droppableProps}>
                                 <h2 className='board-title'>Sprint Tasks</h2>
                                 {sprintTasks.map((task, index) => (
-                                    <DragTask key={task.databaseID} task={task} index={index} onClick={handleTaskClick} />
+                                    <DragTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
                                 ))}
                                 {provided.placeholder}
                             </div>
@@ -95,7 +98,7 @@ const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) =>
                             <div className="backlog" ref={provided.innerRef} {...provided.droppableProps}>
                                 <h2 className='board-title'>Backlog</h2>
                                 {backlog.map((task, index) => (
-                                    <DragTask key={task.databaseID} task={task} index={index} onClick={handleTaskClick} />
+                                    <DragTask key={task.id} task={task} index={index} onClick={handleTaskClick} />
                                 ))}
                                 {provided.placeholder}
                             </div>
