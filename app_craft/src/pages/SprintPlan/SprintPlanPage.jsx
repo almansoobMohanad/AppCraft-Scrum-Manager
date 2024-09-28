@@ -45,6 +45,7 @@ const SprintPlanPage = () => {
                         sprintTasks={sprint.tasks}
                         setBacklog={setBacklog}
                         setSprint={setSprint}
+                        sprintID={sprint.id} // Pass the sprint ID if available
                     />
                 </div>
             </div>

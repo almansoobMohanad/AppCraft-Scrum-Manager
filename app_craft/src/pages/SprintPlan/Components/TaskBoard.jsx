@@ -3,8 +3,10 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import DragTask from './DragTask';
 import EditTaskOverlay from '../../../components/EditTaskOverLay';
 import '../css/TaskBoard.css';
+import { addTaskToSprintBacklog } from '../SprintBacklogAdd';
 
-const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint }) => {
+
+const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [isOverlayVisible, setOverlayVisible] = useState(false);
 
@@ -17,13 +19,23 @@ const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint }) => {
         // If the source and destination are the same, do nothing
         if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
+        console.log('source id', source.droppableId,  'destination id', destination.droppableId);
+
         let updatedBacklog = Array.from(backlog);
         let updatedSprintTasks = Array.from(sprintTasks);
+
+        console.log('sprint we are in rn id', sprintID);
 
         // Moving from backlog to sprint tasks
         if (source.droppableId === 'backlog' && destination.droppableId === 'sprintTasks') {
             const [movedTask] = updatedBacklog.splice(source.index, 1);
             updatedSprintTasks.splice(destination.index, 0, movedTask);
+
+            console.log(movedTask.databaseID);
+
+            // Add the task to the sprint backlog
+            addTaskToSprintBacklog(movedTask.databaseID, sprintID); // Replace 'sprintID' with the actual sprint ID
+
         }
 
         // Moving from sprint tasks to backlog
