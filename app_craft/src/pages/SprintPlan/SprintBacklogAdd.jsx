@@ -11,7 +11,7 @@ import { doc, updateDoc } from "firebase/firestore";
 export async function fetchNonStartedSprints() {
     try {
         const sprintsCollection = collection(db, "sprints");
-        const nonStartedQuery = query(sprintsCollection, where("status", "==", "non-started")); //i actually forgot the status client mentioned will double check
+        const nonStartedQuery = query(sprintsCollection, where("status", "==", "not started")); 
         const snapshot = await getDocs(nonStartedQuery);
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
@@ -49,8 +49,10 @@ export async function addTaskToSprintBacklog(taskId, sprintId) {
         //reference to the task document
         const taskRef = doc(db, "tasks", taskId);
 
-        //update the task's sprintId to associate it with the sprint
-        await updateDoc(taskRef, { sprintId });
+        await updateDoc(taskRef, { 
+            sprintId: sprintId,
+            status: "not started"  //vhange status from null to not started
+        });
 
         console.log(`Task ${taskId} added to sprint ${sprintId} backlog successfully.`);
     } catch (error) {
@@ -65,8 +67,8 @@ export async function addValidatedTaskToSprint(taskId, sprintId) {
     //fetch the sprint to check its status
     const sprint = (await getDoc(doc(db, "sprints", sprintId))).data();
 
-    if (sprint.status !== "non-started") {
-        console.error("Cannot add task to a sprint that has already started.");
+    if (sprint.status !== "null") {
+        console.error("Cannot add task to a sprint that has already been added?");
         return;
     }
 
