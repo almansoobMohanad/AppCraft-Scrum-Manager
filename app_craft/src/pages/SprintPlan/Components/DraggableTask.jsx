@@ -13,14 +13,14 @@ const DraggableTask = ({ task, index, onClick }) => {
                     className="task"
                     onClick={() => onClick(task)}
                 >
-                    <h3 className='task-name-h3'>{task.name}</h3>
+                    <h3 className='task-name-h3'>{task.taskName}</h3>
                     <p className={`priority-display ${task.priority.toLowerCase()}`}>{task.priority}</p>
                     <div className="task-tags">
                         {task.tags.map(tag => (
                             <span key={tag} className={`tag-display ${tag.toLowerCase()}`}>{tag}</span>
                         ))}
                     </div>
-                    <p className="storypoint-circle">{task.storypoint}</p>
+                    <p className="storypoint-circle">{task.storyPoints}</p>
                 </div>
             )}
         </Draggable>
