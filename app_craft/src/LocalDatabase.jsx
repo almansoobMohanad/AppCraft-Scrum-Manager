@@ -45,6 +45,7 @@ class LocalDatabase {
     }
 
     async fetchData() {
+        this.data = [];
         const querySnapshot = await getDocs(collection(db, 'tasks'));
         querySnapshot.forEach((doc) => {
             this.data.push(createData(
