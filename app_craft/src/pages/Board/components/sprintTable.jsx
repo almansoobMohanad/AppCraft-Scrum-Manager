@@ -8,6 +8,18 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
   const [sprints, setSprints] = useState([]);
   const navigate = useNavigate();
 
+  const handleStartSprint = (sprintToStart) => {
+    const activeSprintExists = sprints.some((sprint) => sprint.status === 'Active');
+
+    if (activeSprintExists) {
+      alert('An active sprint is already in progress. Please finish the ongoing sprint before starting a new one.');
+      return; // Prevent starting a new sprint
+    }
+
+    // If no active sprint exists, start the selected sprint
+    updateSprintInFirestore(sprintToStart.id, 'Active');
+    console.log(`Sprint ${sprintToStart.name} started`);
+  };
   // Function to update Firestore with new sprint status
   const updateSprintInFirestore = async (sprintId, updatedStatus) => {
     try {
@@ -100,7 +112,7 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
                 </button>
 
                 {sprint.status === 'Not Active' && (
-                  <button className="start-sprint-btn" onClick={() => onStartSprint(sprint)}>
+                  <button className="start-sprint-btn" onClick={() => handleStartSprint(sprint)}>
                     Start Sprint
                   </button>
                 )}
