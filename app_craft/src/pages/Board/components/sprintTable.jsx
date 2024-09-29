@@ -35,14 +35,15 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
 
   // Function to check if the sprint should be activated
   const checkAndUpdateSprintStatus = (sprints) => {
-    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-
+    const currentDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format in local time
+    console.log('Current date:', currentDate);
     // First, check if any active sprints need to be finished
     sprints.forEach((sprint) => {
       if (sprint.status === 'Active' && sprint.endDate <= currentDate) {
         // Update Firestore status to 'Finished'
         updateSprintInFirestore(sprint.id, 'Finished');
-        console.log(`Sprint ${sprint.name} finished`);
+        console.log(`Sprint ${sprint.name} finished`); 
+        console.log(sprint.endDate);
       }
     });
 
