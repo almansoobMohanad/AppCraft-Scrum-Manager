@@ -60,6 +60,7 @@ function SprintBacklogPage() {
     const location = useLocation();
     const sprintName = location.state?.sprintName || "Current Sprint";
     const sprintTasks = location.state?.sprintTasks || [];
+    const sprintStatus = location.state?.sprintStatus || "Not Active";
 
     const [state, setState] = useState(KanbanTemplate);
     const [view, setView] = useState('kanban'); // Add state to track view mode (kanban or list)
@@ -108,6 +109,8 @@ function SprintBacklogPage() {
 
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
+
+        if (sprintStatus === 'Finished') return; // Prevent dragging tasks if sprint is finished
 
         if (!destination) return;
 
