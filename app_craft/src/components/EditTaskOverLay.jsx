@@ -68,6 +68,8 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     const [logTimeSpent, setLogTimeSpent] = useState(0);
     const [totalLogTime, setTotalLogTime] = useState(0); // To display total logged time
     const [logTimeHistory, setLogTimeHistory] = useState([]); // New state for log time by date
+    const [sprintId, setSprintId] = useState(null);
+
 
 
     const taskTypes = ['Story', 'Bug'];
@@ -121,10 +123,11 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
             setAssignee(task.assignee || '');
             setDescription(task.description || '');
             setHistory(task.history || []); // Set existing history
-            setStatus(task.status || 'Not Started');
-            setLogTimeSpent(task.logTimeSpent); // Set initial log time
-            setTotalLogTime(task.logTimeSpent || 0); // Set initial total log time
-            console.log('Total log time from task:', task.logTimeSpent); // Debug log
+            setStatus(task.status);
+            setLogTimeSpent(task.logtimeSpent); // Set initial log time
+            setTotalLogTime(task.logtimeSpent || 0); // Set initial total log time
+            setSprintId(task.sprintId || null); // Set the sprint ID
+            console.log('Total log time from task:', task.logtimeSpent); // Debug log
 
         }
     }, [task]);
@@ -202,11 +205,13 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
             stage: taskStage,
             storyPoints,
             priority,
+            sprintId,
             tags,
             assignee,
             description,
             history: newHistoryList,    // Update history
-            logTimeSpent: totalLogTime, // Update the logged time
+            status,
+            logtimeSpent: totalLogTime, // Update the logged time
 
             
         };
@@ -225,7 +230,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
         db.changeDescription(updatedTask.description);
         db.changeHistory(updatedTask.history)
         db.changeStatus(updatedTask.status);
-        db.changeLogtimeSpent(updatedTask.logTimeSpent);
+        db.changeLogtimeSpent(updatedTask.logtimeSpent);
     
 
         localDB.editData(updatedTask.id, updatedTask);
