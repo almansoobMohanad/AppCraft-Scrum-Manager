@@ -24,7 +24,7 @@
 
 /* Set specific width for the column containing buttons */
 .sprint-table td.actions-column {
-    width: 300px; /* Adjust the width as needed */
+    width: 400px; /* Adjust the width as needed */
     text-align: right; /* Align buttons to the right */
     vertical-align: middle; /* Ensure vertical alignment */
 }
@@ -71,6 +71,18 @@
 .view-sprint-btn:hover,
 .edit-sprint-btn:hover {
     opacity: 0.8;
+}
+
+.start-sprint-btn {  /* Add start-sprint-btn here */
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #00FF09;
+    border-radius: 5px;
+    cursor: pointer;
+    color: black;
+    display: inline-flex;
+    align-items: center;
 }
 
 /* THIS WHOLE SECTION IS FOR THE STATUS TEXT COLOUR*/

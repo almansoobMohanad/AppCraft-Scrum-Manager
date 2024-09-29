@@ -49,14 +49,23 @@ const SprintTable = ({ sprints, onEditSprint, onDeleteSprint }) => {
                 >
                   View Sprint
                 </button>
-                <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
-                  Edit Sprint
-                </button>
+                
+                {sprint.status === 'Not Active' && (
+                  <button className="start-sprint-btn" onClick={() => onStartSprint(sprint)}>
+                    Start Sprint
+                  </button>
+                )}
+
+                {sprint.status !== 'Finished' && (
+                  <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
+                    Edit Sprint
+                  </button>
+                )}
 
                 <button className="delete-sprint-btn" onClick={() => onDeleteSprint(sprint.id)} >
                 <i className="fas fa-trash-alt"></i>
                 </button>
-
+              
               </td>
             </tr>
           );
