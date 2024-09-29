@@ -6,6 +6,11 @@ import NavigationBar from "../../components/NavigationBar";
 import { Link } from "react-router-dom";
 import localDB from '../../LocalDatabase';
 import { EditFilesInDB } from '../../components/EditFilesInDB';
+import { getFirestore, doc, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { db } from '../../firebase/firebaseConfig';
+import { Bar } from 'react-chartjs-2'; // Import Chart component
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'; // Import chart.js modules
+
 
 const DummyData = {
     tasks: {
@@ -58,96 +63,87 @@ const KanbanTemplate = {
 
 function SprintBacklogPage() {
     const location = useLocation();
+    console.log("SprintBacklogPage location:", location);
     const sprintName = location.state?.sprintName || "Current Sprint";
-    const sprintTasks = location.state?.sprintTasks || [];
     const sprintStatus = location.state?.sprintStatus || "Not Active";
+    const sprintTasks = location.state?.sprintTask || [];
+
 
     const [state, setState] = useState(KanbanTemplate);
     const [view, setView] = useState('kanban'); // Add state to track view mode (kanban or list)
     console.log("SprintBacklogPage state:", state);
 
+
     useEffect(() => {
-        // Filter tasks from localDB that are in the current sprint
-        const filteredTasksFromLDB = localDB.getData().filter(task => sprintTasks.includes(task.id));
-        
-        // Check if the task status is null, if so, change it to 'Not Started'
-        filteredTasksFromLDB.forEach(task => {
-            if (task.status === null) {
-                const editDataInCloud = EditFilesInDB(task.id);
-                localDB.editData(task.id, { ...task, status: 'Not Started' });
-                editDataInCloud.changeStatus('Not Started');
-            } 
+        // Create a new copy of the Kanban template
+        const newData = { ...KanbanTemplate };
+    
+        // First, clear any existing taskIds in each column to avoid duplication
+        newData.columns['not-started'].taskIds = [];
+        newData.columns['in-progress'].taskIds = [];
+        newData.columns['completed'].taskIds = [];
+    
+        // Add each task to the appropriate column based on its status
+        sprintTasks.forEach((task) => {
+            console.log(task.status.replace(' ', '-')); // Check if this matches your column IDs
+
+            newData.tasks[task.id] = task;
+            newData.columns[task.status.replace(' ', '-')].taskIds.push(task.id);
         });
-
-        if (view === 'list') {
-            console.log("Switched to List view");
-        } else {
-            console.log("Switched to Kanban view");
-
-            const data = (sprintTasks) => {
-                const newData = { ...KanbanTemplate };
-                sprintTasks.forEach((task, index) => {
-                    const taskIndex = `task-${index + 1}`; // assigning the id for the task in the template
-                    newData.tasks[taskIndex] = { // assign the tasks with ref ID of the task index
-                        id: task.Id,
-                        content: task.name,
-                        storyPoints: task.storyPoints,
-                        priority: task.priority,
-                        tags: task.tags };
-                    newData.columns['not-started'].taskIds.push(taskIndex); // place the task in the not-started column
-                });
-
-                return newData
-            };
-
-            setState(data(sprintTasks));
-        }
-    }, []);
-
+    
+        // Update the state with the new task data, avoiding duplication
+        setState(newData);
+    }, [sprintTasks]);
+    
     useEffect(() => {
     }, [state]);
 
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
-
+    
         if (sprintStatus === 'Finished') return; // Prevent dragging tasks if sprint is finished
-
+    
         if (!destination) return;
-
+    
         if (destination.droppableId === source.droppableId && destination.index === source.index) return;
-
+    
         const start = state.columns[source.droppableId];
+        console.log("start:", start);
         const finish = state.columns[destination.droppableId];
-
+        console.log("finish:", finish);
+    
         if (start === finish) {
             const newTaskIds = Array.from(start.taskIds);
             newTaskIds.splice(source.index, 1);
             newTaskIds.splice(destination.index, 0, draggableId);
-
+    
             const newColumn = { ...start, taskIds: newTaskIds };
-
+    
             const newState = { ...state, columns: { ...state.columns, [newColumn.id]: newColumn } };
             setState(newState);
             return;
         }
-
+    
         const startTaskIds = Array.from(start.taskIds);
         startTaskIds.splice(source.index, 1);
         const newStart = { ...start, taskIds: startTaskIds };
-
+    
         const finishTaskIds = Array.from(finish.taskIds);
         finishTaskIds.splice(destination.index, 0, draggableId);
         const newFinish = { ...finish, taskIds: finishTaskIds };
-
+    
         const newState = { ...state, columns: { ...state.columns, [newStart.id]: newStart, [newFinish.id]: newFinish } };
         setState(newState);
-
+    
         // Update the status of the task in the localDB and in the cloud
         const task = state.tasks[draggableId];
-        const editDataInCloud = EditFilesInDB();
-        localDB.editData(task.id, { ...task, status: finish.id });
-        editDataInCloud.changeStatus(finish.id);
+        const updatedTask = { ...task, status: finish.id.replace('-', ' ') }; // Ensure status is correctly formatted
+        console.log("updatedTask:", updatedTask.status);   
+        const editDataInCloud = EditFilesInDB(task.id);
+        localDB.editData(task.id, updatedTask);
+        editDataInCloud.changeStatus(updatedTask.status); // Update in cloud database
     };
+    
 
     return (
         <div className="sprintBacklogPage-container">
@@ -174,6 +170,7 @@ function SprintBacklogPage() {
 
                 {/* Conditionally render Kanban or List view */}
                 {view === 'kanban' ? (
+                    <>
                     <DragDropContext onDragEnd={onDragEnd}>
                         <div className="kanban-board">
                             {state.columnOrder.map((columnId) => {
@@ -184,6 +181,9 @@ function SprintBacklogPage() {
                             })}
                         </div>
                     </DragDropContext>
+                    {/* Render Burndown Chart if Sprint is Finished */}
+                    {sprintStatus === 'Finished' && <BurndownChart tasks={state.tasks} />}
+                    </>
                 ) : (
                     <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
                 )}
@@ -208,11 +208,11 @@ function Column({ column, tasks }) {
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
                                     >
-                                        <div className="task-name">{task.content}</div>  {/* Task name bubble */}
+                                        <div className="task-name">{task.name}</div>  {/* Task name bubble */}
                                         <div className="task-field story-points">{task.storyPoints}</div>
                                         <div className={`task-field priority-${task.priority.toLowerCase()}`}>{task.priority}</div>
-                                        <div className={`task-field tags-${task.tags.toLowerCase()}`}>
-                                            {task.tags}
+                                        <div className={`task-field tags-${task.tags.join(', ').toLowerCase()}`}>
+                                            {task.tags.join(', ')}
                                         </div>
                                     </div>
                                 )}
@@ -251,7 +251,7 @@ function ListView({ tasks, columns }) {
 
                     return (
                         <tr key={task.id}>
-                            <td>{task.content}</td>
+                            <td>{task.name}</td>
                             <td>{status}</td> {/* Display status */}
                             <td>{task.tags}</td>
                             <td>{task.priority}</td>
@@ -261,6 +261,42 @@ function ListView({ tasks, columns }) {
                 })}
             </tbody>
         </table>
+    );
+}
+
+// BurndownChart component
+function BurndownChart({ tasks }) {
+    const totalStoryPoints = Object.values(tasks).reduce((acc, task) => acc + parseInt(task.storyPoints), 0);
+    const completedStoryPoints = Object.values(tasks)
+        .filter((task) => task.status === 'completed')
+        .reduce((acc, task) => acc + parseInt(task.storyPoints), 0);
+
+    const data = {
+        labels: ['Total Story Points', 'Completed Story Points'],
+        datasets: [
+            {
+                label: 'Story Points',
+                data: [totalStoryPoints, completedStoryPoints],
+                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)'],
+                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const options = {
+        scales: {
+            y: {
+                beginAtZero: true,
+            },
+        },
+    };
+
+    return (
+        <div className="burndown-chart-container">
+            <h3>Burndown Chart</h3>
+            <Bar data={data} options={options} />
+        </div>
     );
 }
 
