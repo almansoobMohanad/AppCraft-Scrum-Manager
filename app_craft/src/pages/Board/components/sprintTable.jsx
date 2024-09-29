@@ -22,19 +22,31 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
   };
 
   // Function to check if the sprint should be activated
-  const checkAndActivateSprint = (sprints) => {
+  const checkAndUpdateSprintStatus = (sprints) => {
     const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+
+    // First, check if any active sprints need to be finished
+    sprints.forEach((sprint) => {
+      if (sprint.status === 'Active' && sprint.endDate <= currentDate) {
+        // Update Firestore status to 'Finished'
+        updateSprintInFirestore(sprint.id, 'Finished');
+        console.log(`Sprint ${sprint.name} finished`);
+      }
+    });
+
+    // Then, check if any "Not Active" sprints need to be activated
+    const activeSprintExists = sprints.some(sprint => sprint.status === 'Active');
+    if (activeSprintExists) {
+      console.log('An active sprint already exists. No updates will be made.');
+      return;
+    }
 
     sprints.forEach((sprint) => {
       if (sprint.status === 'Not Active' && sprint.startDate <= currentDate) {
         // Update Firestore status to 'Active'
         updateSprintInFirestore(sprint.id, 'Active');
         console.log(`Sprint ${sprint.name} activated`);
-        console.log(`Sprint id ${sprint.id}`);
       }
-      console.log('Checking sprint:', sprint.name);
-      console.log('Current date:', currentDate);
-      console.log('Sprint start date:', sprint.startDate);
     });
   };
 
@@ -47,7 +59,7 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
         ...doc.data(),
       }));
       setSprints(sprintsData);
-      checkAndActivateSprint(sprintsData);
+      checkAndUpdateSprintStatus(sprintsData);
     });
 
     return () => unsubscribe(); // Clean up the listener on component unmount
