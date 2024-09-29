@@ -12,14 +12,14 @@ function dynamicSort(key, sortOrder = 'asc') {
     }
 }
 
-function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date(), status = "Not Started", logtimeSpent = 0) {
+function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date(), status, logtimeSpent = 0) {
 
     return {
         name,
         tags,
         priority,
         storyPoints,
-        priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4,
+        // priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4, commented out because this line is causing a lot of issue
         history,
         id,
         description,
@@ -91,7 +91,7 @@ class LocalDatabase {
                 assignee: data.assignee,
                 description: data.description,
                 history: data.history,
-                priorityNum: data.priority === 'Low' ? 1 : data.priority === 'Medium' ? 2 : data.priority === 'Important' ? 3 : 4,
+                // priorityNum: data.priority === 'Low' ? 1 : data.priority === 'Medium' ? 2 : data.priority === 'Important' ? 3 : 4, commented out because this line is causing a lot of issue
                 status: data.status,
                 logtimeSpent: data.logtimeSpent,
             };
