@@ -72,54 +72,53 @@ const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) =>
 
     const handleUpdate2 = async (updatedTask) => {
 
+        //---------------- Update the task in Firestore -----------------
+        const sprintDocRef = doc(db, 'sprints', sprintID);  // Reference to the sprint document in Firestore
 
-//----------------------------- Update the task in Firestore -----------------------------
-    const sprintDocRef = doc(db, 'sprints', sprintID);  // Reference to the sprint document in Firestore
+        try {
+            // Use getDoc to retrieve the current sprint document (Fixing the issue)
+            const sprintDoc = await getDoc(sprintDocRef); // <-- Fix: use getDoc() here instead of sprintDocRef.get()
+            
+            if (sprintDoc.exists()) {
+                const sprintData = sprintDoc.data();  // Get the current sprint data
 
-    try {
-        // Use getDoc to retrieve the current sprint document (Fixing the issue)
-        const sprintDoc = await getDoc(sprintDocRef); // <-- Fix: use getDoc() here instead of sprintDocRef.get()
-        
-        if (sprintDoc.exists()) {
-            const sprintData = sprintDoc.data();  // Get the current sprint data
+                // Replace the updated task in the tasks array
+                const updatedTasks = sprintData.tasks.map((task) =>
+                    task.id === updatedTask.id ? updatedTask : task
+                );
 
-            // Replace the updated task in the tasks array
-            const updatedTasks = sprintData.tasks.map((task) =>
+                // Debugging output to ensure the task is correct
+                console.log('Updated tasks array:', updatedTasks);
+
+                // Update Firestore with the new tasks array
+                await updateDoc(sprintDocRef, {
+                    tasks: updatedTasks
+                });
+
+                console.log('Task updated successfully in Firestore');
+            } else {
+                console.error('Sprint document does not exist in Firestore');
+            }
+        } catch (error) {
+            console.error('Error updating task in Firestore:', error);
+        }
+
+        //----------------------------- Update the task in the local state -----------------------------
+        setSprint((prevSprint) => {
+            const updatedSprint = { ...prevSprint };
+            updatedSprint.tasks = updatedSprint.tasks.map((task) =>
                 task.id === updatedTask.id ? updatedTask : task
             );
+            return updatedSprint;
+        });
 
-            // Debugging output to ensure the task is correct
-            console.log('Updated tasks array:', updatedTasks);
-
-            // Update Firestore with the new tasks array
-            await updateDoc(sprintDocRef, {
-                tasks: updatedTasks
-            });
-
-            console.log('Task updated successfully in Firestore');
-        } else {
-            console.error('Sprint document does not exist in Firestore');
-        }
-    } catch (error) {
-        console.error('Error updating task in Firestore:', error);
-    }
-
-
-    //----------------------------- Update the task in the local state -----------------------------
-    setSprint((prevSprint) => {
-        const updatedSprint = { ...prevSprint };
-        updatedSprint.tasks = updatedSprint.tasks.map((task) =>
-            task.id === updatedTask.id ? updatedTask : task
+        // Update the task in the backlog (if applicable)
+        setBacklog((prevBacklog) =>
+            prevBacklog.map((task) =>
+                task.id === updatedTask.id ? updatedTask : task
+            )
         );
-        return updatedSprint;
-    });
-// Update the task in the backlog (if applicable)
-setBacklog((prevBacklog) =>
-    prevBacklog.map((task) =>
-        task.id === updatedTask.id ? updatedTask : task
-    )
-);
-// Close the overlay
+        // Close the overlay
     };
 
     useEffect(() => {

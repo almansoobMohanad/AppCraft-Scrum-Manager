@@ -9,6 +9,7 @@ import { EditFilesInDB } from '../../components/EditFilesInDB';
 import { getFirestore, doc, collection, query, where, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseConfig';
 import BurndownChart from './BurndownChart';
+import EditTaskOverlay from '../../components/EditTaskOverLay';
 
 
 const DummyData = {
@@ -154,7 +155,6 @@ function SprintBacklogPage() {
         console.log("this is the sprint id", sprintId);
         editDataInCloud.changeStatusSprintTask(task.id, updatedTask.status, sprintId); // Update in cloud database
     };
-    
 
     return (
         <div className="sprintBacklogPage-container">
@@ -204,6 +204,32 @@ function SprintBacklogPage() {
 }
 
 function Column({ column, tasks }) {
+    const [showOverlay, setShowOverlay] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [updateFlag, setUpdateFlag] = useState(false);
+
+    const handleClick = (task) => {
+        console.log("Task clicked:", task);
+        setSelectedTask(task);
+        setShowOverlay(true);
+    };
+
+    const handleClose = () => {
+        setSelectedTask(null);
+        setShowOverlay(false);
+    };
+
+    const handleUpdate = () => {
+        setUpdateFlag(!updateFlag);
+        handleClose();
+    };
+
+    useEffect(() => {
+        if (showOverlay && selectedTask) {
+            console.log('selected task', selectedTask);
+        }
+    }, [showOverlay, selectedTask]);
+
     return (
         <div className={`column ${column.id}`}>
             <h2>{column.title}</h2>
@@ -218,6 +244,7 @@ function Column({ column, tasks }) {
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
+                                        onClick={() => handleClick(task)}
                                     >
                                         <div className="task-name">{task.name}</div>  {/* Task name bubble */}
                                         <div className="task-field story-points">{task.storyPoints}</div>
@@ -233,11 +260,44 @@ function Column({ column, tasks }) {
                     </div>
                 )}
             </Droppable>
+            {showOverlay && selectedTask && (
+                <EditTaskOverlay
+                    task={selectedTask}
+                    onClose={() => handleClose()}
+                    onUpdate={handleUpdate}
+                />
+            )}
         </div>
     );
 }
 
 function ListView({ tasks, columns }) {
+    const [showOverlay, setShowOverlay] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [updateFlag, setUpdateFlag] = useState(false);
+
+    const handleClick = (task) => {
+        console.log("Task clicked:", task);
+        setSelectedTask(task);
+        setShowOverlay(true);
+    };
+
+    const handleClose = () => {
+        setSelectedTask(null);
+        setShowOverlay(false);
+    };
+
+    const handleUpdate = () => {
+        setUpdateFlag(!updateFlag);
+        handleClose();
+    };
+
+    useEffect(() => {
+        if (showOverlay && selectedTask) {
+            console.log('selected task', selectedTask);
+        }
+    }, [showOverlay, selectedTask]);
+
     return (
         <table className="list-view-table">
             <thead>
@@ -260,8 +320,14 @@ function ListView({ tasks, columns }) {
                         }
                     }
 
+                    const handleRowClick = () => {
+                        console.log("Task clicked:", task);
+                        setSelectedTask(task);
+                        setShowOverlay(true);
+                    }
+
                     return (
-                        <tr key={task.id}>
+                        <tr key={task.id} onClick={handleRowClick}>
                             <td>{task.name}</td>
                             <td>{status}</td> {/* Display status */}
                             <td>{task.tags}</td>
@@ -271,6 +337,13 @@ function ListView({ tasks, columns }) {
                     );
                 })}
             </tbody>
+            {showOverlay && selectedTask && (
+                <EditTaskOverlay
+                    task={selectedTask}
+                    onClose={() => handleClose()}
+                    onUpdate={handleUpdate}
+                />
+            )}
         </table>
     );
 }
