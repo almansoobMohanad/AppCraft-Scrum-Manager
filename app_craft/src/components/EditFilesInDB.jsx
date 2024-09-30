@@ -1,6 +1,6 @@
 import React from "react";
 import { db } from '../firebase/firebaseConfig.js';
-import { getDocs, collection, doc, setDoc } from 'firebase/firestore';
+import { getDocs, collection, doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
 
 export function EditFilesInDB(taskID) {
     const dbRef =  doc(db, 'tasks', taskID);
@@ -61,6 +61,42 @@ export function EditFilesInDB(taskID) {
     const changeLogtimeSpent = async (newLogtimeSpent) => {
         setDoc(dbRef, { logtimeSpent: newLogtimeSpent }, { merge: true });
     }
+
+    const changeStatusSprintTask = async (taskId, newStatus, sprintId) => {
+        const taskRef = doc(db, 'tasks', taskId); // Reference to the specific task document
+        const sprintRef = doc(db, 'sprints', sprintId); // Reference to the specific sprint document
+
+        console.log("editing is running")
+        console.log("this is the sprint id", sprintId)
+        console.log("this is the task id", taskId)
+
+        // Update the task document
+            await setDoc(taskRef, { status: newStatus }, { merge: true });
+
+            // Get the task data
+            const taskSnapshot = await getDoc(taskRef);
+            const taskData = taskSnapshot.data();
+
+            // Get the sprint data
+            const sprintSnapshot = await getDoc(sprintRef);
+            const sprintData = sprintSnapshot.data();
+
+            // Remove the old task data by matching the task ID
+            const updatedTasks = sprintData.tasks.filter(task => task.id !== taskId);
+            console.log("Updated tasks after removal:", updatedTasks);
+
+
+            // Add the updated task data
+            updatedTasks.push({ ...taskData, id: taskId, status: newStatus });
+            console.log("Updated tasks after addition:", updatedTasks);
+
+
+            // Update the sprint document with the modified tasks array
+            await updateDoc(sprintRef, {
+                tasks: updatedTasks
+            });
+    };
+
     return {
         changeName,
         changeType,
@@ -73,5 +109,6 @@ export function EditFilesInDB(taskID) {
         changeHistory,
         changeStatus,
         changeLogtimeSpent,
+        changeStatusSprintTask,
     };
 }
