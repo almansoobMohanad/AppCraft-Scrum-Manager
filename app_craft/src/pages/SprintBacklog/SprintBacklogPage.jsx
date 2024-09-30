@@ -6,7 +6,7 @@ import NavigationBar from "../../components/NavigationBar";
 import { Link } from "react-router-dom";
 import localDB from '../../LocalDatabase';
 import { EditFilesInDB } from '../../components/EditFilesInDB';
-import { getFirestore, doc, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { getFirestore, doc, collection, query, where, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseConfig';
 import { Bar } from 'react-chartjs-2'; // Import Chart component
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'; // Import chart.js modules
@@ -64,6 +64,7 @@ const KanbanTemplate = {
 function SprintBacklogPage() {
     const location = useLocation();
     console.log("SprintBacklogPage location:", location);
+    const sprintId = location.state?.sprintId; // Retrieve sprintId from location state
     const sprintName = location.state?.sprintName || "Current Sprint";
     const sprintStatus = location.state?.sprintStatus || "Not Active";
     const sprintTasks = location.state?.sprintTask || [];
@@ -100,7 +101,7 @@ function SprintBacklogPage() {
 
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
-    
+
         if (sprintStatus === 'Finished') return; // Prevent dragging tasks if sprint is finished
     
         if (!destination) return;
@@ -108,9 +109,9 @@ function SprintBacklogPage() {
         if (destination.droppableId === source.droppableId && destination.index === source.index) return;
     
         const start = state.columns[source.droppableId];
-        console.log("start:", start);
         const finish = state.columns[destination.droppableId];
-        console.log("finish:", finish);
+    
+        if (!start || !finish) return; // Ensure start and finish columns are defined
     
         if (start === finish) {
             const newTaskIds = Array.from(start.taskIds);
@@ -138,10 +139,10 @@ function SprintBacklogPage() {
         // Update the status of the task in the localDB and in the cloud
         const task = state.tasks[draggableId];
         const updatedTask = { ...task, status: finish.id.replace('-', ' ') }; // Ensure status is correctly formatted
-        console.log("updatedTask:", updatedTask.status);   
-        const editDataInCloud = EditFilesInDB(task.id);
+        const editDataInCloud = EditFilesInDB(task.id); // Create an instance of the EditFilesInDB class
         localDB.editData(task.id, updatedTask);
-        editDataInCloud.changeStatus(updatedTask.status); // Update in cloud database
+        console.log("this is the sprint id", sprintId);
+        editDataInCloud.changeStatusSprintTask(task.id, updatedTask.status, sprintId); // Update in cloud database
     };
     
 
