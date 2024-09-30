@@ -161,46 +161,54 @@ function SprintBacklogPage() {
             <NavigationBar />
             <div className="content">
                 <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
-                <h2 className="sprint-name">{sprintName}</h2>
-
-                {/* Toggle Button for Kanban/List View */}
-                <div className="toggle-buttons">
-                    <button
-                        className={view === 'kanban' ? 'active' : ''}
-                        onClick={() => setView('kanban')}
-                    >
-                        Kanban
-                    </button>
-                    <button
-                        className={view === 'list' ? 'active' : ''}
-                        onClick={() => setView('list')}
-                    >
-                        List
-                    </button>
+                
+                {/* Wrap sprint name and toggle buttons in a flex container */}
+                <div className="sprint-header">
+                    <h2 className="sprint-name">{sprintName}</h2>
+                    <div className="toggle-buttons">
+                        <button
+                            className={view === 'kanban' ? 'active' : ''}
+                            onClick={() => setView('kanban')}
+                        >
+                            Kanban
+                        </button>
+                        <button
+                            className={view === 'list' ? 'active' : ''}
+                            onClick={() => setView('list')}
+                        >
+                            List
+                        </button>
+                    </div>
                 </div>
-
+    
                 {/* Conditionally render Kanban or List view */}
                 {view === 'kanban' ? (
-    <>
-        <DragDropContext onDragEnd={onDragEnd}>
-            <div className="kanban-board">
-                {state.columnOrder.map((columnId) => {
-                    const column = state.columns[columnId];
-                    const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
-
-                    return <Column key={column.id} column={column} tasks={tasks} />;
-                })}
-            </div>
-        </DragDropContext>
-        {/* Render Burndown Chart if Sprint is Finished */}
-        {sprintStatus === 'Finished' && <BurndownChart sprintId={sprintId} />}
-    </>
-) : (
-    <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
-)}
+                    <>
+                        <DragDropContext onDragEnd={onDragEnd}>
+                            <div className="kanban-board">
+                                {state.columnOrder.map((columnId) => {
+                                    const column = state.columns[columnId];
+                                    const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
+    
+                                    return <Column key={column.id} column={column} tasks={tasks} />;
+                                })}
+                            </div>
+                        </DragDropContext>
+                        {/* Render Burndown Chart if Sprint is Finished */}
+                        {sprintStatus === 'Finished' && <BurndownChart sprintId={sprintId} />}
+                    </>
+                ) : (
+                    <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
+                )}
+    
+                {/* End Sprint Button */}
+                <button className="end-sprint-button">
+                    End Sprint
+                </button>
             </div>
         </div>
     );
+    
 }
 
 function Column({ column, tasks }) {
@@ -302,11 +310,11 @@ function ListView({ tasks, columns }) {
         <table className="list-view-table">
             <thead>
                 <tr>
-                    <th class = "task-name"> Task </th>
-                    <th class="story-points">Story Points</th>
+                    <th>Task</th>
+                    <th>Status</th>
                     <th>Tags</th>
                     <th>Priority</th>
-                    <th>Story Points</th>
+                    <th>Story points</th>
                 </tr>
             </thead>
             <tbody>
@@ -329,9 +337,11 @@ function ListView({ tasks, columns }) {
                     return (
                         <tr key={task.id} onClick={handleRowClick}>
                             <td>{task.name}</td>
-                            <td>{status}</td> {/* Display status */}
-                            <td>{task.tags}</td>
-                            <td>{task.priority}</td>
+                            <td><span className={`task-status ${status.toLowerCase().replace(" ", "-")}`}>{status}</span></td>
+                            <td>{task.tags.map(tag => (
+                                <span key={tag} className={`task-tags ${tag.toLowerCase()}`}>{tag}</span>
+                            ))}</td>
+                            <td><span className={`task-priority ${task.priority.toLowerCase()}`}>{task.priority}</span></td>
                             <td>{task.storyPoints}</td>
                         </tr>
                     );
@@ -347,6 +357,7 @@ function ListView({ tasks, columns }) {
         </table>
     );
 }
+
 
 
 
