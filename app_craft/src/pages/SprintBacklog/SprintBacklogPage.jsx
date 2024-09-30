@@ -154,6 +154,14 @@ function SprintBacklogPage() {
         localDB.editData(task.id, updatedTask);
         console.log("this is the sprint id", sprintId);
         editDataInCloud.changeStatusSprintTask(task.id, updatedTask.status, sprintId); // Update in cloud database
+
+        if (finish.id === 'completed') {
+            const currentDate = new Date();
+            const completedDate = currentDate.toISOString();
+            const updatedTask = { ...task, completedDate }; // Add a 'completedDate' field to the task
+            localDB.editData(task.id, updatedTask);
+            editDataInCloud.changeCompletedDate(completedDate); // Update in cloud database
+        }
     };
 
     return (

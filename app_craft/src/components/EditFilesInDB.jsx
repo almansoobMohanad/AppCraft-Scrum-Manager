@@ -62,6 +62,33 @@ export function EditFilesInDB(taskID) {
         setDoc(dbRef, { logtimeSpent: newLogtimeSpent }, { merge: true });
     }
 
+    const changeCompletedDate = async (taskId, newCompletedDate, sprintId) => {
+        const taskRef = doc(db, 'tasks', taskId); // Reference to the specific task document
+        const sprintRef = doc(db, 'sprints', sprintId); // Reference to the specific sprint document
+
+        // Update the task document
+        await setDoc(taskRef, { completedDate: newCompletedDate }, { merge: true });
+
+        // Get the task data
+        const taskSnapshot = await getDoc(taskRef);
+        const taskData = taskSnapshot.data();
+
+        // Get the sprint data
+        const sprintSnapshot = await getDoc(sprintRef);
+        const sprintData = sprintSnapshot.data();
+
+        // Remove the old task data by matching the task ID
+        const updatedTasks = sprintData.tasks.filter(task => task.id !== taskId);
+
+        // Add the updated task data
+        updatedTasks.push({ ...taskData, id: taskId, completedDate: newCompletedDate });
+
+        // Update the sprint document with the modified tasks array
+        await updateDoc(sprintRef, {
+            tasks: updatedTasks
+        });
+    };
+
     const changeStatusSprintTask = async (taskId, newStatus, sprintId) => {
         const taskRef = doc(db, 'tasks', taskId); // Reference to the specific task document
         const sprintRef = doc(db, 'sprints', sprintId); // Reference to the specific sprint document
@@ -110,5 +137,7 @@ export function EditFilesInDB(taskID) {
         changeStatus,
         changeLogtimeSpent,
         changeStatusSprintTask,
+        changeCompletedDate,
+
     };
 }

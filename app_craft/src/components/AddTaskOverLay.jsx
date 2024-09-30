@@ -60,6 +60,7 @@ function AddTaskOverlay({ onClose, onSave }) {
             history: [],
             dateCreated: new Date(),
             status: null, // if its null then its not in any of the active sprints
+            completedDate: null,
         };
         if (validateForm(task)) {
             onSave(task);
