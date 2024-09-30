@@ -8,8 +8,7 @@ import localDB from '../../LocalDatabase';
 import { EditFilesInDB } from '../../components/EditFilesInDB';
 import { getFirestore, doc, collection, query, where, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseConfig';
-import { Bar } from 'react-chartjs-2'; // Import Chart component
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'; // Import chart.js modules
+import BurndownChart from './BurndownChart';
 
 
 const DummyData = {
@@ -76,25 +75,36 @@ function SprintBacklogPage() {
 
 
     useEffect(() => {
-        // Create a new copy of the Kanban template
-        const newData = { ...KanbanTemplate };
+        const fetchSprintData = async () => {
+            if (sprintId) {
+                const sprintRef = doc(db, 'sprints', sprintId);
+                const sprintSnapshot = await getDoc(sprintRef);
+                if (sprintSnapshot.exists()) {
+                    const sprintData = sprintSnapshot.data();
+                    const newData = { ...KanbanTemplate };
     
-        // First, clear any existing taskIds in each column to avoid duplication
-        newData.columns['not-started'].taskIds = [];
-        newData.columns['in-progress'].taskIds = [];
-        newData.columns['completed'].taskIds = [];
+                    // First, clear any existing taskIds in each column to avoid duplication
+                    newData.columns['not-started'].taskIds = [];
+                    newData.columns['in-progress'].taskIds = [];
+                    newData.columns['completed'].taskIds = [];
     
-        // Add each task to the appropriate column based on its status
-        sprintTasks.forEach((task) => {
-            console.log(task.status.replace(' ', '-')); // Check if this matches your column IDs
-
-            newData.tasks[task.id] = task;
-            newData.columns[task.status.replace(' ', '-')].taskIds.push(task.id);
-        });
+                    // Add each task to the appropriate column based on its status
+                    sprintData.tasks.forEach((task) => {
+                        console.log(task.status.replace(' ', '-')); // Check if this matches your column IDs
     
-        // Update the state with the new task data, avoiding duplication
-        setState(newData);
-    }, [sprintTasks]);
+                        newData.tasks[task.id] = task;
+                        newData.columns[task.status.replace(' ', '-')].taskIds.push(task.id);
+                    });
+    
+                    // Update the state with the new task data, avoiding duplication
+                    setState(newData);
+                }
+            }
+        };
+    
+        fetchSprintData();
+    }, [sprintId]);
+    
     
     useEffect(() => {
     }, [state]);
@@ -171,23 +181,23 @@ function SprintBacklogPage() {
 
                 {/* Conditionally render Kanban or List view */}
                 {view === 'kanban' ? (
-                    <>
-                    <DragDropContext onDragEnd={onDragEnd}>
-                        <div className="kanban-board">
-                            {state.columnOrder.map((columnId) => {
-                                const column = state.columns[columnId];
-                                const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
+    <>
+        <DragDropContext onDragEnd={onDragEnd}>
+            <div className="kanban-board">
+                {state.columnOrder.map((columnId) => {
+                    const column = state.columns[columnId];
+                    const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
 
-                                return <Column key={column.id} column={column} tasks={tasks} />;
-                            })}
-                        </div>
-                    </DragDropContext>
-                    {/* Render Burndown Chart if Sprint is Finished */}
-                    {sprintStatus === 'Finished' && <BurndownChart tasks={state.tasks} />}
-                    </>
-                ) : (
-                    <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
-                )}
+                    return <Column key={column.id} column={column} tasks={tasks} />;
+                })}
+            </div>
+        </DragDropContext>
+        {/* Render Burndown Chart if Sprint is Finished */}
+        {sprintStatus === 'Finished' && <BurndownChart sprintId={sprintId} />}
+    </>
+) : (
+    <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
+)}
             </div>
         </div>
     );
@@ -265,41 +275,6 @@ function ListView({ tasks, columns }) {
     );
 }
 
-// BurndownChart component
-function BurndownChart({ tasks }) {
-    const totalStoryPoints = Object.values(tasks).reduce((acc, task) => acc + parseInt(task.storyPoints), 0);
-    const completedStoryPoints = Object.values(tasks)
-        .filter((task) => task.status === 'completed')
-        .reduce((acc, task) => acc + parseInt(task.storyPoints), 0);
-
-    const data = {
-        labels: ['Total Story Points', 'Completed Story Points'],
-        datasets: [
-            {
-                label: 'Story Points',
-                data: [totalStoryPoints, completedStoryPoints],
-                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)'],
-                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    const options = {
-        scales: {
-            y: {
-                beginAtZero: true,
-            },
-        },
-    };
-
-    return (
-        <div className="burndown-chart-container">
-            <h3>Burndown Chart</h3>
-            <Bar data={data} options={options} />
-        </div>
-    );
-}
 
 
 export default SprintBacklogPage;
