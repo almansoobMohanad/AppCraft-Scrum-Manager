@@ -82,7 +82,7 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
     if (sprint.status === 'Not Active') {
       navigate('/sprintplan/', { state: { sprint } });
     } else if (sprint.status === 'Active' || sprint.status === 'Finished') {
-      navigate('/sprintbacklog/', { state: { sprintName: sprint.name, sprintTask: sprint.tasks , sprintStatus: sprint.status} });
+      navigate('/sprintbacklog/', { state: { sprintId: sprint.id, sprintName: sprint.name, sprintTask: sprint.tasks , sprintStatus: sprint.status} });
     }
   };
 
