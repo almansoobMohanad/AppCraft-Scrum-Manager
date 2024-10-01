@@ -19,7 +19,7 @@ function createData(name, tags, priority, storyPoints, id, description, type, hi
         tags,
         priority,
         storyPoints,
-        // priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4, commented out because this line is causing a lot of issue
+        priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4,
         history,
         id,
         description,
@@ -95,7 +95,7 @@ class LocalDatabase {
                 assignee: data.assignee,
                 description: data.description,
                 history: data.history,
-                // priorityNum: data.priority === 'Low' ? 1 : data.priority === 'Medium' ? 2 : data.priority === 'Important' ? 3 : 4, commented out because this line is causing a lot of issue
+                priorityNum: data.priority === 'Low' ? 1 : data.priority === 'Medium' ? 2 : data.priority === 'Important' ? 3 : 4,
                 status: data.status,
                 logtimeSpent: data.logtimeSpent,
                 completedDate: data.completedDate,
