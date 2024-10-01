@@ -211,41 +211,42 @@ function SprintBacklogPage() {
     return (
         <div className="sprintBacklogPage-container">
             <NavigationBar />
-            {/* Create a scrollable content wrapper */}
-    <div className="scrollable-content">
-        <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
-        
-        <div className="sprint-header">
-            <h2 className="sprint-name">{sprintName}</h2>
-            <div className="toggle-buttons">
-                <button
-                    className={view === 'kanban' ? 'active' : ''}
-                    onClick={() => setView('kanban')}
-                >
-                    Kanban
-                </button>
-                <button
-                    className={view === 'list' ? 'active' : ''}
-                    onClick={() => setView('list')}
-                >
-                    List
-                </button>
-            </div>
-        </div>
+            <div className="content">
+                <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
 
-        {view === 'kanban' ? (
-            <>
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <div className="kanban-board">
-                        {state.columnOrder.map((columnId) => {
-                            const column = state.columns[columnId];
-                            const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
+                {/* Toggle Button for Kanban/List View */}
+                <div className='top-section'>
+                    <h2 className="sprint-name">{sprintName}</h2>
+                    <div className="toggle-buttons">
+                        <button
+                            className={view === 'kanban' ? 'active' : ''}
+                            onClick={() => setView('kanban')}
+                        >
+                            Kanban
+                        </button>
+                        <button
+                            className={view === 'list' ? 'active' : ''}
+                            onClick={() => setView('list')}
+                        >
+                            List
+                        </button>
+                    </div>
+                </div>
+
+                {/* Conditionally render Kanban or List view */}
+                {view === 'kanban' ? (
+    <>
+        <DragDropContext onDragEnd={onDragEnd}>
+            <div className="kanban-board">
+                {state.columnOrder.map((columnId) => {
+                    const column = state.columns[columnId];
+                    const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
 
                     return <Column key={column.id} column={column} tasks={tasks} />;
                 })}
             </div>
         </DragDropContext>
-        {/* Render Burndown Chart if Sprint is Completed */}
+        {/* Render Burndown Chart if Sprint is Finished */}
         {sprintStatus === 'Completed' && <BurndownChart sprintId={sprintId} />}
     </>
 ) : (
@@ -254,7 +255,6 @@ function SprintBacklogPage() {
             </div>
         </div>
     );
-    
 }
 
 function Column({ column, tasks, updateTask }) {

@@ -68,15 +68,15 @@
 
 /* Color-coded column headers */
 .column.not-started h2 {
-    background-color: #ffe240; 
+    background-color: #3cdfff; /* Soft blue for Not Started */
 }
 
 .column.in-progress h2 {
-    background-color: #40c2ff; 
+    background-color: #fcbf49; /* Soft orange for In Progress */
 }
 
 .column.completed h2 {
-    background-color: #25D366;
+    background-color: #8bc34a; /* Soft green for Completed */
 }
 
 /* Task styling */
@@ -93,15 +93,15 @@
 
 /* Top border colors */
 .task.not-started {
-    border-top-color: #f6ef6b;
+    border-top-color: #3cdfff;
 }
 
 .task.in-progress {
-    border-top-color: #3cdfff; 
+    border-top-color: #fcbf49;
 }
 
 .task.completed {
-    border-top-color: #94c260;
+    border-top-color: #8bc34a;
 }
 
 /* Task field bubbles */
@@ -185,13 +185,18 @@
 }
 
 /* Toggle Button */
+.top-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
 .toggle-buttons {
     display: inline-flex;
-    border: 1px solid #ccc;
-    border-radius: 15px;
-    overflow: hidden;
+    border: none;
     font-family: Arial, sans-serif;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
 .toggle-buttons button {
@@ -229,13 +234,6 @@
     border-radius: 0 15px 15px 0; /* Right-rounded corners */
 }
 
-
-.scrollable-content {
-    flex: 1; /* Take up available space */
-    overflow-y: auto; /* Enable vertical scrolling */
-    padding: 60px;
-    margin-bottom: 20px; /* Ensure space for footer or buttons */
-}
 
 
 /* LIST VIEW */
