@@ -8,6 +8,8 @@ import { editSprintDetails }  from './components/sprintDatabaseLogic.jsx';
 import SprintTable from './components/sprintTable'; // Import the SprintTable component
 import { fetchSprints } from './components/sprintDatabaseLogic.jsx';
 import { deleteSprint } from './components/sprintDatabaseLogic.jsx';
+import localDB from '../../LocalDatabase.jsx';
+import { EditFilesInDB } from '../../components/EditFilesInDB.jsx';
 
 const dummySprints = [
     {
@@ -58,14 +60,62 @@ const SprintBoard = () => {
     };
 
     // Frontend-only deletion logic
-    const handleDeleteSprint = (sprintID) => {
+    const handleDeleteSprint = async (sprintID) => {
         // Filter out the sprint with the given ID
         const updatedSprints = sprints.filter(sprint => sprint.id !== sprintID);
         setSprints(updatedSprints);
         console.log(`Sprint with ID ${sprintID} deleted (frontend only).`);
 
+                // Fetch all tasks
+                await localDB.updateData();
+                const tasks = localDB.getData();
+
+                console.log('this is the tasks', tasks);
+
+                // Filter tasks that belong to the sprint
+                // const sprintTasks = tasks.filter(task => {
+                //     const isTaskInSprint = task.sprintId === sprintID;
+                //     console.log("Task in sprint:", isTaskInSprint);
+                //     console.log('task id:', task.id);
+                //     console.log('task sprint id:', task.sprintId, 'sprint id:', sprintID);
+                //     return isTaskInSprint; // Return true if the task belongs to the sprint
+                // });
+                tasks.forEach(task => {console.log(task.sprintId)});
+                const sprintTasks = tasks.filter(task => task.sprintId === sprintID);
+
+                console.log('this is the sprint tasks', sprintTasks);
+        
+                // Update the status of each task to null
+                const updatedTasks = sprintTasks.map(task => ({
+                    ...task,
+                    status: null,
+                    sprintId: null // Optionally, clear the sprintId if needed
+                }));
+        
+                // Save the updated tasks back to the database
+                // updatedTasks.forEach(task => {
+                //     localDB.editData(task.id, task);
+                //     const editFiles = new EditFilesInDB(task.id);
+                //     editFiles.changeStatusSprintTask(null);
+                //     editFiles.changeSprintId(null);
+                // });
+
+                updatedTasks.forEach(task => {
+                    localDB.editData(task.id, task);
+                    const editFiles = new EditFilesInDB(task.id);
+                    editFiles.changeStatus(null)
+                    editFiles.changeSprintId(null);
+                });
+
+
+                console.log(`Tasks in sprint ${sprintID} moved back to the backlog.`);
+                console.log('this is the updated', updatedTasks);
+
+
         // Backend deletion logic
         deleteSprint(sprintID); // Delete the sprint from the database
+
+        //LETS MAKE BACKEND HERE
 
 
     };
