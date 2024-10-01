@@ -157,6 +157,14 @@ function SprintBacklogPage() {
         localDB.editData(task.id, updatedTask);
         console.log("this is the sprint id", sprintId);
         editDataInCloud.changeStatusSprintTask(task.id, updatedTask.status, sprintId); // Update in cloud database
+
+        if (finish.id === 'completed') {
+            const currentDate = new Date();
+            const completedDate = currentDate.toISOString();
+            const updatedTask = { ...task, completedDate }; // Add a 'completedDate' field to the task
+            localDB.editData(task.id, updatedTask);
+            editDataInCloud.changeCompletedDate(task.id,completedDate, sprintId); // Update in cloud database
+        }
     };
 
     const handleUpdate2 = async (updatedTask) => {
@@ -237,8 +245,8 @@ function SprintBacklogPage() {
                 })}
             </div>
         </DragDropContext>
-        {/* Render Burndown Chart if Sprint is Finished */}
-        {sprintStatus === 'Finished' && <BurndownChart sprintId={sprintId} />}
+        {/* Render Burndown Chart if Sprint is Completed */}
+        {sprintStatus === 'Completed' && <BurndownChart sprintId={sprintId} />}
     </>
 ) : (
     <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
