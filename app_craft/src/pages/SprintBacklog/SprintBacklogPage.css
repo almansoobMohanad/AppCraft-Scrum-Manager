@@ -233,7 +233,7 @@
 .scrollable-content {
     flex: 1; /* Take up available space */
     overflow-y: auto; /* Enable vertical scrolling */
-    padding: 16px;
+    padding: 60px;
     margin-bottom: 20px; /* Ensure space for footer or buttons */
 }
 
