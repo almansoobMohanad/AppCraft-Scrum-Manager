@@ -278,7 +278,7 @@ function SprintBacklogPage() {
                     </div>
                 </DragDropContext>            </>
         ) : (
-            <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
+            <ListView tasks={Object.values(state.tasks)} columns={state.columns} sprintId={sprintId} updateTask={handleUpdate2}/>
         )}
 
         <button className="end-sprint-button" onClick={handleEndSprint}>
@@ -358,7 +358,7 @@ function Column({ column, tasks, updateTask }) {
     );
 }
 
-function ListView({ tasks, columns, updateTask }) {
+function ListView({ tasks, columns, sprintId, updateTask }) {
     const [showOverlay, setShowOverlay] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [updateFlag, setUpdateFlag] = useState(false);
@@ -386,6 +386,8 @@ function ListView({ tasks, columns, updateTask }) {
         }
     }, [showOverlay, selectedTask]);
 
+    const filteredTasks = tasks.filter(task => task.sprintId === sprintId);
+
     return (
         <table className="list-view-table">
             <thead>
@@ -398,7 +400,7 @@ function ListView({ tasks, columns, updateTask }) {
                 </tr>
             </thead>
             <tbody>
-                {tasks.map((task) => {
+                {filteredTasks.map((task) => {
                     // Find the status of the task by checking which column it's in
                     let status = '';
                     for (const columnId in columns) {
