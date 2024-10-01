@@ -133,8 +133,8 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
   }, [showBurndownChart]);
 
   return (
-    <div>
-      <table className="sprint-table">
+<div className="table-container"> {/* Added this div */}
+        <table className="sprint-table">
         <thead>
           <tr>
             <th>Sprint Name</th>
