@@ -74,15 +74,16 @@ function SprintBacklogPage() {
     console.log("SprintBacklogPage state:", state);
 
     const handleEndSprint = async () => {
-        console.log(sprintTasks);
-
+        // Use the latest task statuses from state instead of sprintTasks
+        const sprintTasks = Object.values(state.tasks);
+    
         // Check if any task is "Not Started" or "In Progress"
         const incompleteTasks = sprintTasks.some(task => task.status === 'not started' || task.status === 'in progress');
         if (incompleteTasks) {
             alert('Cannot end sprint. Some tasks are still "Not Started" or "In Progress".');
             return;
         }
-
+    
         try {
             await updateSprintInFirestore(sprintId, 'Completed');
             alert(`Sprint ${sprintName} ended successfully.`);
@@ -92,7 +93,6 @@ function SprintBacklogPage() {
             alert('There was an error ending the sprint. Please try again.');
         }
     };
-
 
     const updateSprintInFirestore = async (sprintId, updatedStatus) => {
         try {
