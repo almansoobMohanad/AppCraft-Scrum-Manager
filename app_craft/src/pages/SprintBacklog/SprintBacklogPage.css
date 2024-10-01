@@ -229,6 +229,15 @@
     border-radius: 0 15px 15px 0; /* Right-rounded corners */
 }
 
+
+.scrollable-content {
+    flex: 1; /* Take up available space */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 16px;
+    margin-bottom: 20px; /* Ensure space for footer or buttons */
+}
+
+
 /* LIST VIEW */
 
 /* Task field consistency in List view */

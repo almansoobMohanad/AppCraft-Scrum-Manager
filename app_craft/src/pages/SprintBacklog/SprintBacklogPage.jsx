@@ -167,54 +167,51 @@ function SprintBacklogPage() {
     return (
         <div className="sprintBacklogPage-container">
             <NavigationBar />
-            <div className="content">
-                <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
-                
-                {/* Wrap sprint name and toggle buttons in a flex container */}
-                <div className="sprint-header">
-                    <h2 className="sprint-name">{sprintName}</h2>
-                    <div className="toggle-buttons">
-                        <button
-                            className={view === 'kanban' ? 'active' : ''}
-                            onClick={() => setView('kanban')}
-                        >
-                            Kanban
-                        </button>
-                        <button
-                            className={view === 'list' ? 'active' : ''}
-                            onClick={() => setView('list')}
-                        >
-                            List
-                        </button>
-                    </div>
-                </div>
-    
-                {/* Conditionally render Kanban or List view */}
-                {view === 'kanban' ? (
-                    <>
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <div className="kanban-board">
-                                {state.columnOrder.map((columnId) => {
-                                    const column = state.columns[columnId];
-                                    const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
-    
-                                    return <Column key={column.id} column={column} tasks={tasks} />;
-                                })}
-                            </div>
-                        </DragDropContext>
-                        {/* Render Burndown Chart if Sprint is Finished */}
-                        {sprintStatus === 'Finished' && <BurndownChart sprintId={sprintId} />}
-                    </>
-                ) : (
-                    <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
-                )}
-    
-                {/* End Sprint Button */}
-                <button className="end-sprint-button">
-                    End Sprint
+            {/* Create a scrollable content wrapper */}
+    <div className="scrollable-content">
+        <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
+        
+        <div className="sprint-header">
+            <h2 className="sprint-name">{sprintName}</h2>
+            <div className="toggle-buttons">
+                <button
+                    className={view === 'kanban' ? 'active' : ''}
+                    onClick={() => setView('kanban')}
+                >
+                    Kanban
+                </button>
+                <button
+                    className={view === 'list' ? 'active' : ''}
+                    onClick={() => setView('list')}
+                >
+                    List
                 </button>
             </div>
         </div>
+
+        {view === 'kanban' ? (
+            <>
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <div className="kanban-board">
+                        {state.columnOrder.map((columnId) => {
+                            const column = state.columns[columnId];
+                            const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
+
+                            return <Column key={column.id} column={column} tasks={tasks} />;
+                        })}
+                    </div>
+                </DragDropContext>
+                {sprintStatus === 'Finished' && <BurndownChart sprintId={sprintId} />}
+            </>
+        ) : (
+            <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
+        )}
+
+        <button className="end-sprint-button">
+            End Sprint
+        </button>
+    </div>
+</div>
     );
     
 }
