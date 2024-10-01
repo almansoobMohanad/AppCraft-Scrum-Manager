@@ -23,10 +23,9 @@ import TaskFilter from './TaskFilter'; // Import TaskFilter component
 import localDB from '../LocalDatabase'; // Import the LocalDatabase module
 
 function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date()) {
-
     return {
         name,
-        tags,
+        tags: tags || [], // Ensure tags is always an array
         priority,
         storyPoints,
         priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4,
@@ -57,8 +56,7 @@ function Row({ row, onDelete, onTaskClick }) {
                 onClick={() => onTaskClick(row)} // Make the row clickable
                 style={{ cursor: 'pointer' }}  // Change cursor to pointer to indicate it's clickable
             >
-                
-                <TableCell component="th" scope="row" className = "task-name">
+                <TableCell component="th" scope="row" className="task-name">
                     {row.name}
                 </TableCell>
                 <TableCell colSpan={4} className="task-details">
@@ -90,7 +88,6 @@ Row.propTypes = {
         history: PropTypes.array.isRequired,
         name: PropTypes.string.isRequired,
         id: PropTypes.string.isRequired,
-
     }).isRequired,
     onDelete: PropTypes.func.isRequired,
     onTaskClick: PropTypes.func.isRequired,  // Add prop validation for the new click handler
@@ -186,7 +183,7 @@ export default function CollapsibleTable({ updateFlag }) {
 
         if (filters.tags.length > 0) {
             filtered = filtered.filter(task => 
-                filters.tags.every(tag => task.tags.includes(tag))
+                filters.tags.every(tag => task.tags && task.tags.includes(tag)) // Ensure task.tags is defined
             );
         }
 
@@ -195,7 +192,7 @@ export default function CollapsibleTable({ updateFlag }) {
         }
 
         if (filters.storyPoints !== null) {
-            filtered = filtered.filter(task => task.storyPoint === filters.storyPoints);
+            filtered = filtered.filter(task => task.storyPoints === filters.storyPoints);
         }
 
         filtered = filtered.filter(task => task.status === null);
