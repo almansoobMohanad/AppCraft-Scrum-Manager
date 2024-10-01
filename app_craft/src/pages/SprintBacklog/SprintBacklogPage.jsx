@@ -13,7 +13,6 @@ import EditTaskOverlay from '../../components/EditTaskOverLay';
 import { editSprintDetails } from '../Board/components/sprintDatabaseLogic';
 import { updateDoc } from 'firebase/firestore';
 
-
 const DummyData = {
     tasks: {
         'task-1': { id: 'task-1', content: 'Task 1', storyPoints: '5', priority: 'Important', tags: 'API' },
@@ -71,84 +70,78 @@ function SprintBacklogPage() {
     const sprintStatus = location.state?.sprintStatus || "Not Started";
     const sprintTasks = location.state?.sprintTask || [];
 
-
     const [state, setState] = useState(KanbanTemplate);
     const [view, setView] = useState('kanban'); // Add state to track view mode (kanban or list)
     console.log("SprintBacklogPage state:", state);
 
-
     useEffect(() => {
-        const fetchSprintData = async () => {
-            if (sprintId) {
-                const sprintRef = doc(db, 'sprints', sprintId);
-                const sprintSnapshot = await getDoc(sprintRef);
+        if (sprintId) {
+            const sprintRef = doc(db, 'sprints', sprintId);
+            const unsubscribe = onSnapshot(sprintRef, (sprintSnapshot) => {
                 if (sprintSnapshot.exists()) {
                     const sprintData = sprintSnapshot.data();
                     const newData = { ...KanbanTemplate };
-    
+
                     // First, clear any existing taskIds in each column to avoid duplication
                     newData.columns['not-started'].taskIds = [];
                     newData.columns['in-progress'].taskIds = [];
                     newData.columns['completed'].taskIds = [];
-    
+
                     // Add each task to the appropriate column based on its status
                     sprintData.tasks.forEach((task) => {
                         console.log(task.status.replace(' ', '-')); // Check if this matches your column IDs
-    
+
                         newData.tasks[task.id] = task;
                         newData.columns[task.status.replace(' ', '-')].taskIds.push(task.id);
                     });
-    
+
                     // Update the state with the new task data, avoiding duplication
                     setState(newData);
                 }
-            }
-        };
-    
-        fetchSprintData();
+            });
+
+            // Cleanup subscription on unmount
+            return () => unsubscribe();
+        }
     }, [sprintId]);
-    
-    
-    useEffect(() => {
-    }, [state]);
 
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
 
         if (sprintStatus === 'Completed') return; // Prevent dragging tasks if sprint is Completed
-    
+
         if (!destination) return;
-    
+
         if (destination.droppableId === source.droppableId && destination.index === source.index) return;
-    
+
         const start = state.columns[source.droppableId];
         const finish = state.columns[destination.droppableId];
-    
+
         if (!start || !finish) return; // Ensure start and finish columns are defined
-    
+
         if (start === finish) {
             const newTaskIds = Array.from(start.taskIds);
             newTaskIds.splice(source.index, 1);
             newTaskIds.splice(destination.index, 0, draggableId);
-    
+
             const newColumn = { ...start, taskIds: newTaskIds };
-    
+
             const newState = { ...state, columns: { ...state.columns, [newColumn.id]: newColumn } };
             setState(newState);
             return;
         }
-    
+
         const startTaskIds = Array.from(start.taskIds);
         startTaskIds.splice(source.index, 1);
         const newStart = { ...start, taskIds: startTaskIds };
-    
+
         const finishTaskIds = Array.from(finish.taskIds);
         finishTaskIds.splice(destination.index, 0, draggableId);
         const newFinish = { ...finish, taskIds: finishTaskIds };
-    
+
         const newState = { ...state, columns: { ...state.columns, [newStart.id]: newStart, [newFinish.id]: newFinish } };
         setState(newState);
-    
+
         // Update the status of the task in the localDB and in the cloud
         const task = state.tasks[draggableId];
         const updatedTask = { ...task, status: finish.id.replace('-', ' ') }; // Ensure status is correctly formatted
@@ -163,35 +156,40 @@ function SprintBacklogPage() {
             const completedDate = currentDate.toISOString();
             const updatedTask = { ...task, completedDate }; // Add a 'completedDate' field to the task
             localDB.editData(task.id, updatedTask);
-            editDataInCloud.changeCompletedDate(task.id,completedDate, sprintId); // Update in cloud database
+            editDataInCloud.changeCompletedDate(task.id, completedDate, sprintId); // Update in cloud database
         }
     };
 
     const handleUpdate2 = async (updatedTask) => {
-
         //---------------- Update the task in Firestore -----------------
         const sprintDocRef = doc(db, 'sprints', sprintId);  // Reference to the sprint document in Firestore
 
         try {
             // Use getDoc to retrieve the current sprint document (Fixing the issue)
             const sprintDoc = await getDoc(sprintDocRef); // <-- Fix: use getDoc() here instead of sprintDocRef.get()
-            
+
             if (sprintDoc.exists()) {
                 const sprintData = sprintDoc.data();  // Get the current sprint data
 
                 console.log('Sprint data:', sprintData);
 
                 // Replace the updated task in the tasks array
-                const updatedTasks = sprintData.tasks.map((task) =>
-                    task.id === updatedTask.id ? updatedTask : task
-                );
+                const updatedTasks = sprintData.tasks.map((task) => {
+                    const updatedTaskData = localDB.getDataByID(updatedTask.id);
+                    return task.id === updatedTask.id ? updatedTaskData : task;
+                });
+
+                // Check for undefined values in updatedTasks
+                if (updatedTasks.includes(undefined)) {
+                    throw new Error('Updated task data is undefined');
+                }
 
                 // Debugging output to ensure the task is correct
                 console.log('Updated tasks array:', updatedTasks);
 
                 // Update Firestore with the new tasks array
                 await updateDoc(sprintDocRef, {
-                    tasks: { ...state.tasks, [updatedTask.id]: updatedTask }
+                    tasks: updatedTasks
                 });
 
                 console.log('Task updated successfully in Firestore');
@@ -212,49 +210,48 @@ function SprintBacklogPage() {
         <div className="sprintBacklogPage-container">
             <NavigationBar />
             {/* Create a scrollable content wrapper */}
-    <div className="scrollable-content">
-        <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
-        
-        <div className="sprint-header">
-            <h2 className="sprint-name">{sprintName}</h2>
-            <div className="toggle-buttons">
-                <button
-                    className={view === 'kanban' ? 'active' : ''}
-                    onClick={() => setView('kanban')}
-                >
-                    Kanban
-                </button>
-                <button
-                    className={view === 'list' ? 'active' : ''}
-                    onClick={() => setView('list')}
-                >
-                    List
-                </button>
-            </div>
-        </div>
+            <div className="scrollable-content">
+                <Link to="/sprintboard" className="back-button">Back to Sprint Board</Link>
 
-        {view === 'kanban' ? (
-            <>
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <div className="kanban-board">
-                        {state.columnOrder.map((columnId) => {
-                            const column = state.columns[columnId];
-                            const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
+                <div className="sprint-header">
+                    <h2 className="sprint-name">{sprintName}</h2>
+                    <div className="toggle-buttons">
+                        <button
+                            className={view === 'kanban' ? 'active' : ''}
+                            onClick={() => setView('kanban')}
+                        >
+                            Kanban
+                        </button>
+                        <button
+                            className={view === 'list' ? 'active' : ''}
+                            onClick={() => setView('list')}
+                        >
+                            List
+                        </button>
+                    </div>
+                </div>
 
-                    return <Column key={column.id} column={column} tasks={tasks} />;
-                })}
-            </div>
-        </DragDropContext>
-        {/* Render Burndown Chart if Sprint is Completed */}
-        {sprintStatus === 'Completed' && <BurndownChart sprintId={sprintId} />}
-    </>
-) : (
-    <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
-)}
+                {view === 'kanban' ? (
+                    <>
+                        <DragDropContext onDragEnd={onDragEnd}>
+                            <div className="kanban-board">
+                                {state.columnOrder.map((columnId) => {
+                                    const column = state.columns[columnId];
+                                    const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
+
+                                    return <Column key={column.id} column={column} tasks={tasks} updateTask={handleUpdate2} />;
+                                })}
+                            </div>
+                        </DragDropContext>
+                        {/* Render Burndown Chart if Sprint is Completed */}
+                        {sprintStatus === 'Completed' && <BurndownChart sprintId={sprintId} />}
+                    </>
+                ) : (
+                    <ListView tasks={Object.values(state.tasks)} columns={state.columns} updateTask={handleUpdate2} />
+                )}
             </div>
         </div>
     );
-    
 }
 
 function Column({ column, tasks, updateTask }) {
@@ -319,7 +316,7 @@ function Column({ column, tasks, updateTask }) {
                 <EditTaskOverlay
                     task={selectedTask}
                     onClose={() => handleClose()}
-                    onSave={(updatedTask) => handleUpdate(updatedTask)}
+                    onSave={(updatedTask) => updateTask(updatedTask)}
                     onUpdate={handleUpdate}
                 />
             )}
@@ -327,7 +324,7 @@ function Column({ column, tasks, updateTask }) {
     );
 }
 
-function ListView({ tasks, columns }) {
+function ListView({ tasks, columns, updateTask }) {
     const [showOverlay, setShowOverlay] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [updateFlag, setUpdateFlag] = useState(false);
@@ -345,6 +342,7 @@ function ListView({ tasks, columns }) {
 
     const handleUpdate = () => {
         setUpdateFlag(!updateFlag);
+        updateTask(selectedTask);
         handleClose();
     };
 
@@ -397,16 +395,14 @@ function ListView({ tasks, columns }) {
             </tbody>
             {showOverlay && selectedTask && (
                 <EditTaskOverlay
-                    task={selectedTask}
-                    onClose={() => handleClose()}
-                    onUpdate={handleUpdate}
+                task={selectedTask}
+                onClose={() => handleClose()}
+                onSave={(updatedTask) => updateTask(updatedTask)}
+                onUpdate={handleUpdate}
                 />
             )}
         </table>
     );
 }
-
-
-
 
 export default SprintBacklogPage;
