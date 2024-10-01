@@ -12,7 +12,7 @@ function dynamicSort(key, sortOrder = 'asc') {
     }
 }
 
-function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date(), status, logtimeSpent = 0,completedDate = null) {
+function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date(), status, logtimeSpent = 0,completedDate = null, sprintId = null) {
 
     return {
         name,
@@ -30,6 +30,7 @@ function createData(name, tags, priority, storyPoints, id, description, type, hi
         status, // Force fallback here,
         logtimeSpent,
         completedDate,
+        sprintId
     };
 }
 
@@ -63,8 +64,8 @@ class LocalDatabase {
                 doc.data().dateCreated,
                 doc.data().status,
                 doc.data().logtimeSpent,
-                doc.data().completedDate
-
+                doc.data().completedDate,
+                doc.data().sprintId
             ));
         });
         this.updateCounter++;
