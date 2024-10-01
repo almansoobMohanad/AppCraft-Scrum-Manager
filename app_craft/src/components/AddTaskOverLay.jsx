@@ -54,6 +54,7 @@ function AddTaskOverlay({ onClose, onSave }) {
             stage: taskStage,
             storyPoints,
             priority,
+            priorityNum: priority === 'Low' ? 1 : priority === 'Medium' ? 2 : priority === 'Important' ? 3 : 4,
             tags,
             assignee,
             description,
