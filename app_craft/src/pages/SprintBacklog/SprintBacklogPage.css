@@ -68,15 +68,15 @@
 
 /* Color-coded column headers */
 .column.not-started h2 {
-    background-color: #3cdfff; /* Soft blue for Not Started */
+    background-color: #ffe240; /* Soft blue for Not Started */
 }
 
 .column.in-progress h2 {
-    background-color: #fcbf49; /* Soft orange for In Progress */
+    background-color: #40c2ff; /* Soft orange for In Progress */
 }
 
 .column.completed h2 {
-    background-color: #8bc34a; /* Soft green for Completed */
+    background-color: #25d366; /* Soft green for Completed */
 }
 
 /* Task styling */
@@ -93,15 +93,15 @@
 
 /* Top border colors */
 .task.not-started {
-    border-top-color: #3cdfff;
+    border-top-color: #f6ef6b;
 }
 
 .task.in-progress {
-    border-top-color: #fcbf49;
+    border-top-color: #3cdfff;
 }
 
 .task.completed {
-    border-top-color: #8bc34a;
+    border-top-color: #94c260;
 }
 
 /* Task field bubbles */
