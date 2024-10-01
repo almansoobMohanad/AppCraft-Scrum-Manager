@@ -126,6 +126,10 @@ class LocalDatabase {
         return this.updateCounter;
     }
 
+    getDataByID(id) {
+        return this.data.find(task => task.id === id);
+    }
+
     filterTasks(tags, priority, storyPoints) {
 
         let filtered = this.data;
