@@ -123,10 +123,11 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
                     Edit Sprint
                   </button>
                 )}
-
+                {sprint.status === 'Not Started' && (
                 <button className="delete-sprint-btn" onClick={() => onDeleteSprint(sprint.id)}>
                   <i className="fas fa-trash-alt"></i>
                 </button>
+                )}
               </td>
             </tr>
           );
