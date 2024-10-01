@@ -58,7 +58,7 @@ const TaskFilter = ({ onFilterChange }) => {
     setSelectedTags([]);
     setSelectedPriority('');
     // setSelectedStoryPoint(null);
-    onFilterChange({ tags: [], priority: '' });
+    onFilterChange({ tags: [], priority: '', storyPoints: null });
   };
 
   return (
@@ -107,8 +107,6 @@ const TaskFilter = ({ onFilterChange }) => {
           </div>
         )}
       </div>
-
-        
 
       {/* Clear Filter Button */}
       <div className="dropdown-container">
