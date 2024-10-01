@@ -165,7 +165,7 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
                     </button>
                   )}
 
-                  {sprint.status !== 'Completed' && (
+                  {sprint.status !== 'Completed' && sprint.status !== 'Active' &&(
                     <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
                       Edit Sprint
                     </button>
