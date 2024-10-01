@@ -5,6 +5,7 @@ import { db } from '../../../firebase/firebaseConfig'; // Firestore config
 import BurndownChart from '../../SprintBacklog/BurnDownChart'; // Import the BurndownChart component
 import '../css/sprintTable.css';
 import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome CSS
+import localDB from '../../../LocalDatabase';
 
 
 const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
@@ -14,17 +15,27 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
   const overlayRef = useRef(null);
   const navigate = useNavigate();
 
-  const handleStartSprint = (sprintToStart) => {
+  const handleStartSprint = async (sprintToStart) => {
     const activeSprintExists = sprints.some((sprint) => sprint.status === 'Active');
 
-    if (activeSprintExists) {
-      alert('An active sprint is already in progress. Please finish the ongoing sprint before starting a new one.');
-      return; // Prevent starting a new sprint
-    }
+      if (activeSprintExists) {
+          alert('An active sprint is already in progress. Please finish the ongoing sprint before starting a new one.');
+          return; // Prevent starting a new sprint
+      }
 
-    // If no active sprint exists, start the selected sprint
-    updateSprintInFirestore(sprintToStart.id, 'Active');
-    console.log(`Sprint ${sprintToStart.name} started`);
+      // Fetch tasks associated with the sprint
+      await localDB.updateData();
+      const tasks = localDB.getData();
+      const sprintTasks = tasks.filter(task => task.sprintId === sprintToStart.id);
+
+      if (sprintTasks.length === 0) {
+          alert('Cannot start an empty sprint. Please add tasks to the sprint before starting it.');
+          return; // Prevent starting an empty sprint
+      }
+
+      // If no active sprint exists and the sprint has tasks, start the selected sprint
+      await updateSprintInFirestore(sprintToStart.id, 'Active');
+      console.log(`Sprint ${sprintToStart.name} started`);
   };
 
   // Function to update Firestore with new sprint status
