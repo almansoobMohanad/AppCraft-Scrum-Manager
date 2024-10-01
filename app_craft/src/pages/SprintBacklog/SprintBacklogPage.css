@@ -68,15 +68,15 @@
 
 /* Color-coded column headers */
 .column.not-started h2 {
-    background-color: #f7d447; 
+    background-color: #ffe240; 
 }
 
 .column.in-progress h2 {
-    background-color: #3cdfff; 
+    background-color: #40c2ff; 
 }
 
 .column.completed h2 {
-    background-color: #94c260; /* Soft green for Completed */
+    background-color: #25D366;
 }
 
 /* Task styling */
