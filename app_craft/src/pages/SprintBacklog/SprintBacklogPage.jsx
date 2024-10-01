@@ -10,6 +10,8 @@ import { getFirestore, doc, collection, query, where, getDoc, onSnapshot } from 
 import { db } from '../../firebase/firebaseConfig';
 import BurndownChart from './BurndownChart';
 import EditTaskOverlay from '../../components/EditTaskOverLay';
+import { editSprintDetails } from '../Board/components/sprintDatabaseLogic';
+import { updateDoc } from 'firebase/firestore';
 
 
 const DummyData = {
@@ -151,9 +153,51 @@ function SprintBacklogPage() {
         const task = state.tasks[draggableId];
         const updatedTask = { ...task, status: finish.id.replace('-', ' ') }; // Ensure status is correctly formatted
         const editDataInCloud = EditFilesInDB(task.id); // Create an instance of the EditFilesInDB class
+
         localDB.editData(task.id, updatedTask);
         console.log("this is the sprint id", sprintId);
         editDataInCloud.changeStatusSprintTask(task.id, updatedTask.status, sprintId); // Update in cloud database
+    };
+
+    const handleUpdate2 = async (updatedTask) => {
+
+        //---------------- Update the task in Firestore -----------------
+        const sprintDocRef = doc(db, 'sprints', sprintId);  // Reference to the sprint document in Firestore
+
+        try {
+            // Use getDoc to retrieve the current sprint document (Fixing the issue)
+            const sprintDoc = await getDoc(sprintDocRef); // <-- Fix: use getDoc() here instead of sprintDocRef.get()
+            
+            if (sprintDoc.exists()) {
+                const sprintData = sprintDoc.data();  // Get the current sprint data
+
+                console.log('Sprint data:', sprintData);
+
+                // Replace the updated task in the tasks array
+                const updatedTasks = sprintData.tasks.map((task) =>
+                    task.id === updatedTask.id ? updatedTask : task
+                );
+
+                // Debugging output to ensure the task is correct
+                console.log('Updated tasks array:', updatedTasks);
+
+                // Update Firestore with the new tasks array
+                await updateDoc(sprintDocRef, {
+                    tasks: { ...state.tasks, [updatedTask.id]: updatedTask }
+                });
+
+                console.log('Task updated successfully in Firestore');
+            } else {
+                console.error('Sprint document does not exist in Firestore');
+            }
+        } catch (error) {
+            console.error('Error updating task in Firestore:', error);
+        }
+
+        //---------------- Update the task in the local state ------------------------
+        const newState = { ...state, tasks: { ...state.tasks, [updatedTask.id]: updatedTask } };
+        setState(newState);
+        // Close the overlay
     };
 
     return (
@@ -188,7 +232,7 @@ function SprintBacklogPage() {
                     const column = state.columns[columnId];
                     const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
 
-                    return <Column key={column.id} column={column} tasks={tasks} />;
+                    return <Column key={column.id} column={column} tasks={tasks} updateTask={handleUpdate2}/>;
                 })}
             </div>
         </DragDropContext>
@@ -203,7 +247,7 @@ function SprintBacklogPage() {
     );
 }
 
-function Column({ column, tasks }) {
+function Column({ column, tasks, updateTask }) {
     const [showOverlay, setShowOverlay] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [updateFlag, setUpdateFlag] = useState(false);
@@ -219,8 +263,9 @@ function Column({ column, tasks }) {
         setShowOverlay(false);
     };
 
-    const handleUpdate = () => {
+    const handleUpdate = async () => {
         setUpdateFlag(!updateFlag);
+        updateTask(selectedTask);
         handleClose();
     };
 
@@ -228,7 +273,7 @@ function Column({ column, tasks }) {
         if (showOverlay && selectedTask) {
             console.log('selected task', selectedTask);
         }
-    }, [showOverlay, selectedTask]);
+    }, [showOverlay, selectedTask, updateFlag]);
 
     return (
         <div className={`column ${column.id}`}>
@@ -264,6 +309,7 @@ function Column({ column, tasks }) {
                 <EditTaskOverlay
                     task={selectedTask}
                     onClose={() => handleClose()}
+                    onSave={(updatedTask) => handleUpdate(updatedTask)}
                     onUpdate={handleUpdate}
                 />
             )}
