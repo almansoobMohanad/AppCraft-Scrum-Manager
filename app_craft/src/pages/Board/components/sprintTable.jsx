@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getFirestore, doc, updateDoc, collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig'; // Firestore config
+import BurndownChart from '../../SprintBacklog/BurnDownChart'; // Import the BurndownChart component
 import '../css/sprintTable.css';
+import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome CSS
+
 
 const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
   const [sprints, setSprints] = useState([]);
+  const [showBurndownChart, setShowBurndownChart] = useState(false);
+  const [selectedSprint, setSelectedSprint] = useState(null);
+  const overlayRef = useRef(null);
   const navigate = useNavigate();
 
   const handleStartSprint = (sprintToStart) => {
@@ -20,6 +26,7 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
     updateSprintInFirestore(sprintToStart.id, 'Active');
     console.log(`Sprint ${sprintToStart.name} started`);
   };
+
   // Function to update Firestore with new sprint status
   const updateSprintInFirestore = async (sprintId, updatedStatus) => {
     try {
@@ -86,54 +93,102 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
     }
   };
 
+  const handleShowBurndownChart = (sprint) => {
+    setSelectedSprint(sprint);
+    setShowBurndownChart(true);
+  };
+
+  const handleCloseBurndownChart = () => {
+    setShowBurndownChart(false);
+    setSelectedSprint(null);
+  };
+
+  const handleClickOutside = (event) => {
+    if (overlayRef.current && !overlayRef.current.contains(event.target)) {
+      handleCloseBurndownChart();
+    }
+  };
+
+  useEffect(() => {
+    if (showBurndownChart) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showBurndownChart]);
+
   return (
-    <table className="sprint-table">
-      <thead>
-        <tr>
-          <th>Sprint Name</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {sprints.map((sprint) => {
-          const status = sprint.status ? sprint.status.toLowerCase().replace(/\s+/g, '-') : 'not-started'; // Ensure default status
+    <div>
+      <table className="sprint-table">
+        <thead>
+          <tr>
+            <th>Sprint Name</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sprints.map((sprint) => {
+            const status = sprint.status ? sprint.status.toLowerCase().replace(/\s+/g, '-') : 'not-started'; // Ensure default status
 
-          return (
-            <tr key={sprint.id}>
-              <td>{sprint.name}</td>
-              <td>
-                <span className={`status-text status-${status}`}>
-                  {sprint.status || 'Not Started'}
-                </span>
-              </td>
-              <td className="actions-column">
-                <button className="view-sprint-btn" onClick={() => handleViewSprint(sprint)}>
-                  View Sprint
-                </button>
-
-                {sprint.status === 'Not Started' && (
-                  <button className="start-sprint-btn" onClick={() => handleStartSprint(sprint)}>
-                    Start Sprint
+            return (
+              <tr key={sprint.id}>
+                <td>{sprint.name}</td>
+                <td>
+                  <span className={`status-text status-${status}`}>
+                    {sprint.status || 'Not Started'}
+                  </span>
+                </td>
+                <td className="actions-column">
+                  <button className="view-sprint-btn" onClick={() => handleViewSprint(sprint)}>
+                    View Sprint
                   </button>
-                )}
 
-                {sprint.status !== 'Completed' && (
-                  <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
-                    Edit Sprint
-                  </button>
-                )}
-                {sprint.status === 'Not Started' && (
-                <button className="delete-sprint-btn" onClick={() => onDeleteSprint(sprint.id)}>
-                  <i className="fas fa-trash-alt"></i>
-                </button>
-                )}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+                  {sprint.status === 'Not Started' && (
+                    <button className="start-sprint-btn" onClick={() => handleStartSprint(sprint)}>
+                      Start Sprint
+                    </button>
+                  )}
+
+                  {sprint.status !== 'Completed' && (
+                    <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
+                      Edit Sprint
+                    </button>
+                  )}
+
+                  {sprint.status === 'Not Started' && (
+                    <button className="delete-sprint-btn" onClick={() => onDeleteSprint(sprint.id)}>
+                      <i className="fas fa-trash-alt"></i>
+                    </button>
+                  )}
+
+                  {sprint.status === 'Completed' && (
+                    <button className="burndown-chart-btn" onClick={() => handleShowBurndownChart(sprint)}>
+                      <i className="fas fa-chart-line"></i>
+                    </button>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      {showBurndownChart && selectedSprint && (
+        <div className="overlay">
+          <div className="overlay-content" ref={overlayRef}>
+            <button className="close-overlay-btn" onClick={handleCloseBurndownChart}>
+              &times;
+            </button>
+            <BurndownChart sprintId={selectedSprint.id} />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

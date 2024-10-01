@@ -103,12 +103,18 @@ function BurndownChart({ sprintId }) {
                 title: {
                     display: true,
                     text: 'Story Points',
+                    font: {
+                        weight: 'bold', // Make the y-axis label bold
+                    },
                 },
             },
             x: {
                 title: {
                     display: true,
                     text: 'Dates',
+                    font: {
+                        weight: 'bold', // Make the y-axis label bold
+                    },
                 },
             },
         },

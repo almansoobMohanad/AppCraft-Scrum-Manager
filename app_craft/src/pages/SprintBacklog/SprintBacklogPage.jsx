@@ -8,7 +8,6 @@ import localDB from '../../LocalDatabase';
 import { EditFilesInDB } from '../../components/EditFilesInDB';
 import { getFirestore, doc, collection, query, where, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseConfig';
-import BurndownChart from './BurndownChart';
 import EditTaskOverlay from '../../components/EditTaskOverLay';
 import { editSprintDetails } from '../Board/components/sprintDatabaseLogic';
 
@@ -277,9 +276,7 @@ function SprintBacklogPage() {
                             return <Column key={column.id} column={column} tasks={tasks} />;
                         })}
                     </div>
-                </DragDropContext>
-                {sprintStatus === 'Completed' && <BurndownChart sprintId={sprintId} />}
-            </>
+                </DragDropContext>            </>
         ) : (
             <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
         )}
