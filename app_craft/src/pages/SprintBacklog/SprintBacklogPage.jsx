@@ -273,7 +273,7 @@ function SprintBacklogPage() {
                             const column = state.columns[columnId];
                             const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
 
-                            return <Column key={column.id} column={column} tasks={tasks} />;
+                            return <Column key={column.id} column={column} tasks={tasks} updateTask={handleUpdate2} />;
                         })}
                     </div>
                 </DragDropContext>            </>
@@ -307,7 +307,6 @@ function Column({ column, tasks, updateTask }) {
 
     const handleUpdate = async () => {
         setUpdateFlag(!updateFlag);
-        updateTask(selectedTask);
         handleClose();
     };
 
@@ -349,10 +348,10 @@ function Column({ column, tasks, updateTask }) {
             </Droppable>
             {showOverlay && selectedTask && (
                 <EditTaskOverlay
-                    task={selectedTask}
-                    onClose={() => handleClose()}
-                    onSave={(updatedTask) => updateTask(updatedTask)}
-                    onUpdate={handleUpdate}
+                task={selectedTask}
+                onClose={() => handleClose()}
+                onSave={(updatedTask) => updateTask(updatedTask)}
+                onUpdate={handleUpdate}
                 />
             )}
         </div>
@@ -379,7 +378,7 @@ function ListView({ tasks, columns, updateTask }) {
         setUpdateFlag(!updateFlag);
         updateTask(selectedTask);
         handleClose();
-    };
+    };  
 
     useEffect(() => {
         if (showOverlay && selectedTask) {
