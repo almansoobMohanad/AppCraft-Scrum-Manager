@@ -62,6 +62,10 @@ export function EditFilesInDB(taskID) {
         setDoc(dbRef, { logtimeSpent: newLogtimeSpent }, { merge: true });
     }
 
+    const changeSprintId = async (newSprintId) => {
+        setDoc(dbRef, { sprintId: newSprintId }, { merge: true });
+    }
+
     const changeCompletedDate = async (taskId, newCompletedDate, sprintId) => {
         const taskRef = doc(db, 'tasks', taskId); // Reference to the specific task document
         const sprintRef = doc(db, 'sprints', sprintId); // Reference to the specific sprint document
@@ -138,6 +142,7 @@ export function EditFilesInDB(taskID) {
         changeLogtimeSpent,
         changeStatusSprintTask,
         changeCompletedDate,
+        changeSprintId
 
     };
 }
