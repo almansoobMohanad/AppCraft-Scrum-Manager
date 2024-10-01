@@ -92,7 +92,7 @@
     -webkit-text-stroke: 1px; /* Default stroke width */
 }
 
-.status-finished {
+.status-completed {
     -webkit-text-stroke-color: #f0b27a; /* Orange outline */
 }
 
@@ -100,6 +100,6 @@
     -webkit-text-stroke-color: #00FF09; /* Green outline */
 }
 
-.status-not-active {
+.status-not-started {
     -webkit-text-stroke-color: #EF15CA; /* Red outline */
 }

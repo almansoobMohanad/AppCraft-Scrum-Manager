@@ -37,17 +37,17 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
   const checkAndUpdateSprintStatus = (sprints) => {
     const currentDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format in local time
     console.log('Current date:', currentDate);
-    // First, check if any active sprints need to be finished
+    // First, check if any active sprints need to be completed
     sprints.forEach((sprint) => {
       if (sprint.status === 'Active' && sprint.endDate <= currentDate) {
-        // Update Firestore status to 'Finished'
-        updateSprintInFirestore(sprint.id, 'Finished');
-        console.log(`Sprint ${sprint.name} finished`); 
+        // Update Firestore status to 'Completed'
+        updateSprintInFirestore(sprint.id, 'Completed');
+        console.log(`Sprint ${sprint.name} Completed`); 
         console.log(sprint.endDate);
       }
     });
 
-    // Then, check if any "Not Active" sprints need to be activated
+    // Then, check if any "Not Started" sprints need to be activated
     const activeSprintExists = sprints.some(sprint => sprint.status === 'Active');
     if (activeSprintExists) {
       console.log('An active sprint already exists. No updates will be made.');
@@ -55,7 +55,7 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
     }
 
     sprints.forEach((sprint) => {
-      if (sprint.status === 'Not Active' && sprint.startDate <= currentDate) {
+      if (sprint.status === 'Not Started' && sprint.startDate <= currentDate) {
         // Update Firestore status to 'Active'
         updateSprintInFirestore(sprint.id, 'Active');
         console.log(`Sprint ${sprint.name} activated`);
@@ -79,9 +79,9 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
   }, []);
 
   const handleViewSprint = (sprint) => {
-    if (sprint.status === 'Not Active') {
+    if (sprint.status === 'Not Started') {
       navigate('/sprintplan/', { state: { sprint } });
-    } else if (sprint.status === 'Active' || sprint.status === 'Finished') {
+    } else if (sprint.status === 'Active' || sprint.status === 'Completed') {
       navigate('/sprintbacklog/', { state: { sprintId: sprint.id, sprintName: sprint.name, sprintTask: sprint.tasks , sprintStatus: sprint.status} });
     }
   };
@@ -97,14 +97,14 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
       </thead>
       <tbody>
         {sprints.map((sprint) => {
-          const status = sprint.status ? sprint.status.toLowerCase().replace(/\s+/g, '-') : 'not-active'; // Ensure default status
+          const status = sprint.status ? sprint.status.toLowerCase().replace(/\s+/g, '-') : 'not-started'; // Ensure default status
 
           return (
             <tr key={sprint.id}>
               <td>{sprint.name}</td>
               <td>
                 <span className={`status-text status-${status}`}>
-                  {sprint.status || 'Not Active'}
+                  {sprint.status || 'Not Started'}
                 </span>
               </td>
               <td className="actions-column">
@@ -112,13 +112,13 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
                   View Sprint
                 </button>
 
-                {sprint.status === 'Not Active' && (
+                {sprint.status === 'Not Started' && (
                   <button className="start-sprint-btn" onClick={() => handleStartSprint(sprint)}>
                     Start Sprint
                   </button>
                 )}
 
-                {sprint.status !== 'Finished' && (
+                {sprint.status !== 'Completed' && (
                   <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
                     Edit Sprint
                   </button>

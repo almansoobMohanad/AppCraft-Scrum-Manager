@@ -66,7 +66,7 @@ function SprintBacklogPage() {
     console.log("SprintBacklogPage location:", location);
     const sprintId = location.state?.sprintId; // Retrieve sprintId from location state
     const sprintName = location.state?.sprintName || "Current Sprint";
-    const sprintStatus = location.state?.sprintStatus || "Not Active";
+    const sprintStatus = location.state?.sprintStatus || "Not Started";
     const sprintTasks = location.state?.sprintTask || [];
 
 
@@ -113,7 +113,7 @@ function SprintBacklogPage() {
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
 
-        if (sprintStatus === 'Finished') return; // Prevent dragging tasks if sprint is finished
+        if (sprintStatus === 'Completed') return; // Prevent dragging tasks if sprint is Completed
     
         if (!destination) return;
     
@@ -201,7 +201,7 @@ function SprintBacklogPage() {
                         })}
                     </div>
                 </DragDropContext>
-                {sprintStatus === 'Finished' && <BurndownChart sprintId={sprintId} />}
+                {sprintStatus === 'Completed' && <BurndownChart sprintId={sprintId} />}
             </>
         ) : (
             <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
