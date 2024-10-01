@@ -1,3 +1,10 @@
+.table-container {
+    max-height: flex; /* Set a max height for the table */
+    overflow-y: auto; /* Enable vertical scrolling */
+    width: 100%; /* Full width */
+    margin: 20px 0; /* Space around the table */
+}
+
 .sprint-table {
     width: 100%;
     border-collapse: collapse;
@@ -14,8 +21,11 @@
 
 /* THIS IS THE HEADER*/ 
 .sprint-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
+    background-color: #f4f4f4; /* Background color for the sticky header */
+    position: sticky;
+    top: 0; /* Keep it at the top of the scrollable area */
+    z-index: 10; /* Ensure it stays above the table body content */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); /* Optional: shadow for visual effect */
 }
 
 .sprint-table tbody tr {
