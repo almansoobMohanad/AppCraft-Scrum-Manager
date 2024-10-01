@@ -85,7 +85,7 @@ export function editSprintDetails(sprintID) {
     }
 
     const changeStatus = async (newStatus) => {
-        const validStatuses = ['Not Active', 'Active', 'Finished'];
+        const validStatuses = ['Not Started', 'Active', 'Comepleted'];
         if (!validStatuses.includes(newStatus)) {
             throw new Error(`Invalid status: ${newStatus}. Status must be one of ${validStatuses.join(', ')}.`);
         }

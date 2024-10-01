@@ -12,7 +12,7 @@ function dynamicSort(key, sortOrder = 'asc') {
     }
 }
 
-function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date(), status, logtimeSpent = 0) {
+function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date(), status, logtimeSpent = 0,completedDate = null) {
 
     return {
         name,
@@ -29,6 +29,7 @@ function createData(name, tags, priority, storyPoints, id, description, type, hi
         dateCreated,
         status, // Force fallback here,
         logtimeSpent,
+        completedDate,
     };
 }
 
@@ -61,7 +62,9 @@ class LocalDatabase {
                 doc.data().stage, 
                 doc.data().dateCreated,
                 doc.data().status,
-                doc.data().logtimeSpent
+                doc.data().logtimeSpent,
+                doc.data().completedDate
+
             ));
         });
         this.updateCounter++;
@@ -94,6 +97,8 @@ class LocalDatabase {
                 // priorityNum: data.priority === 'Low' ? 1 : data.priority === 'Medium' ? 2 : data.priority === 'Important' ? 3 : 4, commented out because this line is causing a lot of issue
                 status: data.status,
                 logtimeSpent: data.logtimeSpent,
+                completedDate: data.completedDate,
+
             };
             this.data[dataToChangeIndex] = updatedData;
             this.updateCounter++;

@@ -1,7 +1,7 @@
 .sprintBacklogPage-container {
     display: flex;
     height: 100vh;
-    background-color: #FAFAFA; /* Light background for the content area */
+    background-color: #FAFAFA; 
 }
 
 .content {
@@ -9,19 +9,17 @@
     padding: 40px;
 }
 
-.title {
-    font-size: 32px;
-    font-weight: bold;
+.sprint-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
     margin-bottom: 20px;
-    text-align: left; /* Align to the left */
 }
 
 .sprint-name {
     font-size: 24px;
-    margin-bottom: 20px;
     color: rgb(41, 41, 41);
     font-weight: bold;
-    text-align: left; /* Align to the left */
 }
 
 .back-button {
@@ -70,15 +68,15 @@
 
 /* Color-coded column headers */
 .column.not-started h2 {
-    background-color: #3cdfff; /* Soft blue for Not Started */
+    background-color: #ffe240; 
 }
 
 .column.in-progress h2 {
-    background-color: #fcbf49; /* Soft orange for In Progress */
+    background-color: #40c2ff; 
 }
 
 .column.completed h2 {
-    background-color: #8bc34a; /* Soft green for Completed */
+    background-color: #25D366;
 }
 
 /* Task styling */
@@ -90,20 +88,20 @@
     border-radius: 10px;
     text-align: left;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    border-top: 5px solid; /* Add top border to match column color */
+    border-top: 5px solid;
 }
 
 /* Top border colors */
 .task.not-started {
-    border-top-color: #3cdfff;
+    border-top-color: #f6ef6b;
 }
 
 .task.in-progress {
-    border-top-color: #fcbf49;
+    border-top-color: #3cdfff; 
 }
 
 .task.completed {
-    border-top-color: #8bc34a;
+    border-top-color: #94c260;
 }
 
 /* Task field bubbles */
@@ -116,6 +114,10 @@
     background-color: #eeeeee;
     color: black;
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.task-name {
+    font-weight: bold;
 }
 
 
@@ -176,24 +178,22 @@
 }
 
 
-/* Add depth and outline to task cards */
 .task:hover {
     box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px); /* Slight lift on hover */
+    transform: translateY(-2px); 
     transition: all 0.4s ease-in-out;
 }
-/* Container for toggle button */
+
+/* Toggle Button */
 .toggle-buttons {
     display: inline-flex;
     border: 1px solid #ccc;
-    border-radius: 25px;
+    border-radius: 15px;
     overflow: hidden;
-    margin-bottom: 20px;
-    margin-left: 1100px; /* Adjust this value to move the button further right */
     font-family: Arial, sans-serif;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
-/* Common styles for buttons */
 .toggle-buttons button {
     padding: 10px 20px;
     border: none;
@@ -207,74 +207,132 @@
     border-radius: 0;
 }
 
-/* Active button */
 .toggle-buttons button.active {
-    background-color: #b3d1ff; /* Light blue background */
+    background-color: #b3d1ff; 
     color: black;
-    border-radius: 25px; /* Make the active button rounded */
-    border: 1px solid #000; /* Add a black outline */
+    border-radius: 15px; 
+    border: 1px solid #000; 
     transition: background-color 0.3s ease, border-radius 0.3s ease;
 }
 
-/* First button styles (left button) */
-.toggle-buttons button:first-child {
-    border-radius: 25px 0 0 25px; /* Left-rounded corners */
-}
-
-/* Last button styles (right button) */
-.toggle-buttons button:last-child {
-    border-radius: 0 25px 25px 0; /* Right-rounded corners */
-}
-
-/* Hover effect */
 .toggle-buttons button:hover {
     background-color: #e0e0e0;
 }
 
-/* List view table styling */
+/* First button styles (left button) */
+.toggle-buttons button:first-child {
+    border-radius: 15px 0 0 15px; /* Left-rounded corners */
+}
+
+/* Last button styles (right button) */
+.toggle-buttons button:last-child {
+    border-radius: 0 15px 15px 0; /* Right-rounded corners */
+}
+
+
+.scrollable-content {
+    flex: 1; /* Take up available space */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 60px;
+    margin-bottom: 20px; /* Ensure space for footer or buttons */
+}
+
+
+/* LIST VIEW */
+
+/* Task field consistency in List view */
 .list-view-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    font-family: Arial, sans-serif; /* Ensure consistency with Kanban view font */
-    color: rgb(41, 41, 41); /* Same font color as the Kanban view */
+    font-family: Arial, sans-serif;
+    color: rgb(41, 41, 41);
+    border-radius: 20px; 
+    overflow: hidden; 
+    border: 1px solid #adadad; 
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1); 
 }
 
-.list-view-table th,
-.list-view-table td {
-    padding: 15px;
-    text-align: left;
-    border: 1px solid #ddd;
-    font-size: 16px; /* Consistent font size */
-    background-color: #fdfdfd; /* Light background similar to Kanban task cards */
-}
-
-.list-view-table .task-name {
-    width: 60%; /* Make the task column wider */
-}
-
-.list-view-table .story-points {
-    width: 10%; /* Make the story points column narrower */
-}
-
+/* Header styling */
 .list-view-table th {
-    background-color: #f4f4f4; /* Light gray background for headers */
-    font-weight: bold; /* Bold header text */
-    text-transform: uppercase; /* Uppercase for header consistency */
+    background-color: #b9e4f6; 
+    font-weight: bold;
+    color: #333;
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #d2d2d2;
+    font-size: 16px;
 }
 
-.list-view-table tr:nth-child(even) {
-    background-color: #f9f9f9; /* Alternating row background colors */
+.list-view-table tr {
+    background-color: #daf5fe; 
 }
 
 .list-view-table tr:hover {
-    background-color: #f1f1f1; /* Subtle hover effect for rows, similar to task hover in Kanban */
+    background-color: #f1f1f1;
     transition: background-color 0.3s ease;
 }
 
-/* Task field consistency in List view */
+/* Task field */
 .list-view-table td {
-    background-color: #eeeeee; /* Light bubble effect, similar to Kanban task fields */
-    border-radius: 5px; /* Rounded edges for a consistent look */
-    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for consistency */
+    background-color: #fafafa;
+    padding: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.list-view-table .task-name {
+    font-weight: bold;
+}
+
+/* Colour-coded bubbles */
+.task-status, .task-priority, .task-tags {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    display: inline-block;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+    color: black;
+}
+
+/* Status bubbles */
+.task-status.not-started { background-color: #f5ed5b; }
+.task-status.in-progress { background-color: #3cdfff;}
+.task-status.completed { background-color: #94c260; }
+
+/* Priority bubbles */
+.task-priority.low { background-color: #75de91; }
+.task-priority.medium { background-color: #ffd864; }
+.task-priority.high { background-color: #f1ad65; }
+.task-priority.urgent { background-color: #f17569; }
+
+/* Tags bubbles */
+.task-tags.ui { background-color: #A6F1C8; }
+.task-tags.backend { background-color: #F4A566; }
+.task-tags.api { background-color: #94a0ff; }
+.task-tags.database { background-color: #98f878; }
+.task-tags.framework { background-color: #ebb7fd; }
+.task-tags.testing { background-color: #fcc372; }
+.task-tags.frontend { background-color: #fb7683; }
+.task-tags.ux { background-color: #66BB77; }
+
+/* End Sprint Button */
+.end-sprint-button {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    padding: 10px 20px;
+    background-color: rgb(198, 54, 54);
+    color: rgb(245, 245, 245);
+    border: none;
+    border-radius: 15px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.end-sprint-button:hover {
+    background-color: darkred;
+    transition: background-color 0.3s ease;
 }

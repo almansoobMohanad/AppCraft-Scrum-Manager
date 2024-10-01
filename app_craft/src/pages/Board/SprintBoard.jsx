@@ -13,7 +13,7 @@ const dummySprints = [
     {
         id: '1',
         name: 'Sprint 1',
-        status: 'Finished'
+        status: 'Completed'
     },
     {
         id: '2',
@@ -23,7 +23,7 @@ const dummySprints = [
     {
         id: '3',
         name: 'Sprint 3',
-        status: 'Not Active'
+        status: 'Not Started'
     }
 ];
 
