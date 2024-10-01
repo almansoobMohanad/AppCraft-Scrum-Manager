@@ -6,7 +6,7 @@ import NavigationBar from "../../components/NavigationBar";
 import { Link } from "react-router-dom";
 import localDB from '../../LocalDatabase';
 import { EditFilesInDB } from '../../components/EditFilesInDB';
-import { getFirestore, doc, collection, query, where, getDoc, onSnapshot } from 'firebase/firestore';
+import { getFirestore, doc, collection, query, where, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseConfig';
 import BurndownChart from './BurndownChart';
 import EditTaskOverlay from '../../components/EditTaskOverLay';
@@ -74,6 +74,39 @@ function SprintBacklogPage() {
     const [view, setView] = useState('kanban'); // Add state to track view mode (kanban or list)
     console.log("SprintBacklogPage state:", state);
 
+    const handleEndSprint = async () => {
+        console.log(sprintTasks);
+
+        // Check if any task is "Not Started" or "In Progress"
+        const incompleteTasks = sprintTasks.some(task => task.status === 'not started' || task.status === 'in progress');
+        if (incompleteTasks) {
+            alert('Cannot end sprint. Some tasks are still "Not Started" or "In Progress".');
+            return;
+        }
+
+        try {
+            await updateSprintInFirestore(sprintId, 'Completed');
+            alert(`Sprint ${sprintName} ended successfully.`);
+            console.log('Sprint ended successfully');
+        } catch (error) {
+            console.error('Error ending sprint:', error);
+            alert('There was an error ending the sprint. Please try again.');
+        }
+    };
+
+
+    const updateSprintInFirestore = async (sprintId, updatedStatus) => {
+        try {
+          const sprintDocRef = doc(db, 'sprints', sprintId);
+          await updateDoc(sprintDocRef, {
+            status: updatedStatus,
+          });
+          console.log(`Sprint ${sprintId} updated to ${updatedStatus} in Firestore`);
+        } catch (error) {
+          console.error('Error updating sprint in Firestore:', error);
+        }
+      };
+
 
     useEffect(() => {
         const fetchSprintData = async () => {
@@ -96,6 +129,7 @@ function SprintBacklogPage() {
                         newData.tasks[task.id] = task;
                         newData.columns[task.status.replace(' ', '-')].taskIds.push(task.id);
                     });
+
     
                     // Update the state with the new task data, avoiding duplication
                     setState(newData);
@@ -207,7 +241,7 @@ function SprintBacklogPage() {
             <ListView tasks={Object.values(state.tasks)} columns={state.columns} />
         )}
 
-        <button className="end-sprint-button">
+        <button className="end-sprint-button" onClick={handleEndSprint}>
             End Sprint
         </button>
     </div>
