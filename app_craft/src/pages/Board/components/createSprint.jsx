@@ -14,7 +14,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
     const handleCreateSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
 
-        if (!sprintName.trim() || !startDate || !endDate || !productOwner.trim() || !members.trim()) {
+        if (!sprintName.trim() || !startDate || !endDate || !productOwner.trim() || !scrumMaster.trim() || !members.trim()) {
             setError('All fields are required.');
             return;
         }
@@ -37,7 +37,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
             scrumMaster, // Include Scrum Master in the created sprint
             members: members.split(',').map((member) => member.trim()), // Convert members into an array
             tasks: [], // Initialize tasks as an empty array
-            status: 'Not Started' // Set the status to 'non-started' by default
+            status: 'Not Started' // Set the status to 'Not Started' by default
         });
         onClose(); // Close overlay after creating the sprint
     };
