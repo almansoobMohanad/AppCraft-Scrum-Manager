@@ -11,7 +11,6 @@ import { db } from '../../firebase/firebaseConfig';
 import BurndownChart from './BurndownChart';
 import EditTaskOverlay from '../../components/EditTaskOverLay';
 import { editSprintDetails } from '../Board/components/sprintDatabaseLogic';
-import { updateDoc } from 'firebase/firestore';
 
 const DummyData = {
     tasks: {
