@@ -86,9 +86,14 @@
     padding: 10px;
     margin: 10px;
     border-radius: 10px;
-    text-align: left;
+    text-align: center;
+    align-items: center;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     border-top: 5px solid;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center; 
+    justify-content: space-between;
 }
 
 /* Top border colors */
@@ -114,6 +119,12 @@
     background-color: #eeeeee;
     color: black;
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.task-tags-container {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
 }
 
 .task-name {

@@ -335,9 +335,11 @@ function Column({ column, tasks, updateTask }) {
                                         <div className="task-name">{task.name}</div>  {/* Task name bubble */}
                                         <div className="task-field story-points">{task.storyPoints}</div>
                                         <div className={`task-field priority-${task.priority.toLowerCase()}`}>{task.priority}</div>
-                                        <div className={`task-field tags-${task.tags.join(', ').toLowerCase()}`}>
-                                            {task.tags.join(', ')}
-                                        </div>
+                                        <div className="task-tags-container">
+                                        {task.tags.map((tag, index) => (
+                                            <span key={index} className={`task-tags ${tag.trim().toLowerCase()}`}>{tag.trim()}</span>
+                                        ))}
+                                    </div>
                                     </div>
                                 )}
                             </Draggable>
