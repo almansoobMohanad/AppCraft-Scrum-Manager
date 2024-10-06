@@ -10,7 +10,9 @@ function BurndownChart({ sprintId }) {
     const [tasks, setTasks] = useState([]);
     const [sprintStartDate, setSprintStartDate] = useState(null);
     const [sprintEndDate, setSprintEndDate] = useState(null);
+    const currentDate = new Date();
 
+    
     useEffect(() => {
         const fetchSprintData = async () => {
             if (sprintId) {
