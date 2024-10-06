@@ -177,7 +177,7 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
                     </button>
                   )}
 
-                  {sprint.status === 'Completed' && (
+                  {sprint.status !== 'Not Started' && (
                     <button className="burndown-chart-btn" onClick={() => handleShowBurndownChart(sprint)}>
                       <i className="fas fa-chart-line"></i>
                     </button>
