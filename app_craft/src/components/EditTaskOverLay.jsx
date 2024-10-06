@@ -382,16 +382,19 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
                             <div className="log-info">
                                 <p>Total Log Time: <span>{totalLogTime} Hours</span></p>
                             </div>
-                            <div className="log-input-container">
-                                <label>Log Time Spent</label>
-                                <input
-                                    type="number"
-                                    value={logTimeSpent}
-                                    onChange={(e) => setLogTimeSpent(e.target.value)}
-                                    className="log-input"
-                                />
-                                <button className="add-time-button" onClick={handleAddTime}>+</button>
-                            </div>
+                                <div className="log-input-container">
+                                    <label>Log Time Spent</label>
+                                    <div className="log-input-wrapper">
+                                        <input
+                                            type="number"
+                                            value={logTimeSpent}
+                                            onChange={(e) => setLogTimeSpent(e.target.value)}
+                                            className="log-input"
+                                        />
+                                        <button className="add-time-button" onClick={handleAddTime}>+</button> {/* Place the button after the input */}
+                                        <span className="log-input-label">hour(s)</span>
+                                    </div>
+                                </div>
                         </div>
 
                         {/* Chart Section */}

@@ -176,4 +176,35 @@
     border: 2px solid black;  /* Add border to indicate selection */
 }
 
+/* Add these new styles */
+.log-input-wrapper {
+    display: flex;
+    align-items: center; /* Aligns input and button vertically */
+}
+
+.log-input-label {
+    margin-left: 8px; /* Space between input and 'hours' label */
+    font-size: 16px; /* Match the font size with the input */
+    color: #333; /* Text color for the label */
+}
+
+.log-input {
+    width: 50px;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-left: 5px; /* Adds a small gap between the button and the input */
+}
+
+/* Adjust button styles if needed */
+.add-time-button {
+    background-color: #ddd;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0px; /* Space between the button and the input */
+    height: 100%;
+}
 
