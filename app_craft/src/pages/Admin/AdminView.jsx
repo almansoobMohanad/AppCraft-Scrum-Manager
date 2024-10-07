@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from '../../firebase/firebaseConfig'; // Firestore config
 import NavigationBar from "../../components/NavigationBar";
 import CreateAccount from "./component/CreateAccount";
@@ -11,13 +11,13 @@ function AdminView() {
     const [accounts, setAccounts] = useState([]);
 
     useEffect(() => {
-        const fetchAccounts = async () => {
-            const querySnapshot = await getDocs(collection(db, "accounts"));
-            const accountsData = querySnapshot.docs.map(doc => doc.data());
+        const unsubscribe = onSnapshot(collection(db, "accounts"), (snapshot) => {
+            const accountsData = snapshot.docs.map(doc => doc.data());
             setAccounts(accountsData);
-        };
+        });
 
-        fetchAccounts();
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
     }, []);
 
     const toggleOverlay = () => {
