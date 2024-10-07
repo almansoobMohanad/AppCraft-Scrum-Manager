@@ -63,3 +63,19 @@ p {
     margin: 0;
     font-size: 14px;
 }
+
+.green-button {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 150px; /* Adjust this width as needed */
+    margin-left: 0; /* Align to the left */
+    display: inline-block; /* Ensure it's not taking full width */
+}
+
+.green-button:hover {
+    background-color: darkgreen;
+}
