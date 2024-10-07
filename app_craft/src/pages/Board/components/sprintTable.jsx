@@ -34,7 +34,8 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
       }
 
       // If no active sprint exists and the sprint has tasks, start the selected sprint
-      await updateSprintInFirestore(sprintToStart.id, 'Active');
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      await startSprintInFirestore(sprintToStart.id, currentDate);
       console.log(`Sprint ${sprintToStart.name} started`);
   };
 
@@ -79,6 +80,19 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
         console.log(`Sprint ${sprint.name} activated`);
       }
     });
+  };
+
+  const startSprintInFirestore = async (sprintId, startDate) => {
+    try {
+      const sprintDocRef = doc(db, 'sprints', sprintId);
+      await updateDoc(sprintDocRef, {
+        status: 'Active',
+        startDate: startDate,
+      });
+      console.log(`Sprint ${sprintId} started on ${startDate} in Firestore`);
+    } catch (error) {
+      console.error('Error starting sprint in Firestore:', error);
+    }
   };
 
   // Use useEffect to set up real-time listener for sprints collection
