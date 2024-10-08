@@ -1,0 +1,43 @@
+.overlay-create-account {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center horizontally and vertically */
+    width: 100%; /* Full width overlay */
+    height: 100%; /* Full height overlay */
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.createAccountForm-container {
+    background: white;
+    padding: 40px; /* Increase padding for more spacing */
+    border-radius: 8px;
+    position: relative;
+    width: 50%; /* Increase the width */
+    max-width: 800px; /* Set a maximum width if needed */
+    height: 60%; /* Make it taller */
+    max-height: 600px; /* Set a maximum height */
+    overflow-y: auto; /* Add scroll if content overflows */
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    color: red; /* Make the close button red */
+
+}
+@media (max-width: 768px) {
+    .createAccountForm-container {
+        width: 80%;
+        height: auto;
+        max-height: 90%;
+    }
+}

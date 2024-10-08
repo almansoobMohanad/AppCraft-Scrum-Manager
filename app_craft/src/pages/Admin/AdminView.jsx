@@ -1,66 +1,55 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { collection, onSnapshot, deleteDoc, doc} from "firebase/firestore";
+import { db } from '../../firebase/firebaseConfig'; // Firestore config
 import NavigationBar from "../../components/NavigationBar";
-import createAccount from "./DatabaseFiles/accountDatabaseLogic";
+import CreateAccount from "./component/CreateAccount";
+import AccountTable from "./component/AccountTable"; // Import the new component
 import './AdminView.css'; 
 
 function AdminView() {
-    const [accountData, setAccountData] = useState({ username: "", password: "", isAdmin: false });
-    const [error, setError] = useState("");
+    const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+    const [accounts, setAccounts] = useState([]);
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setAccountData({
-            ...accountData,
-            [name]: type === "checkbox" ? checked : value,
+    useEffect(() => {
+        const unsubscribe = onSnapshot(collection(db, "accounts"), (snapshot) => {
+            const accountsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setAccounts(accountsData);
         });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+    }, []);
+
+    const toggleOverlay = () => {
+        setIsOverlayVisible(!isOverlayVisible);
     };
 
-    const validatePassword = (password) => {
-        const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#<>]{8,}$/;
-        return strongPasswordRegex.test(password);
+    const handleAccountCreation = (newAccount) => {
+        setAccounts([...accounts, newAccount]);
+        setIsOverlayVisible(false);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log("Password:", accountData.password); // Log the password
-        if (!validatePassword(accountData.password)) {
-            setError("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
-            return;
-        }
+    const handleDelete = async (id) => {
         try {
-            await createAccount(accountData);
-            setError(""); // Reset error state on successful account creation
-            alert("Account created successfully!");
-        } catch (err) {
-            console.error("Error creating account:", err); // Log the error
-            setError(err.message);
+            await deleteDoc(doc(db, "accounts", id));
+            setAccounts(accounts.filter(account => account.id !== id));
+        } catch (error) {
+            console.error("Error deleting account: ", error);
         }
     };
+
+    const adminAccounts = accounts.filter(account => account.isAdmin);
+    const memberAccounts = accounts.filter(account => !account.isAdmin);
 
     return (
         <div className="adminView-container">
             <NavigationBar />
             <div className="content">
                 <h1 className="title">Admin View</h1>
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Username:</label>
-                        <input type="text" name="username" value={accountData.username} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <label>Password:</label>
-                        <input type="password" name="password" value={accountData.password} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <label>
-                            <input type="checkbox" name="isAdmin" checked={accountData.isAdmin} onChange={handleChange} />
-                            Is Admin
-                        </label>
-                    </div>
-                    {error && <p style={{ color: "red" }}>{error}</p>}
-                    <button type="submit">Create Account</button>
-                </form>
+                <button className="green-button" onClick={toggleOverlay}>Create Account</button>
+                {isOverlayVisible && <CreateAccount onClose={toggleOverlay} onCreate={handleAccountCreation} />}
+                <AccountTable title="Admin Accounts" accounts={adminAccounts} onDelete={handleDelete} />
+                <AccountTable title="Member Accounts" accounts={memberAccounts} onDelete={handleDelete} />
             </div>
         </div>
     );
