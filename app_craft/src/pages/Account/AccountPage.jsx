@@ -1,6 +1,7 @@
 import React from "react";
 import NavigationBar from "../../components/NavigationBar";
-import './AccountPage.css'; ;
+import './AccountPage.css';
+import changeDetails from './components/accountsDatabaseLogic'; // import the things to change the details of the account
 
 function AccountPage() {
     return (
