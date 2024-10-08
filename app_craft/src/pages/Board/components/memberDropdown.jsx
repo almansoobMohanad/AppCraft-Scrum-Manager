@@ -5,10 +5,14 @@ const MemberDropdown = ({ inputValue, options, handleSelect }) => {
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
-    const filteredOptions = options.filter((option) =>
-      option.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-    setSuggestions(filteredOptions);
+    if (Array.isArray(options)) {
+      const filteredOptions = options.filter((option) =>
+        option.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      setSuggestions(filteredOptions);
+    } else {
+      setSuggestions([]);
+    }
   }, [inputValue, options]);
 
   return (
