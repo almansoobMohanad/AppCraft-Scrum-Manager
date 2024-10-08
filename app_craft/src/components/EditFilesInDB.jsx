@@ -62,6 +62,10 @@ export function EditFilesInDB(taskID) {
         setDoc(dbRef, { logtimeSpent: newLogtimeSpent }, { merge: true });
     }
 
+    const changeLogTimeHistory = async (newLogTimeHistory) => {
+        setDoc(dbRef, { logTimeHistory: newLogTimeHistory }, { merge: true });
+    }
+
     const changeSprintId = async (newSprintId) => {
         setDoc(dbRef, { sprintId: newSprintId }, { merge: true });
     }
@@ -92,6 +96,7 @@ export function EditFilesInDB(taskID) {
             tasks: updatedTasks
         });
     };
+
 
     const changeStatusSprintTask = async (taskId, newStatus, sprintId) => {
         const taskRef = doc(db, 'tasks', taskId); // Reference to the specific task document
@@ -126,6 +131,7 @@ export function EditFilesInDB(taskID) {
             await updateDoc(sprintRef, {
                 tasks: updatedTasks
             });
+            
     };
 
     return {
@@ -140,6 +146,7 @@ export function EditFilesInDB(taskID) {
         changeHistory,
         changeStatus,
         changeLogtimeSpent,
+        changeLogTimeHistory,
         changeStatusSprintTask,
         changeCompletedDate,
         changeSprintId

@@ -100,7 +100,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
             },
             y: {
                 min: 0, // Set the minimum value for the y-axis
-                max: 10, // Set the maximum value for the y-axis
+                max: totalLogTime? totalLogTime + 10: 10, // Set the maximum value for the y-axis
                 title: {
                     display: true,
                     text: 'Log Time (hours)',
@@ -124,10 +124,12 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
             setDescription(task.description || '');
             setHistory(task.history || []); // Set existing history
             setStatus(task.status);
-            setLogTimeSpent(task.logtimeSpent); // Set initial log time
+            //setLogTimeSpent(task.logtimeSpent); // Set initial log time
             setTotalLogTime(task.logtimeSpent || 0); // Set initial total log time
+            setLogTimeHistory(task.logTimeHistory || []); // Set existing log time history
             setSprintId(task.sprintId || null); // Set the sprint ID
             console.log('Total log time from task:', task.logtimeSpent); // Debug log
+            
 
         }
     }, [task]);
@@ -212,8 +214,9 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
             history: newHistoryList,    // Update history
             status,
             logtimeSpent: totalLogTime, // Update the logged time
+            logTimeHistory: logTimeHistory,
 
-            
+
         };
     
         console.log('Updated task:', updatedTask);
@@ -231,6 +234,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
         db.changeHistory(updatedTask.history)
         db.changeStatus(updatedTask.status);
         db.changeLogtimeSpent(updatedTask.logtimeSpent);
+        db.changeLogTimeHistory(updatedTask.logTimeHistory);
     
 
         localDB.editData(updatedTask.id, updatedTask);

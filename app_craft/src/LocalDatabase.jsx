@@ -12,7 +12,7 @@ function dynamicSort(key, sortOrder = 'asc') {
     }
 }
 
-function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date(), status, logtimeSpent = 0,completedDate = null, sprintId = null) {
+function createData(name, tags, priority, storyPoints, id, description, type, history, assignee, stage, dateCreated = new Date(), status, logtimeSpent = 0, logTimeHistory ,completedDate = null, sprintId = null) {
 
     return {
         name,
@@ -29,6 +29,7 @@ function createData(name, tags, priority, storyPoints, id, description, type, hi
         dateCreated,
         status, // Force fallback here,
         logtimeSpent,
+        logTimeHistory,
         completedDate,
         sprintId
     };
@@ -64,6 +65,7 @@ class LocalDatabase {
                 doc.data().dateCreated,
                 doc.data().status,
                 doc.data().logtimeSpent,
+                doc.data().logTimeHistory,
                 doc.data().completedDate,
                 doc.data().sprintId
             ));
@@ -98,6 +100,7 @@ class LocalDatabase {
                 priorityNum: data.priority === 'Low' ? 1 : data.priority === 'Medium' ? 2 : data.priority === 'Important' ? 3 : 4,
                 status: data.status,
                 logtimeSpent: data.logtimeSpent,
+                logTimeHistory: data.logTimeHistory,
                 completedDate: data.completedDate,
 
             };
