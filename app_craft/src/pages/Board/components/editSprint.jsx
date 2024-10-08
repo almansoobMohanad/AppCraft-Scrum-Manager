@@ -45,10 +45,9 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
             name: sprintName,
             startDate,
             endDate,
-            productOwner,
-            scrumMaster,
-            // members: members.split(',').map((member) => member.trim()), // old format
-            members: members.join(', ') //new format
+            productOwner: productOwner.value,
+            scrumMaster: scrumMaster.value,
+            members: members.map((member) => member.value),
         });
         onClose(); // Close overlay after editing the sprint
     };

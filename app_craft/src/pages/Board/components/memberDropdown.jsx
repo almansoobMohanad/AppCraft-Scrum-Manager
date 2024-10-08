@@ -1,26 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select'; // do npm i --save react-select then restart npm run dev
 
-const MemberDropdown = ({ inputValue, options, handleSelect }) => {
-  const [suggestions, setSuggestions] = useState([]);
-
-  useEffect(() => {
-    if (Array.isArray(options)) {
-      const filteredOptions = options.filter((option) =>
-        option.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-      setSuggestions(filteredOptions);
-    } else {
-      setSuggestions([]);
-    }
-  }, [inputValue, options]);
-
+const MemberDropdown = ({ inputValue, options, handleSelect, isMulti, placeholder }) => {
   return (
     <Select
       value={inputValue}
       onChange={handleSelect}
-      options={suggestions}
-      placeholder="Select a member..."
+      options={options}
+      isMulti={isMulti}  // Enable multi-select when needed
+      placeholder={placeholder}
     />
   );
 };

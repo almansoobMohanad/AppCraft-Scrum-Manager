@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import '../css/createSprint.css'; // Ensure you import the CSS file
 import { TaskSharp } from '@mui/icons-material';
+import '../css/createSprint.css';
+import MemberDropdown from './memberDropdown.jsx';
 
 const CreateSprint = ({ onCreate, onClose }) => {
     const [sprintName, setSprintName] = useState('');
@@ -11,10 +13,16 @@ const CreateSprint = ({ onCreate, onClose }) => {
     const [members, setMembers] = useState('');
     const [error, setError] = useState('');
 
+    const memberOptions = [
+        { label: 'Alice', value: 'Alice' },
+        { label: 'Bob', value: 'Bob' },
+        { label: 'Charlie', value: 'Charlie' },
+    ];
+
     const handleCreateSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
 
-        if (!sprintName.trim() || !startDate || !endDate || !productOwner.trim() || !scrumMaster.trim() || !members.trim()) {
+        if (!sprintName.trim() || !startDate || !endDate || !productOwner || !scrumMaster || members.length === 0) {
             setError('All fields are required.');
             return;
         }
@@ -33,11 +41,11 @@ const CreateSprint = ({ onCreate, onClose }) => {
             name: sprintName,
             startDate,
             endDate,
-            productOwner,
-            scrumMaster, // Include Scrum Master in the created sprint
-            members: members.split(',').map((member) => member.trim()), // Convert members into an array
-            tasks: [], // Initialize tasks as an empty array
-            status: 'Not Started' // Set the status to 'Not Started' by default
+            productOwner: productOwner.value,
+            scrumMaster: scrumMaster.value,   
+            members: members.map((member) => member.value),
+            tasks: [], 
+            status: 'Not Started' 
         });
         onClose(); // Close overlay after creating the sprint
     };
@@ -73,33 +81,43 @@ const CreateSprint = ({ onCreate, onClose }) => {
                             onChange={(e) => setEndDate(e.target.value)}
                         />
                     </div>
+
+                    {/* Single select for Product Owner */}
                     <div className="form-group">
                         <label>Product Owner</label>
-                        <input
-                            type="text"
-                            value={productOwner}
-                            onChange={(e) => setProductOwner(e.target.value)}
-                            placeholder="Enter Product Owner"
+                        <MemberDropdown
+                            options={memberOptions}
+                            inputValue={productOwner}
+                            handleSelect={setProductOwner}
+                            isMulti={false}
+                            placeholder="Select Product Owner"
                         />
                     </div>
+
+                    {/* Single select for Scrum Master */}
                     <div className="form-group">
                         <label>Scrum Master</label>
-                        <input
-                            type="text"
-                            value={scrumMaster}
-                            onChange={(e) => setScrumMaster(e.target.value)}
-                            placeholder="Enter Scrum Master"
+                        <MemberDropdown
+                            options={memberOptions}
+                            inputValue={scrumMaster}
+                            handleSelect={setScrumMaster}
+                            isMulti={false}
+                            placeholder="Select Scrum Master"
                         />
                     </div>
+
+                    {/* Multi select for Members */}
                     <div className="form-group">
                         <label>Members</label>
-                        <input
-                            type="text"
-                            value={members}
-                            onChange={(e) => setMembers(e.target.value)}
-                            placeholder="Enter Members (comma separated)"
+                        <MemberDropdown
+                            options={memberOptions}
+                            inputValue={members}
+                            handleSelect={setMembers}
+                            isMulti={true}
+                            placeholder="Select Members"
                         />
                     </div>
+
                     <div className="button-group">
                         <button className="cancel-button" onClick={onClose}>Cancel</button>
                         <button className="create-button" onClick={handleCreateSprint}>Create Sprint</button>
