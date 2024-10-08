@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../css/editSprint.css';
+import MemberDropdown from './memberDropdown.jsx';
 
 const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     const [sprintName, setSprintName] = useState(sprintDetails.name || '');
@@ -7,13 +8,25 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     const [endDate, setEndDate] = useState(sprintDetails.endDate || '');
     const [productOwner, setProductOwner] = useState(sprintDetails.productOwner || '');
     const [scrumMaster, setScrumMaster] = useState(sprintDetails.scrumMaster || '');
-    const [members, setMembers] = useState(sprintDetails.members ? sprintDetails.members.join(', ') : '');
+    // const [members, setMembers] = useState(sprintDetails.members ? sprintDetails.members.join(', ') : ''); // old format
+    const [members, setMembers] = useState(
+        Array.isArray(sprintDetails.members)
+            ? sprintDetails.members
+            : sprintDetails.members
+            ? sprintDetails.members.split(',').map((member) => member.trim())
+            : []
+    ); 
     const [error, setError] = useState('');
+    const [memberOptions, setMemberOptions] = useState([ // this is used for memberDropdown.jsx
+        {label: 'Alice', value: 'Alice'},
+        {label: 'Bob', value: 'Bob'},
+        // Add more members here
+    ]);
 
     const handleEditSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
 
-        if (!sprintName.trim() || !startDate || !endDate || !productOwner.trim() || !members.trim()) {
+        if (!sprintName.trim() || !startDate || !endDate || !productOwner.trim() || !members.length) {
             setError('All fields are required.');
             return;
         }
@@ -34,10 +47,15 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
             endDate,
             productOwner,
             scrumMaster,
-            members: members.split(',').map((member) => member.trim()),
+            // members: members.split(',').map((member) => member.trim()), // old format
+            members: members.join(', ') //new format
         });
         onClose(); // Close overlay after editing the sprint
     };
+
+    const handleMemberSelect = (option) => {
+        setMembers([...members, option.value]);
+    }
 
     return (
         <div className="edit-sprint-overlay">
@@ -90,12 +108,23 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
                     </div>
                     <div className="form-group">
                         <label>Members</label>
-                        <input
+                        <MemberDropdown
+                            inputValue=""
+                            options={memberOptions}
+                            handleSelect={handleMemberSelect}
+                        />
+                        <ul>
+                            {members.map((member, index) => (
+                                <li key={index}>{member}</li>
+                            ))}
+                        </ul>
+                        {/* bellow is the old format for members */}
+                        {/* <input
                             type="text"
                             value={members}
                             onChange={(e) => setMembers(e.target.value)}
                             placeholder="Enter Members (comma separated)"
-                        />
+                        /> */}
                     </div>
                     <div className="button-group">
                         <button className="cancel-button" onClick={onClose}>Cancel</button>

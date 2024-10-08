@@ -21,6 +21,7 @@ import {
     Legend,
 } from 'chart.js';
 import 'chart.js/auto';
+import MemberDropdown from '../pages/Board/components/memberDropdown';
 
 ChartJS.register(
     CategoryScale,
@@ -54,7 +55,6 @@ const mockTask = {
 function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     console.log('Props received:', { task, onClose, onSave, onUpdate });
 
-    // console.log('this ism me', task)
     const [name, setTaskName] = useState('');
     const [taskType, setTaskType] = useState('Bug');
     const [taskStage, setTaskStage] = useState('Planning');
@@ -69,7 +69,10 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     const [totalLogTime, setTotalLogTime] = useState(0); // To display total logged time
     const [logTimeHistory, setLogTimeHistory] = useState([]); // New state for log time by date
     const [sprintId, setSprintId] = useState(null);
-
+    const [members, setMembers] = useState([
+        { label: 'Alice', value: 'Alice' },
+        { label: 'Bob', value: 'Bob' },
+    ]); // New state for members
 
 
     const taskTypes = ['Story', 'Bug'];
@@ -131,6 +134,10 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
 
         }
     }, [task]);
+
+    const handleMemberSelect = (option) => {
+        setMembers(option.value);
+    };
 
     const handleTagChange = (event) => {
         const value = event.target.value;
@@ -348,13 +355,18 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
                 {/* Assignee */}
                 <div className="form-group">
                     <label htmlFor="assignee" className="task-label">Assignee</label>
-                    <input
+                    <MemberDropdown
+                        inputValue=""
+                        options={members}
+                        handleSelect={handleMemberSelect}
+                    />
+                    {/* <input
                         type="text"
                         id="assignee"
                         className="task-input"
                         value={assignee}
                         onChange={(e) => setAssignee(e.target.value)}
-                    />
+                    /> */}
                 </div>
 
                 {/* Description */}
