@@ -6,16 +6,17 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     const [sprintName, setSprintName] = useState(sprintDetails.name || '');
     const [startDate, setStartDate] = useState(sprintDetails.startDate || '');
     const [endDate, setEndDate] = useState(sprintDetails.endDate || '');
-    const [productOwner, setProductOwner] = useState(sprintDetails.productOwner || '');
-    const [scrumMaster, setScrumMaster] = useState(sprintDetails.scrumMaster || '');
-    // const [members, setMembers] = useState(sprintDetails.members ? sprintDetails.members.join(', ') : ''); // old format
+    const [productOwner, setProductOwner] = useState(
+        sprintDetails.productOwner ? { label: sprintDetails.productOwner, value: sprintDetails.productOwner } : null
+    );
+    const [scrumMaster, setScrumMaster] = useState(
+        sprintDetails.scrumMaster ? { label: sprintDetails.scrumMaster, value: sprintDetails.scrumMaster } : null
+    );
     const [members, setMembers] = useState(
         Array.isArray(sprintDetails.members)
-            ? sprintDetails.members
-            : sprintDetails.members
-            ? sprintDetails.members.split(',').map((member) => member.trim())
+            ? sprintDetails.members.map((member) => ({ label: member, value: member }))
             : []
-    ); 
+    );
     const [error, setError] = useState('');
     const [memberOptions, setMemberOptions] = useState([ // this is used for memberDropdown.jsx
         {label: 'Alice', value: 'Alice'},
@@ -87,44 +88,43 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
                             onChange={(e) => setEndDate(e.target.value)}
                         />
                     </div>
+                    
+                    {/* Single select for Product Owner */}
                     <div className="form-group">
                         <label>Product Owner</label>
-                        <input
-                            type="text"
-                            value={productOwner}
-                            onChange={(e) => setProductOwner(e.target.value)}
-                            placeholder="Enter Product Owner"
+                        <MemberDropdown
+                            options={memberOptions}
+                            inputValue={productOwner} // Pre-filled value
+                            handleSelect={(selected) => setProductOwner(selected)} // Update value
+                            isMulti={false}
+                            placeholder="Select Product Owner"
                         />
                     </div>
+
+                    {/* Single select for Scrum Master */}
                     <div className="form-group">
                         <label>Scrum Master</label>
-                        <input
-                            type="text"
-                            value={scrumMaster}
-                            onChange={(e) => setScrumMaster(e.target.value)}
-                            placeholder="Enter Scrum Master"
+                        <MemberDropdown
+                            options={memberOptions}
+                            inputValue={scrumMaster} // Pre-filled value
+                            handleSelect={(selected) => setScrumMaster(selected)} // Update value
+                            isMulti={false}
+                            placeholder="Select Scrum Master"
                         />
                     </div>
+
+                    {/* Multi select for Members */}
                     <div className="form-group">
                         <label>Members</label>
                         <MemberDropdown
-                            inputValue=""
                             options={memberOptions}
-                            handleSelect={handleMemberSelect}
+                            inputValue={members} // Pre-filled values
+                            handleSelect={handleMemberSelect} // Update members list
+                            isMulti={true}
+                            placeholder="Select Members"
                         />
-                        <ul>
-                            {members.map((member, index) => (
-                                <li key={index}>{member}</li>
-                            ))}
-                        </ul>
-                        {/* bellow is the old format for members */}
-                        {/* <input
-                            type="text"
-                            value={members}
-                            onChange={(e) => setMembers(e.target.value)}
-                            placeholder="Enter Members (comma separated)"
-                        /> */}
                     </div>
+
                     <div className="button-group">
                         <button className="cancel-button" onClick={onClose}>Cancel</button>
                         <button className="edit-button" onClick={handleEditSprint}>Save Changes</button>
