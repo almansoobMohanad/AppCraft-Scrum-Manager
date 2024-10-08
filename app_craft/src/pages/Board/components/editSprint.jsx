@@ -27,7 +27,7 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     const handleEditSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
 
-        if (!sprintName.trim() || !startDate || !endDate || !productOwner.trim() || !members.length) {
+        if (!sprintName.trim() || !startDate || !endDate || !productOwner || !members.length) {
             setError('All fields are required.');
             return;
         }
@@ -54,7 +54,7 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     };
 
     const handleMemberSelect = (option) => {
-        setMembers([...members, option.value]);
+        setMembers(option);
     }
 
     return (
@@ -118,7 +118,7 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
                         <label>Members</label>
                         <MemberDropdown
                             options={memberOptions}
-                            inputValue={members} // Pre-filled values
+                            inputValue={members || []} // Pre-filled values
                             handleSelect={handleMemberSelect} // Update members list
                             isMulti={true}
                             placeholder="Select Members"
