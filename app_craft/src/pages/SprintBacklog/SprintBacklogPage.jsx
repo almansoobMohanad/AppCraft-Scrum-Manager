@@ -76,20 +76,39 @@ function SprintBacklogPage() {
         // Use the latest task statuses from state instead of sprintTasks
         const sprintTasks = Object.values(state.tasks);
     
-        // Check if any task is "Not Started" or "In Progress"
-        const incompleteTasks = sprintTasks.some(task => task.status === 'not started' || task.status === 'in progress');
-        if (incompleteTasks) {
-            alert('Cannot end sprint. Some tasks are still "Not Started" or "In Progress".');
-            return;
-        }
+        // Filter tasks that are "Not Started" or "In Progress"
+        const tasksToMoveBack = sprintTasks.filter(task => 
+            task.status === 'not started' || task.status === 'in progress'
+        );
     
         try {
+            // Move each task back to the product backlog
+            for (const task of tasksToMoveBack) {
+                await moveTaskToBacklog(task.id);
+            }
+    
+            // Update sprint status to "Completed"
             await updateSprintInFirestore(sprintId, 'Completed');
-            alert(`Sprint ${sprintName} ended successfully.`);
+            
+            alert(`Sprint ${sprintName} ended successfully. All tasks moved back to backlog.`);
             console.log('Sprint ended successfully');
         } catch (error) {
             console.error('Error ending sprint:', error);
             alert('There was an error ending the sprint. Please try again.');
+        }
+    };
+    
+    //function to move a task back to the product backlog
+    const moveTaskToBacklog = async (taskId) => {
+        try {
+            const taskRef = doc(db, 'tasks', taskId);
+            await updateDoc(taskRef, {
+                sprintId: null, 
+                status: null
+            });
+            console.log(`Task ${taskId} moved to product backlog.`);
+        } catch (error) {
+            console.error('Error moving task to backlog:', error);
         }
     };
 
