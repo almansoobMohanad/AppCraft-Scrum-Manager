@@ -40,7 +40,7 @@ const NavigationBar = () => {
                     <span>Account</span>
                 </Link>
                 <Link 
-                    to="/" 
+                    to="/app" 
                     className={`nav-item ${activeItem === "Backlog" ? "active" : ""}`}
                     onClick={() => handleItemClick("Backlog")}
                 >
