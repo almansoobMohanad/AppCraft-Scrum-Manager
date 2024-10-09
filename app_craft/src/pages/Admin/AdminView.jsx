@@ -30,9 +30,17 @@ function AdminView() {
     };
 
     const handleDelete = async (id) => {
+        // Add confirmation for deletion
+        const confirmDelete = window.confirm("Are you sure you want to delete this account?");
+        if (!confirmDelete) {
+            return; //if the user cancels, do ntg
+        }
+
         try {
+            // proceed with deletion if confirmed
             await deleteDoc(doc(db, "accounts", id));
             setAccounts(accounts.filter(account => account.id !== id));
+            console.log("Account successfully deleted");
         } catch (error) {
             console.error("Error deleting account: ", error);
         }
