@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../css/editSprint.css';
 import MemberDropdown from './memberDropdown.jsx';
+import { fetchUsers } from './sprintDatabaseLogic.jsx';
 
 const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     const [sprintName, setSprintName] = useState(sprintDetails.name || '');
@@ -18,11 +19,22 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
             : []
     );
     const [error, setError] = useState('');
-    const [memberOptions, setMemberOptions] = useState([ // this is used for memberDropdown.jsx
-        {label: 'Alice', value: 'Alice'},
-        {label: 'Bob', value: 'Bob'},
-        // Add more members here
-    ]);
+    const [memberOptions, setMemberOptions] = useState([]);
+
+    
+        useEffect(() => {
+            const loadUsers = async () => {
+                try {
+                    const users = await fetchUsers();
+                    const options = users.map(user => ({ label: user.email, value: user.email })); 
+                    setMemberOptions(options);
+                } catch (error) {
+                    console.error("Error fetching users:", error);
+                }
+            };
+    
+            loadUsers();
+        }, []);
 
     const handleEditSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
