@@ -1,20 +1,18 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import '../css/AccountTable.css'; // Create and import a CSS file for styling if needed
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // run this: npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-
 function AccountTable({ title, accounts, onDelete, graph, changePassword }) {
-    const [passwordVisibility, setPasswordVisibility] = useState(false);
+    const [passwordVisibility, setPasswordVisibility] = useState({});
 
     const togglePasswordVisibility = (index) => {
         setPasswordVisibility((prevState) => ({
             ...prevState,
             [index]: !prevState[index],
         }));
-    }
+    };
 
     return (
         <div className="account-table">
@@ -48,18 +46,32 @@ function AccountTable({ title, accounts, onDelete, graph, changePassword }) {
                                 </div>
                             </td>
 
-                            {/* Log Time Spent*/}
+                            {/* Log Time Spent */}
                             <td className="time-spent-column">{account.logTimeSpent}</td>
 
                             {/* Average Log Time */}
                             <td className="average-column">{account.averageLogTime}</td>
 
                             {/* Action */}
-
                             <td className="buttons-column">
-                                <button className="change-password-button"onClick={() => {/* add function handling here */}}>Change Password</button>
-                                <button className="show-graph-button" onClick={() => {graph(account)}}>Graph</button>
-                                <button className="delete-button" onClick={() => onDelete(account.id)}>Delete</button>
+                                <button 
+                                    className="change-password-button"
+                                    onClick={() => changePassword(account.id)}
+                                >
+                                    Change Password
+                                </button>
+                                <button 
+                                    className="show-graph-button" 
+                                    onClick={() => graph(account)}
+                                >
+                                    Graph
+                                </button>
+                                <button 
+                                    className="delete-button" 
+                                    onClick={() => onDelete(account.id)}
+                                >
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     ))}
@@ -74,11 +86,13 @@ AccountTable.propTypes = {
     accounts: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
-            username: PropTypes.string.isRequired,
+            email: PropTypes.string.isRequired,
             isAdmin: PropTypes.bool.isRequired,
         })
     ).isRequired,
     onDelete: PropTypes.func.isRequired,
+    graph: PropTypes.func.isRequired,
+    changePassword: PropTypes.func.isRequired,
 };
 
 export default AccountTable;

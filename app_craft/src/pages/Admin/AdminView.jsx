@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
-import { db } from '../../firebase/firebaseConfig'; // Firestore config
+import { collection, onSnapshot, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { db, auth } from '../../firebase/firebaseConfig'; // Firestore and Auth config
+import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "firebase/auth";
 import NavigationBar from "../../components/NavigationBar";
 import CreateAccount from "./component/CreateAccount";
 import AccountTable from "./component/AccountTable"; // Import the new component
 import GraphOverlay from "./component/GraphOverlay";
 import TimeRangeFilter from "./component/TimeRangeFilter"; // Import the TimeRangeFilter component
+import PasswordChangeOverlay from "./component/PasswordChangeOverlay"; // Import the PasswordChangeOverlay component
 import './AdminView.css'; 
 
 function AdminView() {
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
     const [isGraphVisible, setGraphVisible] = useState(false);
+    const [isPasswordChangeVisible, setPasswordChangeVisible] = useState(false);
     const [users, setUsers] = useState([]);
     const [filteredAccounts, setFilteredAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
@@ -73,6 +76,37 @@ function AdminView() {
         console.log("Time range selected: ", start, end);
     };
 
+    const handleChangePassword = (accountId) => {
+        setSelectedAccount(accountId);
+        setPasswordChangeVisible(true);
+    };
+
+    const handlePasswordChange = async (oldPassword, newPassword) => {
+        try {
+            const user = auth.currentUser;
+            const credential = EmailAuthProvider.credential(user.email, oldPassword);
+
+            // Re-authenticate the user
+            await reauthenticateWithCredential(user, credential);
+
+            // Update the password in Firebase Authentication
+            await updatePassword(user, newPassword);
+
+            // Update the password in Firestore
+            const userDocRef = doc(db, "users", selectedAccount);
+            await updateDoc(userDocRef, { password: newPassword });
+
+            setUsers(users.map(user => 
+                user.id === selectedAccount ? { ...user, password: newPassword } : user
+            ));
+            console.log("Password successfully updated");
+            setPasswordChangeVisible(false);
+            setSelectedAccount(null);
+        } catch (error) {
+            console.error("Error updating password: ", error);
+            alert("Error updating password: " + error.message);
+        }
+    };
     const memberUsers = users.filter(user => !user.isAdmin);
 
     return (
@@ -88,18 +122,22 @@ function AdminView() {
                 {/* Time Range Filter */}
                 <TimeRangeFilter onConfirm={handleTimeRangeConfirm} />
                 
-
                 {/* Member Accounts Table */}
                 <AccountTable 
                     title="Member Accounts" 
                     accounts={memberUsers}
                     onDelete={handleDelete}
-                    // Add the props for handling things like changing password and graph
                     graph={handleGraph}
-                    changePassword={null}
+                    changePassword={handleChangePassword} // Pass the changePassword function
                 />
 
                 {isGraphVisible && <GraphOverlay onClose={closeGraph} selectedAccount={selectedAccount} />}
+                {isPasswordChangeVisible && (
+                    <PasswordChangeOverlay 
+                        onClose={() => setPasswordChangeVisible(false)} 
+                        onChangePassword={handlePasswordChange} 
+                    />
+                )}
             </div>
         </div>
     );
