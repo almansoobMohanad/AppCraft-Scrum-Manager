@@ -139,3 +139,13 @@ export async function fetchTasksInSprint(sprintId) {
         console.error("Error fetching tasks in sprint:", error);
     }
 }
+
+// Function to fetch users from Firestore
+export async function fetchUsers() {
+    const usersList = [];
+    const usersSnapshot = await getDocs(collection(db, 'users'));
+    usersSnapshot.forEach((doc) => {
+        usersList.push({ id: doc.id, ...doc.data() });
+    });
+    return usersList;
+}

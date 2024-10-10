@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/createSprint.css'; // Ensure you import the CSS file
 import { TaskSharp } from '@mui/icons-material';
 import '../css/createSprint.css';
 import MemberDropdown from './memberDropdown.jsx';
+import { fetchUsers } from './sprintDatabaseLogic.jsx';
 
 const CreateSprint = ({ onCreate, onClose }) => {
     const [sprintName, setSprintName] = useState('');
@@ -12,12 +13,30 @@ const CreateSprint = ({ onCreate, onClose }) => {
     const [scrumMaster, setScrumMaster] = useState(''); // New state for Scrum Master
     const [members, setMembers] = useState('');
     const [error, setError] = useState('');
+    const [memberOptions, setMemberOptions] = useState([]);
 
-    const memberOptions = [
+    // Fetch users from Firestore when the component mounts
+    useEffect(() => {
+        const loadUsers = async () => {
+            try {
+                const users = await fetchUsers(); // Fetch users from Firestore
+                const options = users.map(user => ({ label: user.email, value: user.email })); 
+                setMemberOptions(options);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+    
+        loadUsers();
+    }, []);
+    
+
+    /*const memberOptions = [
         { label: 'Alice', value: 'Alice' },
         { label: 'Bob', value: 'Bob' },
         { label: 'Charlie', value: 'Charlie' },
     ];
+    */
 
     const handleCreateSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
