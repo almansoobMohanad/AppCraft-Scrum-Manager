@@ -56,8 +56,13 @@ function AdminView() {
                 <h1 className="title">Admin View</h1>
                 <button className="green-button" onClick={toggleOverlay}>Create Account</button>
                 {isOverlayVisible && <CreateAccount onClose={toggleOverlay} onCreate={handleAccountCreation} />}
-                <AccountTable title="Admin Accounts" accounts={adminAccounts} onDelete={handleDelete} />
-                <AccountTable title="Member Accounts" accounts={memberAccounts} onDelete={handleDelete} />
+                <AccountTable title="Member Accounts" 
+                    accounts={memberAccounts}
+                    onDelete={handleDelete}
+                    // Add the props for handling things like changing password and graph
+                    graph={null}
+                    changePassword={null}
+                />
             </div>
         </div>
     );
