@@ -1,5 +1,5 @@
-import React, { useEffect , useState } from 'react';
-import {getAuth, onAuthStateChanged } from "firebase/auth";
+import React, { useEffect, useState } from 'react';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from 'firebase/firestore';
 
 import { auth, db } from "../../firebase/firebaseConfig"; // Adjust the path as necessary
@@ -8,30 +8,12 @@ import EditSprintOverlay from './components/editSprint.jsx';
 import NavigationBar from "../../components/NavigationBar";
 import './SprintBoard.css'; 
 import createSprint from './components/sprintDatabaseLogic.jsx'; //import the createSprint function
-import { editSprintDetails }  from './components/sprintDatabaseLogic.jsx';
+import { editSprintDetails } from './components/sprintDatabaseLogic.jsx';
 import SprintTable from './components/sprintTable'; // Import the SprintTable component
 import { fetchSprints } from './components/sprintDatabaseLogic.jsx';
 import { deleteSprint } from './components/sprintDatabaseLogic.jsx';
 import localDB from '../../LocalDatabase.jsx';
 import { EditFilesInDB } from '../../components/EditFilesInDB.jsx';
-
-const dummySprints = [
-    {
-        id: '1',
-        name: 'Sprint 1',
-        status: 'Completed'
-    },
-    {
-        id: '2',
-        name: 'Sprint 2',
-        status: 'Active'
-    },
-    {
-        id: '3',
-        name: 'Sprint 3',
-        status: 'Not Started'
-    }
-];
 
 const SprintBoard = () => { 
     //all sprints in this page are stored here
@@ -41,6 +23,7 @@ const SprintBoard = () => {
     const [showEditOverlay, setShowEditOverlay] = useState(false);
     const [selectedSprint, setSelectedSprint] = useState(null); // Track sprint being edited
     const [currentUser, setCurrentUser] = useState({ isAdmin: false }); // Track the current user
+
     useEffect(() => {
         const fetchAndSetSprints = async () => {
             const fetchedSprints = await fetchSprints();
@@ -188,6 +171,7 @@ const SprintBoard = () => {
                         setShowEditOverlay(true);
                     }}
                     onDeleteSprint={handleDeleteSprint}
+                    isAdmin={currentUser.isAdmin} // Pass the isAdmin prop to SprintTable
                 />
             </div>
         </div>

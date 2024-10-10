@@ -7,8 +7,7 @@ import '../css/sprintTable.css';
 import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome CSS
 import localDB from '../../../LocalDatabase';
 
-
-const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
+const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) => {
   const [sprints, setSprints] = useState([]);
   const [showBurndownChart, setShowBurndownChart] = useState(false);
   const [selectedSprint, setSelectedSprint] = useState(null);
@@ -18,25 +17,25 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
   const handleStartSprint = async (sprintToStart) => {
     const activeSprintExists = sprints.some((sprint) => sprint.status === 'Active');
 
-      if (activeSprintExists) {
-          alert('An active sprint is already in progress. Please finish the ongoing sprint before starting a new one.');
-          return; // Prevent starting a new sprint
-      }
+    if (activeSprintExists) {
+      alert('An active sprint is already in progress. Please finish the ongoing sprint before starting a new one.');
+      return; // Prevent starting a new sprint
+    }
 
-      // Fetch tasks associated with the sprint
-      await localDB.updateData();
-      const tasks = localDB.getData();
-      const sprintTasks = tasks.filter(task => task.sprintId === sprintToStart.id);
+    // Fetch tasks associated with the sprint
+    await localDB.updateData();
+    const tasks = localDB.getData();
+    const sprintTasks = tasks.filter(task => task.sprintId === sprintToStart.id);
 
-      if (sprintTasks.length === 0) {
-          alert('Cannot start an empty sprint. Please add tasks to the sprint before starting it.');
-          return; // Prevent starting an empty sprint
-      }
+    if (sprintTasks.length === 0) {
+      alert('Cannot start an empty sprint. Please add tasks to the sprint before starting it.');
+      return; // Prevent starting an empty sprint
+    }
 
-      // If no active sprint exists and the sprint has tasks, start the selected sprint
-      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-      await startSprintInFirestore(sprintToStart.id, currentDate);
-      console.log(`Sprint ${sprintToStart.name} started`);
+    // If no active sprint exists and the sprint has tasks, start the selected sprint
+    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    await startSprintInFirestore(sprintToStart.id, currentDate);
+    console.log(`Sprint ${sprintToStart.name} started`);
   };
 
   // Function to update Firestore with new sprint status
@@ -147,8 +146,8 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
   }, [showBurndownChart]);
 
   return (
-<div className="table-container"> {/* Added this div */}
-        <table className="sprint-table">
+    <div className="table-container"> {/* Added this div */}
+      <table className="sprint-table">
         <thead>
           <tr>
             <th>Sprint Name</th>
@@ -173,19 +172,19 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint }) => {
                     View Sprint
                   </button>
 
-                  {sprint.status === 'Not Started' && (
+                  {isAdmin && sprint.status === 'Not Started' && (
                     <button className="start-sprint-btn" onClick={() => handleStartSprint(sprint)}>
                       Start Sprint
                     </button>
                   )}
 
-                  {sprint.status !== 'Completed' && sprint.status !== 'Active' &&(
+                  {isAdmin && sprint.status !== 'Completed' && sprint.status !== 'Active' && (
                     <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
                       Edit Sprint
                     </button>
                   )}
 
-                  {sprint.status === 'Not Started' && (
+                  {isAdmin && sprint.status === 'Not Started' && (
                     <button className="delete-sprint-btn" onClick={() => onDeleteSprint(sprint.id)}>
                       <i className="fas fa-trash-alt"></i>
                     </button>
