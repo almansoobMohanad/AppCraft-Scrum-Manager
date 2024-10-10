@@ -11,8 +11,10 @@ function AccountPage() {
     const [email, setEmail] = useState("");
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // New state for confirm password visibility
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
@@ -41,6 +43,12 @@ function AccountPage() {
             return;
         }
 
+        if (newPassword !== confirmPassword) {
+            setError("New password and confirm password do not match.");
+            setSuccess("");
+            return;
+        }
+
         try {
             const auth = getAuth();
             const user = auth.currentUser;
@@ -54,12 +62,11 @@ function AccountPage() {
                 const userDoc = doc(db, "users", user.uid);
                 await updateDoc(userDoc, { password: newPassword });
 
-
-
                 setError("");
                 setSuccess("Password changed successfully!");
                 setOldPassword("");
                 setNewPassword("");
+                setConfirmPassword(""); // Clear confirm password
             } else {
                 setError("No authenticated user found.");
                 setSuccess("");
@@ -73,6 +80,7 @@ function AccountPage() {
 
     const toggleOldPasswordVisibility = () => setShowOldPassword((prevState) => !prevState);
     const toggleNewPasswordVisibility = () => setShowNewPassword((prevState) => !prevState);
+    const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((prevState) => !prevState); // Toggle confirm password visibility
 
     return (
         <div className="accountPage-container">
@@ -111,6 +119,21 @@ function AccountPage() {
                         />
                         <span className="toggle-password-icon" onClick={toggleNewPasswordVisibility}>
                             <FontAwesomeIcon icon={showNewPassword ? faEye : faEyeSlash} />
+                        </span>
+                    </div>
+                </div>
+
+                <div className="form-group password-field">
+                    <label>Confirm New Password</label>
+                    <div className="password-input-container">
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm new password"
+                        />
+                        <span className="toggle-password-icon" onClick={toggleConfirmPasswordVisibility}>
+                            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} />
                         </span>
                     </div>
                 </div>
