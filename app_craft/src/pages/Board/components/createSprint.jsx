@@ -49,6 +49,24 @@ const CreateSprint = ({ onCreate, onClose }) => {
     ];
     */
 
+    // Automatically add Product Owner and Scrum Master to the members list
+    useEffect(() => {
+        let updatedMembers = [...members];
+
+        // add po if not already in the members list
+        if (productOwner && !updatedMembers.some(member => member.value === productOwner.value)) {
+            updatedMembers = [...updatedMembers, productOwner];
+        }
+
+        // add sm if not already in the members list
+        if (scrumMaster && !updatedMembers.some(member => member.value === scrumMaster.value)) {
+            updatedMembers = [...updatedMembers, scrumMaster];
+        }
+
+        setMembers(updatedMembers);
+    }, [productOwner, scrumMaster]); 
+
+
     const handleCreateSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
 
