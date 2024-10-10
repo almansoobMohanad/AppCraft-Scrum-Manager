@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai"; // Import the cross icon
-import createAccount from "../DatabaseFiles/accountDatabaseLogic";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../../../firebase/firebaseConfig"; // Import Firebase auth and Firestore
 import '../css/CreateAccount.css'; 
 
 function CreateAccount({ onClose }) {
-    const [accountData, setAccountData] = useState({ username: "", password: "", isAdmin: false });
+    const [accountData, setAccountData] = useState({ email: "", password: "", isAdmin: false });
     const [error, setError] = useState("");
 
     const handleChange = (e) => {
@@ -27,38 +29,69 @@ function CreateAccount({ onClose }) {
             return;
         }
         try {
-            await createAccount(accountData);
-            setError(""); // Reset error state on successful account creation
-            alert("Account created successfully!");
-            onClose();
-        } catch (err) {
-            console.error("Error creating account:", err); // Log the error
-            setError(err.message);
+            // Register the user with Firebase Authentication
+            const userCredential = await createUserWithEmailAndPassword(auth, accountData.email, accountData.password);
+            const user = userCredential.user;
+
+            // Add user details to Firestore
+            await setDoc(doc(db, "users", user.uid), {
+                email: accountData.email,
+                isAdmin: accountData.isAdmin,
+            });
+
+            console.log("Account created successfully");
+            onClose(); // Close the form
+        } catch (error) {
+            console.error("Error creating account:", error);
+            setError("Error creating account. Please try again.");
         }
     };
 
     return (
         <div className="overlay-create-account">
-            <div className="createAccountForm-container">
-                <AiOutlineClose className="close-button" onClick={onClose} /> {/* Use the cross icon */}
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Username:</label>
-                        <input type="text" name="username" value={accountData.username} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <label>Password:</label>
-                        <input type="password" name="password" value={accountData.password} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <label>
-                            <input type="checkbox" name="isAdmin" checked={accountData.isAdmin} onChange={handleChange} />
-                            Is Admin
-                        </label>
-                    </div>
-                    {error && <p style={{ color: "red" }}>{error}</p>}
-                    <button type="submit">Create Account</button>
-                </form>
+            <div className="create-account-container">
+                <div className="create-account-box">
+                    <button className="close-button" onClick={onClose}>
+                        <AiOutlineClose />
+                    </button>
+                    <h2>Create Account</h2>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label htmlFor="email">Email:</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={accountData.email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="password">Password:</label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={accountData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="isAdmin">Admin:</label>
+                            <input
+                                type="checkbox"
+                                id="isAdmin"
+                                name="isAdmin"
+                                checked={accountData.isAdmin}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        {error && <div className="error-message">{error}</div>}
+                        <button type="submit" className="create-account-button">Create Account</button>
+                    </form>
+                </div>
             </div>
         </div>
     );
