@@ -15,20 +15,31 @@ const CreateSprint = ({ onCreate, onClose }) => {
     const [error, setError] = useState('');
     const [memberOptions, setMemberOptions] = useState([]);
 
-    // Fetch users from Firestore when the component mounts
     useEffect(() => {
         const loadUsers = async () => {
             try {
-                const users = await fetchUsers(); // Fetch users from Firestore
-                const options = users.map(user => ({ label: user.email, value: user.email })); 
+                const users = await fetchUsers();
+                const options = users.map(user => ({ label: user.email, value: user.email }));
                 setMemberOptions(options);
+    
+                //if the pre-selected Product Owner or Scrum Master no longer exist, clear them
+                if (productOwner && !options.some(option => option.value === productOwner.value)) {
+                    setProductOwner(null);
+                }
+                if (scrumMaster && !options.some(option => option.value === scrumMaster.value)) {
+                    setScrumMaster(null);
+                }
+    
+                // Filter out invalid members
+                const validMembers = members.filter(member => options.some(option => option.value === member.value));
+                setMembers(validMembers);
             } catch (error) {
                 console.error("Error fetching users:", error);
             }
         };
     
         loadUsers();
-    }, []);
+    }, [productOwner, scrumMaster, members]);
     
 
     /*const memberOptions = [

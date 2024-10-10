@@ -22,19 +22,33 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     const [memberOptions, setMemberOptions] = useState([]);
 
     
-        useEffect(() => {
-            const loadUsers = async () => {
-                try {
-                    const users = await fetchUsers();
-                    const options = users.map(user => ({ label: user.email, value: user.email })); 
-                    setMemberOptions(options);
-                } catch (error) {
-                    console.error("Error fetching users:", error);
-                }
-            };
+    useEffect(() => {
+        const loadUsers = async () => {
+            try {
+                const users = await fetchUsers();
+                const options = users.map(user => ({ label: user.email, value: user.email }));
+                setMemberOptions(options);
     
-            loadUsers();
-        }, []);
+                // Check if the selected Product Owner or Scrum Master are still valid
+                if (productOwner && !options.some(option => option.value === productOwner.value)) {
+                    setProductOwner(null); // Clear Product Owner if no longer in the options
+                }
+                if (scrumMaster && !options.some(option => option.value === scrumMaster.value)) {
+                    setScrumMaster(null); // Clear Scrum Master if no longer in the options
+                }
+    
+                // Filter out members that are no longer valid
+                const validMembers = members.filter(member => options.some(option => option.value === member.value));
+                setMembers(validMembers);
+    
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+    
+        loadUsers();
+    }, [productOwner, scrumMaster, members]);
+    
 
     const handleEditSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
