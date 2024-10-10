@@ -10,8 +10,6 @@ function GraphOverlay({ onClose, selectedAccount }) {
     const [hoursSpent, setHoursSpent] = useState([]);
 
     useEffect(() => {
-        // Fetch data for selected account
-        // Replace with actual data fetching logic
         const labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const hoursSpent = [5, 10, 15, 20, 25, 30, 35];
 

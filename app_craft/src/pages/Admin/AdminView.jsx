@@ -14,16 +14,15 @@ function AdminView() {
     const [users, setUsers] = useState([]);
     const [filteredAccounts, setFilteredAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
-    
-    const adminAccounts = accounts.filter(account => account.isAdmin);
-    const memberAccounts = accounts.filter(account => !account.isAdmin);
     const [timeRange, setTimeRange] = useState({ start: "", end: "" });
+
+    const memberAccounts = users.filter(account => !account.isAdmin);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
             const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setUsers(usersData);
-            setFilteredAccounts(accountsData);
+            setFilteredAccounts(memberAccounts);
         });
 
         // Cleanup subscription on unmount
