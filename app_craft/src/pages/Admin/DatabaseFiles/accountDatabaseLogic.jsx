@@ -33,3 +33,44 @@ export default async function createAccount(accountData) {
         throw new Error(error.message);
     }
 };
+
+export async function removeMemberFromProject(userId) {
+    try {
+        //Delete the user document from the collection
+        const userDocRef = doc(db, 'users', userId);
+        await deleteDoc(userDocRef);
+        console.log(`User ${userId} successfully removed from the project.`);
+
+        //Remove user from active sprints
+        await removeUserFromActiveSprints(userId);
+
+    } catch (error) {
+        console.error("Error removing user from project:", error);
+    }
+}
+
+//remove user's tasks from active sprints
+async function removeUserFromActiveSprints(userId) {
+    try {
+        //Query all active sprints (excluding completed sprints)
+        const sprintsCollection = collection(db, 'sprints');
+        const activeSprintsQuery = query(sprintsCollection, where('status', '!=', 'completed'));
+        const snapshot = await getDocs(activeSprintsQuery);
+
+        //Loop through each sprint and update tasks
+        snapshot.forEach(async (sprintDoc) => {
+            const sprintData = sprintDoc.data();
+            const sprintTasks = sprintData.tasks.map(task => {
+                if (task.assignee === userId) {
+                    return { ...task, assignee: null };  // Unassign the task, but keep the task in sprint
+                }
+                return task;
+            });
+
+            const sprintDocRef = doc(db, 'sprints', sprintDoc.id);
+            await updateDoc(sprintDocRef, { tasks: sprintTasks });
+        });
+    } catch (error) {
+        console.error('Error removing user from active sprints:', error);
+    }
+}
