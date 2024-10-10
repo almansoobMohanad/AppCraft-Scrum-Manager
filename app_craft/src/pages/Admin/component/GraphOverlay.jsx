@@ -17,7 +17,7 @@ function GraphOverlay({ onClose, selectedAccount, timeRange }) {
          */
         const generateDateLabels = (account, timeRange) => {
 
-            if (account && account.logTimeSpentTasks ) {
+            if (account && account.logTimeSpentTasks && Object.keys(account.logTimeSpentTasks).length > 0) {
                 let dates = Object.keys(account.logTimeSpentTasks);
                 let startDate = timeRange.start;
                 let endDate = timeRange.end;
