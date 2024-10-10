@@ -1,4 +1,8 @@
 import React, { useEffect , useState } from 'react';
+import {getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from 'firebase/firestore';
+
+import { auth, db } from "../../firebase/firebaseConfig"; // Adjust the path as necessary
 import CreateSprintOverlay from './components/createSprint.jsx';
 import EditSprintOverlay from './components/editSprint.jsx';
 import NavigationBar from "../../components/NavigationBar";
@@ -34,19 +38,31 @@ const SprintBoard = () => {
     const [sprints, setSprints] = useState([]);
     const [showOverlay, setShowOverlay] = useState(false);
     const [tasksInSprint, setTasksInSprint] = useState([]);
-
     const [showEditOverlay, setShowEditOverlay] = useState(false);
     const [selectedSprint, setSelectedSprint] = useState(null); // Track sprint being edited
-
-
+    const [currentUser, setCurrentUser] = useState({ isAdmin: false }); // Track the current user
     useEffect(() => {
-        // Fetch sprints from the server
         const fetchAndSetSprints = async () => {
             const fetchedSprints = await fetchSprints();
             setSprints(fetchedSprints);
         };
         fetchAndSetSprints();
-    }, []); // Empty dependency array ensures this runs only once   
+    
+        // Firebase authentication listener to get the current user
+        const auth = getAuth();
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log("Fetching user data for:", user); // Log the current user
+                const userDoc = await getDoc(doc(db, "users", user.uid)); // Query from "users" collection
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    setCurrentUser(userData); // Set the user data (including isAdmin flag)
+                } else {
+                    console.log("No user data found");
+                }
+            }
+        });
+    }, []);
 
     const handleViewTasksInSprint = (sprintID) => {
         console.log("View tasks in sprint with ID:", sprintID);
@@ -66,58 +82,38 @@ const SprintBoard = () => {
         setSprints(updatedSprints);
         console.log(`Sprint with ID ${sprintID} deleted (frontend only).`);
 
-                // Fetch all tasks
-                await localDB.updateData();
-                const tasks = localDB.getData();
+        // Fetch all tasks
+        await localDB.updateData();
+        const tasks = localDB.getData();
 
-                console.log('this is the tasks', tasks);
+        console.log('this is the tasks', tasks);
 
-                // Filter tasks that belong to the sprint
-                // const sprintTasks = tasks.filter(task => {
-                //     const isTaskInSprint = task.sprintId === sprintID;
-                //     console.log("Task in sprint:", isTaskInSprint);
-                //     console.log('task id:', task.id);
-                //     console.log('task sprint id:', task.sprintId, 'sprint id:', sprintID);
-                //     return isTaskInSprint; // Return true if the task belongs to the sprint
-                // });
-                tasks.forEach(task => {console.log(task.sprintId)});
-                const sprintTasks = tasks.filter(task => task.sprintId === sprintID);
+        // Filter tasks that belong to the sprint
+        tasks.forEach(task => { console.log(task.sprintId) });
+        const sprintTasks = tasks.filter(task => task.sprintId === sprintID);
 
-                console.log('this is the sprint tasks', sprintTasks);
-        
-                // Update the status of each task to null
-                const updatedTasks = sprintTasks.map(task => ({
-                    ...task,
-                    status: null,
-                    sprintId: null // Optionally, clear the sprintId if needed
-                }));
-        
-                // Save the updated tasks back to the database
-                // updatedTasks.forEach(task => {
-                //     localDB.editData(task.id, task);
-                //     const editFiles = new EditFilesInDB(task.id);
-                //     editFiles.changeStatusSprintTask(null);
-                //     editFiles.changeSprintId(null);
-                // });
+        console.log('this is the sprint tasks', sprintTasks);
 
-                updatedTasks.forEach(task => {
-                    localDB.editData(task.id, task);
-                    const editFiles = new EditFilesInDB(task.id);
-                    editFiles.changeStatus(null)
-                    editFiles.changeSprintId(null);
-                });
+        // Update the status of each task to null
+        const updatedTasks = sprintTasks.map(task => ({
+            ...task,
+            status: null,
+            sprintId: null // Optionally, clear the sprintId if needed
+        }));
 
+        // Save the updated tasks back to the database
+        updatedTasks.forEach(task => {
+            localDB.editData(task.id, task);
+            const editFiles = new EditFilesInDB(task.id);
+            editFiles.changeStatus(null)
+            editFiles.changeSprintId(null);
+        });
 
-                console.log(`Tasks in sprint ${sprintID} moved back to the backlog.`);
-                console.log('this is the updated', updatedTasks);
-
+        console.log(`Tasks in sprint ${sprintID} moved back to the backlog.`);
+        console.log('this is the updated', updatedTasks);
 
         // Backend deletion logic
         deleteSprint(sprintID); // Delete the sprint from the database
-
-        //LETS MAKE BACKEND HERE
-
-
     };
 
     const handleCreateSprint = async (newSprint) => {
@@ -157,14 +153,15 @@ const SprintBoard = () => {
         }
     };
 
-
     return (
         <div className="sprintBoard-container">
             <NavigationBar /> {/* Add the NavigationBar component */}
             <div className="content">
                 <h1 className="title">Sprint Board</h1>
-                <button className='create-sprint-button'
-                onClick={() => setShowOverlay(true)}>Create Sprint</button>
+                {currentUser.isAdmin && (
+                    <button className='create-sprint-button'
+                        onClick={() => setShowOverlay(true)}>Create Sprint</button>
+                )}
                 
                 {/* Create Sprint Overlay */}
                 {showOverlay && (
