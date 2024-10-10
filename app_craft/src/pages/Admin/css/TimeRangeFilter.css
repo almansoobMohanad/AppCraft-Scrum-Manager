@@ -2,8 +2,8 @@
     display: flex;
     flex-direction: row; /* Change from column to row layout */
     align-items: center; /* Align items vertically centered */
+    justify-content: flex-end; /* Align items horizontally to the left */
     margin-bottom: 10px; /* Spacing from the table */
-    margin-left: 805px; /* Add this to move the fields to the right */
 }
 
 .time-range-filter label {

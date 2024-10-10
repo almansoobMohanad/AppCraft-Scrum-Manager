@@ -59,10 +59,10 @@ function AdminView() {
         }
     };
 
-    const handleGraph = (id) => {
-        setSelectedAccount(id);
+    const handleGraph = (account) => {
+        setSelectedAccount(account);
         setGraphVisible(true);
-        console.log("Graph for account with ID: ", id);
+        console.log("Graph for account with ID: ", account.id);
     };
 
     const closeGraph = () => {
@@ -131,7 +131,12 @@ function AdminView() {
                     changePassword={handleChangePassword} // Pass the changePassword function
                 />
 
-                {isGraphVisible && <GraphOverlay onClose={closeGraph} selectedAccount={selectedAccount} />}
+                {isGraphVisible && <GraphOverlay 
+                    onClose={closeGraph}
+                    selectedAccount={selectedAccount}
+                    timeRange={timeRange}
+                    />}
+
                 {isPasswordChangeVisible && (
                     <PasswordChangeOverlay 
                         onClose={() => setPasswordChangeVisible(false)} 

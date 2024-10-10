@@ -5,17 +5,47 @@ import { Bar } from "react-chartjs-2";
 import '../css/GraphOverlay.css'; // Create and import a CSS file for styling if needed
 import { plugins, Ticks } from "chart.js";
 
-function GraphOverlay({ onClose, selectedAccount }) {
+function GraphOverlay({ onClose, selectedAccount, timeRange }) {
     const [labels, setLabels] = useState([]);
     const [hoursSpent, setHoursSpent] = useState([]);
 
     useEffect(() => {
-        const labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const hoursSpent = [5, 10, 15, 20, 25, 30, 35];
+        /**
+         * this badboy will generate the labels for the graph
+         * only if there's a time range filter if not then
+         * it will generate the labels for all the time
+         */
+        const generateDateLabels = (account, timeRange) => {
 
-        setLabels(labels);
-        setHoursSpent(hoursSpent);
+            if (account && account.logTimeSpentTasks ) {
+                let dates = Object.keys(account.logTimeSpentTasks);
+                let startDate = timeRange.start;
+                let endDate = timeRange.end;
+        
+                if (startDate && endDate) {
+                    dates = dates.filter(date => {
+                        const currentDate = new Date(date);
+                        return currentDate >= new Date(startDate) && currentDate <= new Date(endDate);
+                    });
+                }
+        
+                const filteredHoursSpent = dates.map(date => account.logTimeSpentTasks[date]);
+        
+                setLabels(dates);
+                setHoursSpent(filteredHoursSpent);
+            } else {
+                console.log("No account data"); 
+                return;
+            }
+        };
 
+        if (selectedAccount) {
+            generateDateLabels(selectedAccount, timeRange);
+        } else {
+            console.log("No account selected");
+            setLabels([]);
+            setHoursSpent([]);
+        }
     }, [hoursSpent, labels]);
 
     const data = {
