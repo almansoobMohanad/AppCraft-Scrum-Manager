@@ -4,11 +4,17 @@ import { db } from '../../firebase/firebaseConfig'; // Firestore config
 import NavigationBar from "../../components/NavigationBar";
 import CreateAccount from "./component/CreateAccount";
 import AccountTable from "./component/AccountTable"; // Import the new component
+import GraphOverlay from "./component/GraphOverlay";
 import './AdminView.css'; 
 
 function AdminView() {
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+    const [isGraphVisible, setGraphVisible] = useState(false);
     const [accounts, setAccounts] = useState([]);
+    const [selectedAccount, setSelectedAccount] = useState(null);
+    
+    const adminAccounts = accounts.filter(account => account.isAdmin);
+    const memberAccounts = accounts.filter(account => !account.isAdmin);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, "accounts"), (snapshot) => {
@@ -46,8 +52,17 @@ function AdminView() {
         }
     };
 
-    const adminAccounts = accounts.filter(account => account.isAdmin);
-    const memberAccounts = accounts.filter(account => !account.isAdmin);
+    const handleGraph = (id) => {
+        setSelectedAccount(id);
+        setGraphVisible(true);
+        console.log("Graph for account with ID: ", id);
+    };
+
+    const closeGraph = () => {
+        setGraphVisible(false);
+        setSelectedAccount(null);
+    }
+
 
     return (
         <div className="adminView-container">
@@ -60,9 +75,11 @@ function AdminView() {
                     accounts={memberAccounts}
                     onDelete={handleDelete}
                     // Add the props for handling things like changing password and graph
-                    graph={null}
+                    graph={handleGraph}
                     changePassword={null}
                 />
+
+                {isGraphVisible && <GraphOverlay onClose={closeGraph} selectedAccount={selectedAccount} />}
             </div>
         </div>
     );

@@ -58,7 +58,7 @@ function AccountTable({ title, accounts, onDelete, graph, changePassword }) {
 
                             <td className="buttons-column">
                                 <button className="change-password-button"onClick={() => {/* add function handling here */}}>Change Password</button>
-                                <button className="show-graph-button" onClick={() => {/* add function handling here */}}>Graph</button>
+                                <button className="show-graph-button" onClick={() => {graph(account)}}>Graph</button>
                                 <button className="delete-button" onClick={() => onDelete(account.id)}>Delete</button>
                             </td>
                         </tr>
