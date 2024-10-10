@@ -49,6 +49,21 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
         loadUsers();
     }, [productOwner, scrumMaster, members]);
     
+    useEffect(() => {
+        let updatedMembers = [...members];
+
+        // add po if not already in the members list
+        if (productOwner && !updatedMembers.some(member => member.value === productOwner.value)) {
+            updatedMembers = [...updatedMembers, productOwner];
+        }
+
+        // add sm if not already in the members list
+        if (scrumMaster && !updatedMembers.some(member => member.value === scrumMaster.value)) {
+            updatedMembers = [...updatedMembers, scrumMaster];
+        }
+
+        setMembers(updatedMembers);
+    }, [productOwner, scrumMaster]); 
 
     const handleEditSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
