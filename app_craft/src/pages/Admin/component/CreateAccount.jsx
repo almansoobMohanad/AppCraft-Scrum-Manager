@@ -36,6 +36,7 @@ function CreateAccount({ onClose }) {
             // Add user details to Firestore
             await setDoc(doc(db, "users", user.uid), {
                 email: accountData.email,
+                password: accountData.password, // Storing password directly is not recommended
                 isAdmin: accountData.isAdmin,
             });
 
