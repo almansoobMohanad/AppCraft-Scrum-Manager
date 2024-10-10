@@ -1,54 +1,86 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavigationBar from "../../components/NavigationBar";
 import './AccountPage.css';
 import changeDetails from './components/accountsDatabaseLogic';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // run this: npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { getFirestore, doc, updateDoc } from "firebase/firestore"; // Import Firestore functions
+import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 
 function AccountPage() {
-    const [username, setUsername] = useState("User123");
-    const [password, setPassword] = useState("Abcdefg1!");
-
-    // States for handling new password input
+    const [email, setEmail] = useState("");
+    const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false); // For the new password visibility
+    const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // New state for confirm password visibility
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    // Password validation logic
+    useEffect(() => {
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setEmail(user.email);
+            } else {
+                setEmail("");
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
     const validatePassword = (password) => {
         const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#<>]{8,}$/;
         return strongPasswordRegex.test(password);
     };
 
-    // Handle the password change
     const handleChangePassword = async () => {
         if (!validatePassword(newPassword)) {
             setError("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
-            setSuccess(""); // Clear success message
+            setSuccess("");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            setError("New password and confirm password do not match.");
+            setSuccess("");
             return;
         }
 
         try {
-            const accountId = "dummyAccountId"; // Replace with actual account ID
-            const account = await changeDetails(accountId);
-            await account.changePassword(newPassword);
-            setError(""); // Clear any previous errors
-            setSuccess("Password changed successfully!"); // Show success message
-            setPassword(newPassword);
+            const auth = getAuth();
+            const user = auth.currentUser;
+            if (user) {
+                const credential = EmailAuthProvider.credential(user.email, oldPassword);
+                await reauthenticateWithCredential(user, credential);
+                const account = await changeDetails(user.uid);
+                await account.changePassword(newPassword);
+
+                const db = getFirestore();
+                const userDoc = doc(db, "users", user.uid);
+                await updateDoc(userDoc, { password: newPassword });
+
+                setError("");
+                setSuccess("Password changed successfully!");
+                setOldPassword("");
+                setNewPassword("");
+                setConfirmPassword(""); // Clear confirm password
+            } else {
+                setError("No authenticated user found.");
+                setSuccess("");
+            }
         } catch (err) {
             console.error("Error changing password:", err);
             setError("Failed to change password. Please try again.");
-            setSuccess(""); // Clear success message
+            setSuccess("");
         }
     };
 
-    // Toggle password visibility
-    const togglePasswordVisibility = () => setShowPassword((prevState) => !prevState);
-
-    // Toggle new password visibility
+    const toggleOldPasswordVisibility = () => setShowOldPassword((prevState) => !prevState);
     const toggleNewPasswordVisibility = () => setShowNewPassword((prevState) => !prevState);
+    const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((prevState) => !prevState); // Toggle confirm password visibility
 
     return (
         <div className="accountPage-container">
@@ -56,23 +88,22 @@ function AccountPage() {
             <div className="content">
                 <h1 className="title">Account Page</h1>
 
-                {/* Display Username */}
                 <div className="form-group">
-                    <label>Username</label>
-                    <input type="text" value={username} readOnly /> {/* Username is not editable */}
+                    <label>Email</label>
+                    <input type="text" value={email} readOnly />
                 </div>
 
-                {/* Display Password with toggle eye icon */}
                 <div className="form-group password-field">
-                    <label>Password</label>
+                    <label>Old Password</label>
                     <div className="password-input-container">
                         <input
-                            type={showPassword ? "text" : "password"}  // Toggle between text and password
-                            value={password}
-                            readOnly
+                            type={showOldPassword ? "text" : "password"}
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
+                            placeholder="Enter old password"
                         />
-                        <span className="toggle-password-icon" onClick={togglePasswordVisibility}>
-                            <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} /> {/* Icon switch */}
+                        <span className="toggle-password-icon" onClick={toggleOldPasswordVisibility}>
+                            <FontAwesomeIcon icon={showOldPassword ? faEye : faEyeSlash} />
                         </span>
                     </div>
                 </div>
@@ -87,18 +118,29 @@ function AccountPage() {
                             placeholder="Enter new password"
                         />
                         <span className="toggle-password-icon" onClick={toggleNewPasswordVisibility}>
-                            <FontAwesomeIcon icon={showNewPassword ? faEye : faEyeSlash} /> {/* Icon switch for new password */}
+                            <FontAwesomeIcon icon={showNewPassword ? faEye : faEyeSlash} />
                         </span>
                     </div>
                 </div>
 
-                {/* Error Message */}
+                <div className="form-group password-field">
+                    <label>Confirm New Password</label>
+                    <div className="password-input-container">
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm new password"
+                        />
+                        <span className="toggle-password-icon" onClick={toggleConfirmPasswordVisibility}>
+                            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} />
+                        </span>
+                    </div>
+                </div>
+
                 {error && <p style={{ color: "red" }}>{error}</p>}
-                
-                {/* Success Message */}
                 {success && <p style={{ color: "green" }}>{success}</p>}
 
-                {/* Button to change password */}
                 <button className="change-password-button" onClick={handleChangePassword}>Change Password</button>
             </div>
         </div>
@@ -106,5 +148,3 @@ function AccountPage() {
 }
 
 export default AccountPage;
-
-

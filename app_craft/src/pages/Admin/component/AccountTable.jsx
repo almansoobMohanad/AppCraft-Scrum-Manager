@@ -33,7 +33,7 @@ function AccountTable({ title, accounts, onDelete, graph, changePassword }) {
                     {accounts.map((account, index) => (
                         <tr key={index}>
                             {/* Username */}
-                            <td className="username-column">{account.username}</td> 
+                            <td className="username-column">{account.email}</td> 
 
                             {/* Password */}
                             <td className="password-column">

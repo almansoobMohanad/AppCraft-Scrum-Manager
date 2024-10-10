@@ -1,15 +1,31 @@
-import { addDoc, collection, getFirestore, doc, setDoc, getDocs, deleteDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
+import { getAuth, updateEmail, updatePassword } from "firebase/auth";
 import { db } from "../../../firebase/firebaseConfig.js";
 
 const changeDetails = async (accountId) => {
-    const account = doc(db, 'accounts', accountId);
+    const account = doc(db, 'users', accountId); // Changed 'accounts' to 'users'
+    const auth = getAuth();
+    const user = auth.currentUser;
 
     const changeUserName = async (newUserName) => {
         await setDoc(account, { username: newUserName }, { merge: true });
     };
 
+    const changeEmail = async (newEmail) => {
+        if (user) {
+            await updateEmail(user, newEmail);
+            await setDoc(account, { email: newEmail }, { merge: true });
+        } else {
+            throw new Error("No authenticated user found");
+        }
+    };
+
     const changePassword = async (newPassword) => {
-        await setDoc(account, { password: newPassword }, { merge: true });
+        if (user) {
+            await updatePassword(user, newPassword);
+        } else {
+            throw new Error("No authenticated user found");
+        }
     };
 
     const changeRoles = async (newRoles) => {
@@ -26,6 +42,7 @@ const changeDetails = async (accountId) => {
 
     return { 
         changeUserName, 
+        changeEmail, 
         changePassword, 
         changeRoles,
         changeContributionTime,
