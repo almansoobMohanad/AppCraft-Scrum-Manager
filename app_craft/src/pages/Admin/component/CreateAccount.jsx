@@ -38,8 +38,9 @@ function CreateAccount({ onClose }) {
                 email: accountData.email,
                 password: accountData.password, // Storing passwxord directly is not recommended
                 isAdmin: accountData.isAdmin,
-                logTimeSpent: 0,
-                averageLogTime: 0,
+                logTimeSpent: 0, // used for tracking user's time spent in admin view
+                averageLogTime: 0, // used for tracking user's average time spent in admin view
+                creationTime: new Date().toISOString(), // Store the creation time of the account
 
             });
 

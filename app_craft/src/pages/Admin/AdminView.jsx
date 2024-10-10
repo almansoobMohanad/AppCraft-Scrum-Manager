@@ -73,7 +73,6 @@ function AdminView() {
         console.log("Time range selected: ", start, end);
     };
 
-    const adminUsers = users.filter(user => user.isAdmin);
     const memberUsers = users.filter(user => !user.isAdmin);
 
     return (
