@@ -1,8 +1,9 @@
 .time-range-filter {
     display: flex;
-    align-items: center;
-    justify-content: flex-end; /* This will align the feature to the right */
-    margin-bottom: 20px; /* Spacing from the table */
+    flex-direction: row; /* Change from column to row layout */
+    align-items: center; /* Align items vertically centered */
+    margin-bottom: 10px; /* Spacing from the table */
+    margin-left: 805px; /* Add this to move the fields to the right */
 }
 
 .time-range-filter label {
@@ -29,4 +30,18 @@
 
 .time-range-filter button:hover {
     background-color: #45a049;
+}
+
+
+/* Error message styling */
+.error-message-container {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 805px; /* Add this to move the error message to the right */
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
 }
