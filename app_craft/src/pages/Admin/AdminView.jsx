@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, onSnapshot, deleteDoc, doc} from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { db } from '../../firebase/firebaseConfig'; // Firestore config
 import NavigationBar from "../../components/NavigationBar";
 import CreateAccount from "./component/CreateAccount";
@@ -9,14 +9,14 @@ import './AdminView.css';
 
 function AdminView() {
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
-    const [accounts, setAccounts] = useState([]);
+    const [users, setUsers] = useState([]);
     const [filteredAccounts, setFilteredAccounts] = useState([]);
     const [timeRange, setTimeRange] = useState({ start: "", end: "" });
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, "accounts"), (snapshot) => {
-            const accountsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setAccounts(accountsData);
+        const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+            const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setUsers(usersData);
             setFilteredAccounts(accountsData);
         });
 
@@ -28,8 +28,8 @@ function AdminView() {
         setIsOverlayVisible(!isOverlayVisible);
     };
 
-    const handleAccountCreation = (newAccount) => {
-        setAccounts([...accounts, newAccount]);
+    const handleAccountCreation = (newUser) => {
+        setUsers([...users, newUser]);
         setIsOverlayVisible(false);
     };
 
@@ -37,13 +37,13 @@ function AdminView() {
         // Add confirmation for deletion
         const confirmDelete = window.confirm("Are you sure you want to delete this account?");
         if (!confirmDelete) {
-            return; //if the user cancels, do ntg
+            return; // If the user cancels, do nothing
         }
 
         try {
-            // proceed with deletion if confirmed
-            await deleteDoc(doc(db, "accounts", id));
-            setAccounts(accounts.filter(account => account.id !== id));
+            // Proceed with deletion if confirmed
+            await deleteDoc(doc(db, "users", id));
+            setUsers(users.filter(user => user.id !== id));
             setFilteredAccounts(filteredAccounts.filter(account => account.id !== id));
             console.log("Account successfully deleted");
         } catch (error) {
@@ -57,8 +57,8 @@ function AdminView() {
         console.log("Time range selected: ", start, end);
     };
 
-    const adminAccounts = accounts.filter(account => account.isAdmin);
-    const memberAccounts = accounts.filter(account => !account.isAdmin);
+    const adminUsers = users.filter(user => user.isAdmin);
+    const memberUsers = users.filter(user => !user.isAdmin);
 
     return (
         <div className="adminView-container">
@@ -77,7 +77,7 @@ function AdminView() {
                 {/* Member Accounts Table */}
                 <AccountTable 
                     title="Member Accounts" 
-                    accounts={memberAccounts}
+                    accounts={memberUsers}
                     onDelete={handleDelete}
                     // Add the props for handling things like changing password and graph
                     graph={null}
