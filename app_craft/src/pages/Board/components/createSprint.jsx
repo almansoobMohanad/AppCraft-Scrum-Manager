@@ -39,7 +39,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
         };
     
         loadUsers();
-    }, [productOwner, scrumMaster, members]);
+    }, []);
     
 
     /*const memberOptions = [
@@ -64,7 +64,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
         }
 
         setMembers(updatedMembers);
-    }, [productOwner, scrumMaster]); 
+    }, []); 
 
 
     const handleCreateSprint = () => {
