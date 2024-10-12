@@ -11,6 +11,7 @@ import CollapsibleTable from './components/TaskCardDetail.jsx';
 import TaskFilter from './components/TaskFilter.jsx';
 import SortButton from './components/SortButton.jsx';  // Import SortButton
 import localDB from './LocalDatabase.jsx';
+import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
 
 function App() {
   // State to control overlay visibility
@@ -20,9 +21,58 @@ function App() {
   const [tasks, setTasks] = useState([]); // Manage all tasks
   const [sortedTasks, setSortedTasks] = useState([]); // Manage sorted tasks
   const [updateFlag, setUpdateFlag] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userData, setUserData] = useState(null); // State to store user-specific data
 
   const docRef = doc(db, 'tasks', 'Yn7xWRHWqZlKgEiWTo0n');
 
+  // Fetch the current user when the component mounts
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setCurrentUser(user);
+        console.log('Current user:', user); // Log the current user
+  
+        // Fetch user-specific data from Firestore
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+  
+        if (userDocSnap.exists()) {
+          const fetchedUserData = userDocSnap.data();
+          console.log('Fetched User data:', fetchedUserData); // Log fetched data
+          
+          // Instead of relying on setUserData, directly call the function here
+          handleUserData(fetchedUserData);  // Call your method to process or use userData
+          setUserData(fetchedUserData); // Optionally set the state if needed for later
+        } else {
+          console.log('No such document!');
+        }
+      } else {
+        setCurrentUser(null);
+        setUserData(null); // Clear user data when no user is signed in
+        console.log('No user is signed in');
+      }
+    });
+  
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+  
+  // Method to handle or process user data
+  const handleUserData = (data) => {
+    console.log('Processing user data:', data);
+
+    return data;
+    // Do something with user data immediately
+    console.log('Processing user data:', data);
+    // You can call other functions here or update UI, etc.
+  };
+
+  useEffect(() => {
+    console.log('Updated userData:', userData); // Log the updated userData
+  }, [userData]);
+  
   // Function to handle the "Create" button click
   const handleCreateButtonClick = () => {
     setOverlayVisible(true);  // Show the overlay
@@ -78,7 +128,8 @@ function App() {
           <CreateTaskButton onClick={handleCreateButtonClick} />
           {/* Add Sort Button */}
         </div>
-        <CollapsibleTable updateFlag={updateFlag} /> 
+        <CollapsibleTable updateFlag={updateFlag}
+        currentUser={userData} /> 
       </div>
 
       {/* Conditionally render the AddTaskOverlay */}
@@ -87,14 +138,17 @@ function App() {
       )}
 
       {/* Conditionally render the EditTaskOverlay */}
-      {isEditOverlayVisible && selectedTask && (
-      <EditTaskOverlay
+      {isEditOverlayVisible && selectedTask && userData &&(
+        <> 
+            {console.log('Passing userData to EditTaskOverlay:', userData)}
+        <EditTaskOverlay
           task={selectedTask}
           onClose={handleEditOverlayClose}
           onSave={handleTaskEditSave}
-          showAssignee={false} 
-      />
-  )}
+          showAssignee={false}
+          currentUser ={userData}        />
+        </>
+      )}
     </div>
   );
 }

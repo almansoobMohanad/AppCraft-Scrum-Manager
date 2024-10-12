@@ -10,33 +10,8 @@ import { getFirestore, doc, collection, query, where, getDoc, onSnapshot, update
 import { db } from '../../firebase/firebaseConfig';
 import EditTaskOverlay from '../../components/EditTaskOverLay';
 import { editSprintDetails } from '../Board/components/sprintDatabaseLogic';
+import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
 
-const DummyData = {
-    tasks: {
-        'task-1': { id: 'task-1', content: 'Task 1', storyPoints: '5', priority: 'Important', tags: 'API' },
-        'task-2': { id: 'task-2', content: 'Task 2', storyPoints: '8', priority: 'Medium', tags: 'Database' },
-        'task-3': { id: 'task-3', content: 'Task 3', storyPoints: '3', priority: 'Low', tags: 'Framework' },
-        'task-4': { id: 'task-4', content: 'Task 4', storyPoints: '1', priority: 'Urgent', tags: 'Testing' },
-    },
-    columns: {
-        'not-started': {
-            id: 'not-started',
-            title: 'Not Started',
-            taskIds: ['task-1', 'task-2'],
-        },
-        'in-progress': {
-            id: 'in-progress',
-            title: 'In Progress',
-            taskIds: ['task-3'],
-        },
-        'completed': {
-            id: 'completed',
-            title: 'Completed',
-            taskIds: ['task-4'],
-        },
-    },
-    columnOrder: ['not-started', 'in-progress', 'completed'],
-};
 
 const KanbanTemplate = {
     tasks: {},
@@ -70,7 +45,37 @@ function SprintBacklogPage() {
 
     const [state, setState] = useState(KanbanTemplate);
     const [view, setView] = useState('kanban'); // Add state to track view mode (kanban or list)
+    const [currentUser, setCurrentUser] = useState(null);
+    const [userData, setUserData] = useState(null);
     console.log("SprintBacklogPage state:", state);
+
+    useEffect(() => {
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                setCurrentUser(user);
+                console.log('Current user:', user);
+
+                // Fetch user-specific data from Firestore
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const fetchedUserData = userDocSnap.data();
+                    console.log('Fetched User data:', fetchedUserData);
+                    setUserData(fetchedUserData);
+                } else {
+                    console.log('No such document!');
+                }
+            } else {
+                setCurrentUser(null);
+                setUserData(null);
+                console.log('No user is signed in');
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     const handleEndSprint = async () => {
         // Use the latest task statuses from state instead of sprintTasks
@@ -292,12 +297,12 @@ function SprintBacklogPage() {
                             const column = state.columns[columnId];
                             const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
 
-                            return <Column key={column.id} column={column} tasks={tasks} updateTask={handleUpdate2} />;
+                            return <Column key={column.id} column={column} tasks={tasks} updateTask={handleUpdate2} currentUser={userData}/>;
                         })}
                     </div>
                 </DragDropContext>            </>
         ) : (
-            <ListView tasks={Object.values(state.tasks)} columns={state.columns} sprintId={sprintId} updateTask={handleUpdate2}/>
+            <ListView tasks={Object.values(state.tasks)} columns={state.columns} sprintId={sprintId} updateTask={handleUpdate2} currentUser={userData}/>
         )}
 
         <button className="end-sprint-button" onClick={handleEndSprint}>
@@ -308,7 +313,7 @@ function SprintBacklogPage() {
     );
 }
 
-function Column({ column, tasks, updateTask }) {
+function Column({ column, tasks, updateTask, currentUser }) {
     const [showOverlay, setShowOverlay] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [updateFlag, setUpdateFlag] = useState(false);
@@ -374,13 +379,14 @@ function Column({ column, tasks, updateTask }) {
                 onSave={(updatedTask) => updateTask(updatedTask)}
                 onUpdate={handleUpdate}
                 showAssignee={true} // Show assignee in sprint backlog
+                currentUser={currentUser} // Pass the current
             />
         )}
         </div>
     );
 }
 
-function ListView({ tasks, columns, sprintId, updateTask }) {
+function ListView({ tasks, columns, sprintId, updateTask, currentUser}) {
     const [showOverlay, setShowOverlay] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [updateFlag, setUpdateFlag] = useState(false);
@@ -457,6 +463,7 @@ function ListView({ tasks, columns, sprintId, updateTask }) {
                 onClose={() => handleClose()}
                 onSave={(updatedTask) => updateTask(updatedTask)}
                 onUpdate={handleUpdate}
+                currentUser={currentUser}
                 />
             )}
         </table>

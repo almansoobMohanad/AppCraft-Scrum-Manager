@@ -93,7 +93,7 @@ Row.propTypes = {
     onTaskClick: PropTypes.func.isRequired,  // Add prop validation for the new click handler
 };
 
-export default function CollapsibleTable({ updateFlag }) {
+export default function CollapsibleTable({ updateFlag, currentUser }) {
     const [rows, setRows] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
     const [filters, setFilters] = useState({
@@ -263,6 +263,7 @@ export default function CollapsibleTable({ updateFlag }) {
                     onClose={() => setEditOverlayVisible(false)}
                     onSave={(updatedTask) => { /* Handle save logic here */ }}
                     onUpdate={handleUpdate}
+                    currentUser={currentUser} // Pass the current user data here
                 />
             )}
         </div>

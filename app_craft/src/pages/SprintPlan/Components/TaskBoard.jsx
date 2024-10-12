@@ -9,7 +9,7 @@ import { doc, updateDoc,getDoc  } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig';  
 
 
-const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) => {
+const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID, currentUser }) => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [isOverlayVisible, setOverlayVisible] = useState(false);
     const [updateFlag2, setUpdateFlag2] = useState(false);
@@ -155,15 +155,7 @@ const TaskBoard = ({ backlog, sprintTasks, setBacklog, setSprint, sprintID }) =>
                     </Droppable>
                 </div>
             </DragDropContext>
-            {isOverlayVisible && selectedTask && (
-                <EditTaskOverlay
-                
-                    task={selectedTask}
-                    onClose={closeOverlay}
-                    onSave={(updatedTask) => handleUpdate2(updatedTask)}
-                    onUpdate={handleUpdate}
-                />
-            )}
+ 
         </>
     );
 };
