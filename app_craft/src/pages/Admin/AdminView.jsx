@@ -129,6 +129,7 @@ function AdminView() {
                     onDelete={handleDelete}
                     graph={handleGraph}
                     changePassword={handleChangePassword} // Pass the changePassword function
+                    timeRange={timeRange}
                 />
 
                 {isGraphVisible && <GraphOverlay 
