@@ -307,7 +307,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
     };
 
     // Check if the current user is allowed to edit the task
-    const canEdit = !assignee || assignee === "" || assignee === currentUser.email || currentUser.isAdmin;
+    const canEdit = !assignee || assignee === "" || assignee === currentUser.username || currentUser.isAdmin;
     console.log('Assignee:', assignee);
     console.log('Current User:', currentUser);
     console.log('Can Edit:', canEdit);
