@@ -7,6 +7,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 function AccountTable({ title, accounts, onDelete, graph, changePassword, timeRange }) {
     const [passwordVisibility, setPasswordVisibility] = useState({});
     const [averageLogTimes, setAverageLogTimes] = useState([]);
+    const [totalLogTimes, setTotalLogTimes] = useState([]);
 
     const togglePasswordVisibility = (index) => {
         setPasswordVisibility((prevState) => ({
@@ -16,9 +17,12 @@ function AccountTable({ title, accounts, onDelete, graph, changePassword, timeRa
     };
 
     useEffect(() => {
-        // Calculate average log times and store them in the array
-        const calculateAverageLogTimes = () => {
-            const averages = accounts.map(account => {
+        // Calculate average log times and total log times and store them in the arrays
+        const calculateLogTimes = () => {
+            const averages = [];
+            const totals = [];
+
+            accounts.forEach(account => {
                 if (account.logTimeSpentTasks && account.logTimeSpentTasks.length > 0) {
                     let filteredTasks = account.logTimeSpentTasks;
 
@@ -34,27 +38,31 @@ function AccountTable({ title, accounts, onDelete, graph, changePassword, timeRa
 
                     if (filteredTasks.length > 0) {
                         const totalLogTime = filteredTasks.reduce((total, task) => total + task.logTime, 0);
-                        let averageLogTime;
+                        totals.push(totalLogTime);
 
+                        let averageLogTime;
                         if (timeRange && timeRange.start && timeRange.end) {
                             const periodLength = (new Date(timeRange.end) - new Date(timeRange.start)) / (1000 * 60 * 60 * 24) + 1; // Period length in days
                             averageLogTime = (totalLogTime / periodLength).toFixed(2);
                         } else {
                             averageLogTime = (totalLogTime / filteredTasks.length).toFixed(2);
                         }
-
-                        return averageLogTime;
+                        averages.push(averageLogTime);
                     } else {
-                        return 0; // Default value if no tasks are within the time range
+                        totals.push(0);
+                        averages.push(0);
                     }
                 } else {
-                    return 0; // Default value if logTimeSpentTasks is undefined or empty
+                    totals.push(0);
+                    averages.push(0);
                 }
             });
+
+            setTotalLogTimes(totals);
             setAverageLogTimes(averages);
         };
 
-        calculateAverageLogTimes();
+        calculateLogTimes();
     }, [accounts, timeRange]);
 
     return (
@@ -90,7 +98,7 @@ function AccountTable({ title, accounts, onDelete, graph, changePassword, timeRa
                             </td>
 
                             {/* Log Time Spent */}
-                            <td className="time-spent-column">{account.logTimeSpentTotal}</td>
+                            <td className="time-spent-column">{totalLogTimes[index]}</td>
 
                             {/* Average Log Time */}
                             <td className="average-column">{averageLogTimes[index]}</td>
