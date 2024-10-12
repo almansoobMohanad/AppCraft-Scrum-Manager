@@ -23,6 +23,8 @@ import {
 import 'chart.js/auto';
 import MemberDropdown from '../pages/Board/components/memberDropdown';
 import { fetchUsers } from '../pages/Board/components/sprintDatabaseLogic';
+import { getAuth } from 'firebase/auth';
+import { getFirestore, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
 
 ChartJS.register(
     CategoryScale,
@@ -69,6 +71,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
     const [history, setHistory] = useState([]);
     const [status, setStatus] = useState('Not Started');
     const [logTimeSpent, setLogTimeSpent] = useState(0);
+    const [logTimeSpentUser, setLogTimeSpentUser] = useState(0); // used to update user's log time
     const [totalLogTime, setTotalLogTime] = useState(0); // To display total logged time
     const [logTimeHistory, setLogTimeHistory] = useState([]); // New state for log time by date
     const [sprintId, setSprintId] = useState(null);
@@ -113,7 +116,6 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
             },
         },
     };
-    
 
     // Load the existing task data into the form fields when the component mounts
     useEffect(() => {
@@ -133,30 +135,29 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
             setLogTimeHistory(task.logTimeHistory || []); // Set existing log time history
             setSprintId(task.sprintId || null); // Set the sprint ID
             console.log('Total log time from task:', task.logtimeSpent); // Debug log
-            
+            setLogTimeSpentUser(0); // Reset the user's log time
 
         }
     }, [task]);
 
-        // Fetch users from Firestore and populate member options
-        useEffect(() => {
-            const loadUsers = async () => {
-                try {
-                    const users = await fetchUsers();
-                    const options = users.map(user => ({ label: user.email, value: user.email }));
-                    setMemberOptions(options);
-                } catch (error) {
-                    console.error('Error fetching users:', error);
-                }
-            };
-            
-            loadUsers();
-        }, []);
-
-        const handleMemberSelect = (option) => {
-            setAssignee(option.value);
+    // Fetch users from Firestore and populate member options
+    useEffect(() => {
+        const loadUsers = async () => {
+            try {
+                const users = await fetchUsers();
+                const options = users.map(user => ({ label: user.email, value: user.email }));
+                setMemberOptions(options);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
         };
         
+        loadUsers();
+    }, []);
+
+    const handleMemberSelect = (option) => {
+        setAssignee(option.value);
+    };
 
     const handleTagChange = (event) => {
         const value = event.target.value;
@@ -188,11 +189,64 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
         }
         
         setLogTimeHistory(updatedLogTimeHistory); // Update state with new history
+        setLogTimeSpentUser(Number(logTimeSpent)); // Update the user's log time
         setLogTimeSpent(0); // Reset the input after adding time
-    
+
         console.log(`New Total Log Time: ${updatedTotalLogTime} hours`);
     };
-    
+
+    const updateAccountLogtime = async (newLogTime) => {
+        const currentDate = new Date().toLocaleDateString('en-GB');
+
+        try {
+            if (!newLogTime) {
+                console.error('Invalid log time data');
+                return;
+            }
+
+            const auth = getAuth();
+            const user = auth.currentUser;
+
+            if (user) {
+                const db = getFirestore();
+                const userDoc = doc(db, "users", user.uid);
+                const userData = (await getDoc(userDoc)).data();
+
+                const LTSTasks = userData.logTimeSpentTasks || {};
+
+                let updatedTotalLogTime = (userData.logTimeSpentTotal || 0) + Number(newLogTime);
+                let dateFound = false;
+
+                for (let key in LTSTasks) {
+                    if (LTSTasks[key].date === currentDate) {
+                        LTSTasks[key].logTimeSpent += Number(newLogTime);
+                        dateFound = true;
+                        break;
+                    }
+                }
+
+                if (!dateFound) {
+                    const newIndex = Object.keys(LTSTasks).length + 1;
+                    LTSTasks[newIndex] = { 
+                        date: currentDate, 
+                        logTimeSpent: Number(newLogTime) 
+                    };
+                }
+
+                await updateDoc(userDoc, {
+                    logTimeSpentTotal: updatedTotalLogTime,
+                    logTimeSpentTasks: LTSTasks,
+                });
+
+                console.log('Log time updated successfully');
+
+            } else {
+                console.error('No authenticated user found.');
+            }
+        } catch (error) {
+            console.error('Error updating log time:', error);
+        }
+    };
 
     const validateFields = () => {
         if (!name || tags.length === 0 || !description) {
@@ -240,7 +294,6 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
             logtimeSpent: totalLogTime, // Update the logged time
             logTimeHistory: logTimeHistory,
 
-
         };
     
         console.log('Updated task:', updatedTask);
@@ -266,12 +319,14 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
         // Trigger the onSave callback with the updated task
         console.log('onSave called with:', updatedTask);
         onSave(updatedTask);
-    
+
         // Update the history in the component state
         //setHistory(updatedHistory); // <-- Ensure this is updated
-    
+
         // Close the overlay after saving
         onClose();
+
+        updateAccountLogtime(logTimeSpentUser); // Update the user's log time
     }
     };
 
