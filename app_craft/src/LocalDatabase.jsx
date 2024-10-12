@@ -1,6 +1,6 @@
 import { db } from './firebase/firebaseConfig.js';
 import { collection, getDocs } from 'firebase/firestore';
-// import React from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
 
 function dynamicSort(key, sortOrder = 'asc') {
     return function (a, b) {
@@ -35,16 +35,17 @@ function createData(name, tags, priority, storyPoints, id, description, type, hi
     };
 }
 
-
 class LocalDatabase {
     constructor() {
         this.data = [];
         this.modifiedData = [];
         this.updateCounter = 0; // Counter to track updates
+        this.currentUser = null; // Store the current user
     }
 
     async init() {
         await this.fetchData();
+        await this.fetchCurrentUser(); // Fetch the current user
     }
 
     async fetchData() {
@@ -71,6 +72,25 @@ class LocalDatabase {
             ));
         });
         this.updateCounter++;
+    }
+
+    async fetchCurrentUser() {
+        const auth = getAuth();
+        return new Promise((resolve, reject) => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    this.currentUser = user;
+                    resolve(user);
+                } else {
+                    this.currentUser = null;
+                    reject('No user is signed in');
+                }
+            });
+        });
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
     }
 
     getData() {
@@ -102,7 +122,6 @@ class LocalDatabase {
                 logtimeSpent: data.logtimeSpent,
                 logTimeHistory: data.logTimeHistory,
                 completedDate: data.completedDate,
-
             };
             this.data[dataToChangeIndex] = updatedData;
             this.updateCounter++;
@@ -121,7 +140,7 @@ class LocalDatabase {
     }
 
     deleteData(id) {
-        this.data.filter(task => task.id !== id);
+        this.data = this.data.filter(task => task.id !== id);
         this.updateCounter++;
     }
 
@@ -134,11 +153,10 @@ class LocalDatabase {
     }
 
     filterTasks(tags, priority, storyPoints) {
-
         let filtered = this.data;
 
         if (tags.length > 0) {
-            filtered = filtered.filter(task => tags.some(tag => task.tag.includes(tag)));
+            filtered = filtered.filter(task => tags.some(tag => task.tags.includes(tag)));
         }
 
         if (priority) {
@@ -146,7 +164,7 @@ class LocalDatabase {
         }
 
         if (storyPoints !== null) {
-            filtered = filtered.filter(task => task.storyPoint === storyPoints);
+            filtered = filtered.filter(task => task.storyPoints === storyPoints);
         }
 
         this.modifiedData = filtered;
@@ -157,13 +175,12 @@ class LocalDatabase {
     }
 
     sortData(key, sortOrder) {
-        if (!key) this.modifiedData;
+        if (!key) return this.modifiedData;
         if (sortOrder === 'desc') 
             this.modifiedData.sort(dynamicSort(key, sortOrder)).reverse();
         else
             this.modifiedData.sort(dynamicSort(key, sortOrder));
     }
-
 }
 
 const localDB = new LocalDatabase();

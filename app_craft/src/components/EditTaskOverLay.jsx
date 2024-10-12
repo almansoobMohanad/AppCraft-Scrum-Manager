@@ -34,29 +34,8 @@ ChartJS.register(
     Legend
 );
 
-/*
-const mockTask = {
-    databaseID: 'hjxHrhQcXO2Ray9cskR9',
-    taskName: 'Implement Login Feature',
-    type: 'Bug',
-    stage: 'Development',
-    storyPoints: 5,
-    priority: 'High',
-    tags: ['API', 'Backend'],
-    assignee: 'John Doe',
-    description: 'Implement the login feature using React and Redux.',
-    history: [
-        { date: '2023-10-01', name: 'Task created' },
-        { date: '2023-10-02', name: 'Initial setup completed' },
-        { date: '2024-12-02', name: 'Bob'}
-    ],
-};
-*/
-
-function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
-    console.log('Props received:', { task, onClose, onSave, onUpdate });
-
-    console.log('showAssignee value:', showAssignee);
+function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, currentUser }) {
+    console.log('Props received:', { task, onClose, onSave, onUpdate, currentUser });
 
     const [name, setTaskName] = useState('');
     const [taskType, setTaskType] = useState('Bug');
@@ -104,7 +83,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
             },
             y: {
                 min: 0, // Set the minimum value for the y-axis
-                max: totalLogTime? totalLogTime + 10: 10, // Set the maximum value for the y-axis
+                max: totalLogTime ? totalLogTime + 10 : 10, // Set the maximum value for the y-axis
                 title: {
                     display: true,
                     text: 'Log Time (hours)',
@@ -113,7 +92,6 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
             },
         },
     };
-    
 
     // Load the existing task data into the form fields when the component mounts
     useEffect(() => {
@@ -128,13 +106,10 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
             setDescription(task.description || '');
             setHistory(task.history || []); // Set existing history
             setStatus(task.status);
-            //setLogTimeSpent(task.logtimeSpent); // Set initial log time
             setTotalLogTime(task.logtimeSpent || 0); // Set initial total log time
             setLogTimeHistory(task.logTimeHistory || []); // Set existing log time history
             setSprintId(task.sprintId || null); // Set the sprint ID
             console.log('Total log time from task:', task.logtimeSpent); // Debug log
-            
-
         }
     }, [task]);
 
@@ -153,10 +128,9 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
             loadUsers();
         }, []);
 
-        const handleMemberSelect = (option) => {
-            setAssignee(option.value);
-        };
-        
+    const handleMemberSelect = (option) => {
+        setAssignee(option.value);
+    };
 
     const handleTagChange = (event) => {
         const value = event.target.value;
@@ -192,7 +166,6 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
     
         console.log(`New Total Log Time: ${updatedTotalLogTime} hours`);
     };
-    
 
     const validateFields = () => {
         if (!name || tags.length === 0 || !description) {
@@ -210,70 +183,72 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
     };
 
     const handleSave = (updateHandler) => {
+        if (validateFields()) {
+            console.log('handleSave called');
 
-        if (validateFields()){
+            const newHistoryEntry = generateHistoryEntry('name');
+            console.log('new history entry', newHistoryEntry);
 
-        console.log('handleSave called');
+            let newHistoryList = [...task.history, newHistoryEntry];
 
-        const newHistoryEntry = generateHistoryEntry('name');
-        console.log('new history entry', newHistoryEntry)
+            console.log('the new history list supposedly', newHistoryList);
 
-        let newHistoryList = [...task.history, newHistoryEntry]
+            onUpdate();
 
-        console.log('the new history list supposedly', newHistoryList)
+            const updatedTask = {
+                ...task,  // Keep the original task details
+                name,
+                type: taskType,
+                stage: taskStage,
+                storyPoints,
+                priority,
+                sprintId,
+                tags,
+                assignee,
+                description,
+                history: newHistoryList,    // Update history
+                status,
+                logtimeSpent: totalLogTime, // Update the logged time
+                logTimeHistory: logTimeHistory,
+            };
 
-        onUpdate();
+            console.log('Updated task:', updatedTask);
 
-        const updatedTask = {
-            ...task,  // Keep the original task details
-            name,
-            type: taskType,
-            stage: taskStage,
-            storyPoints,
-            priority,
-            sprintId,
-            tags,
-            assignee,
-            description,
-            history: newHistoryList,    // Update history
-            status,
-            logtimeSpent: totalLogTime, // Update the logged time
-            logTimeHistory: logTimeHistory,
+            // Update the task in the database (example)
+            const db = EditFilesInDB(updatedTask.id);
+            db.changeName(updatedTask.name);
+            db.changeType(updatedTask.type);
+            db.changeStage(updatedTask.stage);
+            db.changeStoryPoints(updatedTask.storyPoints);
+            db.changePriority(updatedTask.priority);
+            db.changeTags(updatedTask.tags);
+            db.changeAssignee(updatedTask.assignee);
+            db.changeDescription(updatedTask.description);
+            db.changeHistory(updatedTask.history);
+            db.changeStatus(updatedTask.status);
+            db.changeLogtimeSpent(updatedTask.logtimeSpent);
+            db.changeLogTimeHistory(updatedTask.logTimeHistory);
 
+            localDB.editData(updatedTask.id, updatedTask);
 
-        };
-    
-        console.log('Updated task:', updatedTask);
-    
-        // Update the task in the database (example)
-        const db = EditFilesInDB(updatedTask.id);
-        db.changeName(updatedTask.name);
-        db.changeType(updatedTask.type);
-        db.changeStage(updatedTask.stage);
-        db.changeStoryPoints(updatedTask.storyPoints);
-        db.changePriority(updatedTask.priority);
-        db.changeTags(updatedTask.tags);
-        db.changeAssignee(updatedTask.assignee);
-        db.changeDescription(updatedTask.description);
-        db.changeHistory(updatedTask.history)
-        db.changeStatus(updatedTask.status);
-        db.changeLogtimeSpent(updatedTask.logtimeSpent);
-        db.changeLogTimeHistory(updatedTask.logTimeHistory);
-    
+            // Trigger the onSave callback with the updated task
+            console.log('onSave called with:', updatedTask);
+            onSave(updatedTask);
 
-        localDB.editData(updatedTask.id, updatedTask);
+            // Update the history in the component state
+            //setHistory(updatedHistory); // <-- Ensure this is updated
 
-        // Trigger the onSave callback with the updated task
-        console.log('onSave called with:', updatedTask);
-        onSave(updatedTask);
-    
-        // Update the history in the component state
-        //setHistory(updatedHistory); // <-- Ensure this is updated
-    
-        // Close the overlay after saving
-        onClose();
-    }
+            // Close the overlay after saving
+            onClose();
+        }
     };
+
+    // Check if the current user is allowed to edit the task
+    const canEdit = !assignee || assignee === "" || assignee === currentUser.email || currentUser.isAdmin;
+    console.log('Assignee:', assignee);
+    console.log('Current User:', currentUser);
+    console.log('Can Edit:', canEdit);
+
 
     return (
         <div className="overlay">
@@ -281,136 +256,136 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
                 <h2 className="overlay-title">Edit Task</h2>
                 <div><CrossButton onClick={onClose} className="cross-button" /></div>
 
-                {/* Task Name */}
-                <div className="form-group">
-                    <label htmlFor="task-name" className="task-label">Task Name</label>
-                    <input
-                        type="text"
-                        id="task-name"
-                        className="task-input"
-                        value={name}
-                        onChange={(e) => setTaskName(e.target.value)}
-                    />
-                </div>
-
-                {/* Task Type */}
-                <div className="form-group">
-                    <label htmlFor="task-type" className="task-label">Task Type</label>
-                    <Dropdown
-                        id="task-type"
-                        options={taskTypes.map(type => ({ value: type, label: type }))}
-                        selectedOption={taskType}
-                        onChange={setTaskType}
-                    />
-                </div>
-
-                {/* Task Stage */}
-                <div className="form-group">
-                    <label htmlFor="task-stage" className="task-label">Task Stage</label>
-                    <Dropdown
-                        id="task-stage"
-                        options={taskStages.map(stage => ({ value: stage, label: stage }))}
-                        selectedOption={taskStage}
-                        onChange={setTaskStage}
-                    />
-                </div>
-
-                {/* Story Points */}
-                <div className="form-group">
-                    <label htmlFor="story-points" className="task-label">Story Points</label>
-                    <input
-                        type="number"
-                        id="story-points"
-                        min="1"
-                        max="10"
-                        value={storyPoints}
-                        onChange={(e) => setStoryPoints(Number(e.target.value))}
-                        className="task-input"
-                    />
-                </div>
-
-                {/* Priority */}
-                <div className="form-group">
-                    <label htmlFor="priority" className="task-label">Priority</label>
-                    <div className="priority-container">
-                        {['Low', 'Medium', 'Important', 'Urgent'].map(priorityLevel => (
-                            <div key={priorityLevel} className="priority-checkbox-wrapper">
-                                <input
-                                    type="radio"  // Use radio buttons since only one priority can be selected
-                                    name="priority"
-                                    value={priorityLevel}
-                                    checked={priority === priorityLevel}
-                                    onChange={() => setPriority(priorityLevel)}
-                                    className={`priority-checkbox ${priorityLevel.toLowerCase()}`}
-                                />
-                                <label className={`priority-label ${priorityLevel.toLowerCase()}`}>
-                                    {priorityLevel}
-                                </label>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-
-                {/* Tags */}
-                <div className="form-group">
-                    <label htmlFor="tags" className="task-label">Tags</label>
-                    <div className="tags-container">
-                        {availableTags.map(tag => (
-                            <div key={tag} className="tag-checkbox-wrapper">
-                                <input
-                                    type="checkbox"
-                                    value={tag}
-                                    checked={tags.includes(tag)}
-                                    onChange={handleTagChange}
-                                    className={`tag-checkbox ${tag.toLowerCase()}`}
-                                />
-                                <label className={`tag-label ${tag.toLowerCase()}`}>
-                                    {tag}
-                                </label>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Conditionally render the Assignee dropdown */}
-                {showAssignee && (
+                <>
+                    {/* Task Name */}
                     <div className="form-group">
-                        <label htmlFor="assignee" className="task-label">Assignee</label>
-                        <MemberDropdown
-                            inputValue={{ label: assignee, value: assignee }}
-                            options={memberOptions}
-                            handleSelect={handleMemberSelect}
-                            isMulti={false}
+                        <label htmlFor="task-name" className="task-label">Task Name</label>
+                        <input
+                            type="text"
+                            id="task-name"
+                            className="task-input"
+                            value={name}
+                            onChange={(e) => setTaskName(e.target.value)}
                         />
                     </div>
-                )}
 
-                {/* Description */}
-                <div className="form-group">
-                    <label htmlFor="description" className="task-label">Description</label>
-                    <textarea
-                        id="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        className="task-textarea"
-                    />
-                </div>
+                    {/* Task Type */}
+                    <div className="form-group">
+                        <label htmlFor="task-type" className="task-label">Task Type</label>
+                        <Dropdown
+                            id="task-type"
+                            options={taskTypes.map(type => ({ value: type, label: type }))}
+                            selectedOption={taskType}
+                            onChange={setTaskType}
+                        />
+                    </div>
 
-                {/* Change History Table */}
-                <div className="change-history-section">
-                    <h3>Changes History</h3>
-                    <ChangesHistoryTable changes={history} />
-                </div>
+                    {/* Task Stage */}
+                    <div className="form-group">
+                        <label htmlFor="task-stage" className="task-label">Task Stage</label>
+                        <Dropdown
+                            id="task-stage"
+                            options={taskStages.map(stage => ({ value: stage, label: stage }))}
+                            selectedOption={taskStage}
+                            onChange={setTaskStage}
+                        />
+                    </div>
 
-                {task.status && (
-                    <>
-                        {/* New Activity Section */}
-                        <div className="activity-section">
-                            <h3>Activity</h3>
-                            <div className="log-info">
-                                <p>Total Log Time: <span>{totalLogTime} Hours</span></p>
-                            </div>
+                    {/* Story Points */}
+                    <div className="form-group">
+                        <label htmlFor="story-points" className="task-label">Story Points</label>
+                        <input
+                            type="number"
+                            id="story-points"
+                            min="1"
+                            max="10"
+                            value={storyPoints}
+                            onChange={(e) => setStoryPoints(Number(e.target.value))}
+                            className="task-input"
+                        />
+                    </div>
+
+                    {/* Priority */}
+                    <div className="form-group">
+                        <label htmlFor="priority" className="task-label">Priority</label>
+                        <div className="priority-container">
+                            {['Low', 'Medium', 'Important', 'Urgent'].map(priorityLevel => (
+                                <div key={priorityLevel} className="priority-checkbox-wrapper">
+                                    <input
+                                        type="radio"  // Use radio buttons since only one priority can be selected
+                                        name="priority"
+                                        value={priorityLevel}
+                                        checked={priority === priorityLevel}
+                                        onChange={() => setPriority(priorityLevel)}
+                                        className={`priority-checkbox ${priorityLevel.toLowerCase()}`}
+                                    />
+                                    <label className={`priority-label ${priorityLevel.toLowerCase()}`}>
+                                        {priorityLevel}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Tags */}
+                    <div className="form-group">
+                        <label htmlFor="tags" className="task-label">Tags</label>
+                        <div className="tags-container">
+                            {availableTags.map(tag => (
+                                <div key={tag} className="tag-checkbox-wrapper">
+                                    <input
+                                        type="checkbox"
+                                        value={tag}
+                                        checked={tags.includes(tag)}
+                                        onChange={handleTagChange}
+                                        className={`tag-checkbox ${tag.toLowerCase()}`}
+                                    />
+                                    <label className={`tag-label ${tag.toLowerCase()}`}>
+                                        {tag}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Conditionally render the Assignee dropdown */}
+                    {showAssignee && (
+                        <div className="form-group">
+                            <label htmlFor="assignee" className="task-label">Assignee</label>
+                            <MemberDropdown
+                                inputValue={{ label: assignee, value: assignee }}
+                                options={memberOptions}
+                                handleSelect={handleMemberSelect}
+                                isMulti={false}
+                            />
+                        </div>
+                    )}
+
+                    {/* Description */}
+                    <div className="form-group">
+                        <label htmlFor="description" className="task-label">Description</label>
+                        <textarea
+                            id="description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            className="task-textarea"
+                        />
+                    </div>
+
+                    {/* Change History Table */}
+                    <div className="change-history-section">
+                        <h3>Changes History</h3>
+                        <ChangesHistoryTable changes={history} />
+                    </div>
+
+                    {task.status && (
+                        <>
+                            {/* New Activity Section */}
+                            <div className="activity-section">
+                                <h3>Activity</h3>
+                                <div className="log-info">
+                                    <p>Total Log Time: <span>{totalLogTime} Hours</span></p>
+                                </div>
                                 <div className="log-input-container">
                                     <label>Log Time Spent</label>
                                     <div className="log-input-wrapper">
@@ -419,30 +394,37 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
                                             value={logTimeSpent}
                                             onChange={(e) => setLogTimeSpent(e.target.value)}
                                             className="log-input"
+                                            disabled={!canEdit} // Always disabled to make it read-only
                                         />
-                                        <button className="add-time-button" onClick={handleAddTime}>+</button> {/* Place the button after the input */}
+                                        <button className="add-time-button" onClick={handleAddTime} disabled={true}>+</button> {/* Always disabled to make it read-only */}
                                         <span className="log-input-label">hour(s)</span>
                                     </div>
                                 </div>
-                        </div>
+                            </div>
 
-                        {/* Chart Section */}
-                        <div className="chart-section">
-                            <h3>Log Time History</h3>
-                            <Line data={chartData} options={chartOptions} />
-                        </div>
-                    </>
-                )}
+                            {/* Chart Section */}
+                            <div className="chart-section">
+                                <h3>Log Time History</h3>
+                                <Line data={chartData} options={chartOptions} />
+                            </div>
+                        </>
+                    )}
 
-                {/* Save and Cancel */}
-                <div className="overlay-actions">
-                    <CancelButton onClick={onClose} className="cancel-button" />
-                    <SaveButton onClick={handleSave} className="save-button" />
-                </div>
+                    {/* Save and Cancel */}
+                    <div className="overlay-actions">
+                        <CancelButton onClick={onClose} className="cancel-button" />
+                        <SaveButton onClick={handleSave} className="save-button" disabled={!canEdit} />
+                    </div>
+                </>
             </div>
         </div>
     );
 }
+
+const userShape = PropTypes.shape({
+    email: PropTypes.string.isRequired,
+    isAdmin: PropTypes.bool    // Add other properties as needed
+});
 
 EditTaskOverlay.propTypes = {
     task: PropTypes.shape({
@@ -458,14 +440,23 @@ EditTaskOverlay.propTypes = {
             PropTypes.shape({
                 name: PropTypes.string,
                 date: PropTypes.string,
-            }))
+            })
+        ),
+        status: PropTypes.string,
+        logtimeSpent: PropTypes.number,
+        logTimeHistory: PropTypes.arrayOf(
+            PropTypes.shape({
+                date: PropTypes.string,
+                logTime: PropTypes.number,
+            })
+        ),
+        sprintId: PropTypes.string,
     }),
     onClose: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
-    handleUpdate: PropTypes.func.isRequired,
+    onUpdate: PropTypes.func.isRequired,
     showAssignee: PropTypes.bool,
+    currentUser: userShape.isRequired, // Ensure currentUser is defined correctly
 };
 
-
-
-export default EditTaskOverlay
+export default EditTaskOverlay;

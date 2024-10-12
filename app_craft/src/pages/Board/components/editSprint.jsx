@@ -20,7 +20,8 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     );
     const [error, setError] = useState('');
     const [memberOptions, setMemberOptions] = useState([]);
-
+    const [prevProductOwner, setPrevProductOwner] = useState(productOwner);
+    const [prevScrumMaster, setPrevScrumMaster] = useState(scrumMaster);
     
     useEffect(() => {
         const loadUsers = async () => {
@@ -52,21 +53,44 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     useEffect(() => {
         let updatedMembers = [...members];
 
-        // add po if not already in the members list
+        if (productOwner && scrumMaster && productOwner.value === scrumMaster.value) {
+            setError('Product Owner and Scrum Master cannot be the same person.');
+            return; // Exit the effect early, don't update members
+        } else {
+            setError(''); // Clear any previous error if it's valid
+        }
+        // Remove the previous po if they were added automatically
+        if (prevProductOwner && prevProductOwner.value !== productOwner?.value) {
+            updatedMembers = updatedMembers.filter(member => member.value !== prevProductOwner.value);
+        }
+
+        // Remove the previous sm if they were added automatically
+        if (prevScrumMaster && prevScrumMaster.value !== scrumMaster?.value) {
+            updatedMembers = updatedMembers.filter(member => member.value !== prevScrumMaster.value);
+        }
+
+        // Add the current po if not already in the members list
         if (productOwner && !updatedMembers.some(member => member.value === productOwner.value)) {
-            updatedMembers = [...updatedMembers, productOwner];
+            updatedMembers.push(productOwner);
         }
 
-        // add sm if not already in the members list
+        // Add the current sm if not already in the members list
         if (scrumMaster && !updatedMembers.some(member => member.value === scrumMaster.value)) {
-            updatedMembers = [...updatedMembers, scrumMaster];
+            updatedMembers.push(scrumMaster);
         }
 
+        setPrevProductOwner(productOwner); // Update the previous po
+        setPrevScrumMaster(scrumMaster); // Update the previous sm
         setMembers(updatedMembers);
     }, [productOwner, scrumMaster]); 
 
     const handleEditSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
+
+        if (productOwner && scrumMaster && productOwner.value === scrumMaster.value) {
+            setError('Product Owner and Scrum Master cannot be the same person.');
+            return; // Prevent submission
+        }
 
         if (!sprintName.trim() || !startDate || !endDate || !productOwner || !members.length) {
             setError('All fields are required.');
