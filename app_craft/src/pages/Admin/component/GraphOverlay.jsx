@@ -18,7 +18,8 @@ function GraphOverlay({ onClose, selectedAccount, timeRange }) {
         const generateDateLabels = (account, timeRange) => {
 
             if (account && account.logTimeSpentTasks && Object.keys(account.logTimeSpentTasks).length > 0) {
-                let dates = Object.keys(account.logTimeSpentTasks);
+                let dates = Object.values(account.logTimeSpentTasks).map(task => task.date);
+
                 let startDate = timeRange.start;
                 let endDate = timeRange.end;
         
@@ -28,13 +29,16 @@ function GraphOverlay({ onClose, selectedAccount, timeRange }) {
                         return currentDate >= new Date(startDate) && currentDate <= new Date(endDate);
                     });
                 }
-        
-                const filteredHoursSpent = dates.map(date => account.logTimeSpentTasks[date]);
-        
+
+                const filteredHoursSpent = dates.map(date => {
+                    const entry = Object.values(account.logTimeSpentTasks).find(task => task.date === date);
+                    return entry ? entry.logTime : 0;
+                });
+
                 setLabels(dates);
                 setHoursSpent(filteredHoursSpent);
             } else {
-                console.log("No account data"); 
+                console.log("No account data");
                 return;
             }
         };
@@ -46,7 +50,7 @@ function GraphOverlay({ onClose, selectedAccount, timeRange }) {
             setLabels([]);
             setHoursSpent([]);
         }
-    }, [hoursSpent, labels]);
+    }, []);
 
     const data = {
         labels: labels,
