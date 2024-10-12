@@ -10,6 +10,7 @@ import { EditFilesInDB } from './EditFilesInDB.jsx';
 import ChangesHistoryTable from './ChangesHistoryTable.jsx';
 import localDB from '../LocalDatabase.jsx';
 import { updateTask } from '../services/tasksService.js';
+import { fetchSprintDetails } from '../services/sprintDetails'; // Import the fetchSprintDetails function
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -57,7 +58,6 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
     const [members, setMembers] = useState([]); 
     const [memberOptions, setMemberOptions] = useState([]);
 
-
     const taskTypes = ['Story', 'Bug'];
     const taskStages = ['Planning', 'Development', 'Testing', 'Integration'];
     const priorities = ['Low', 'Medium', 'Important', 'Urgent'];
@@ -98,6 +98,16 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
 
     // Load the existing task data into the form fields when the component mounts
     useEffect(() => {
+
+        const loadSprintDetails = async (sprintId) => {
+            try {
+                const sprint = await fetchSprintDetails(sprintId);
+                setMembers(sprint.members || []);
+            } catch (error) {
+                console.error("Error fetching sprint details:", error);
+            }
+        };
+
         if (task) {
             setTaskName(task.name);
             setTaskType(task.type);
@@ -113,11 +123,29 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
             setLogTimeHistory(task.logTimeHistory || []); // Set existing log time history
             setSprintId(task.sprintId || null); // Set the sprint ID
             console.log('Total log time from task:', task.logtimeSpent); // Debug log
+
+            if (task.sprintId) {
+                loadSprintDetails(task.sprintId);
+            }
             setLogTimeSpentUser(0); // Reset the user's log time
 
         }
     }, [task]);
 
+    // Fetch users from Firestore and populate member options
+    useEffect(() => {
+        const loadUsers = async () => {
+            try {
+                const users = await fetchUsers();
+                const options = users.map(user => ({ label: user.username, value: user.username }));
+                setMemberOptions(options);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+        
+        loadUsers();
+    }, []);
     // Fetch users from Firestore and populate member options
     useEffect(() => {
         const loadUsers = async () => {
@@ -237,7 +265,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
     const generateHistoryEntry = (name) => {
         return {
             date: new Date().toLocaleDateString('en-GB'),
-            name: currentUser.email,
+            name: currentUser.username, // Use username instead of email
         };
     };
 
@@ -417,7 +445,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
                             <label htmlFor="assignee" className="task-label">Assignee</label>
                             <MemberDropdown
                                 inputValue={{ label: assignee, value: assignee }}
-                                options={memberOptions}
+                                options={members.map(member => ({ label: member, value: member }))}
                                 handleSelect={handleMemberSelect}
                                 isMulti={false}
                             />
@@ -485,7 +513,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
 }
 
 const userShape = PropTypes.shape({
-    email: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired, // Use username instead of email
     isAdmin: PropTypes.bool    // Add other properties as needed
 });
 
