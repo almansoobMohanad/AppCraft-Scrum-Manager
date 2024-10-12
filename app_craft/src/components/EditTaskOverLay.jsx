@@ -394,7 +394,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
                                             value={logTimeSpent}
                                             onChange={(e) => setLogTimeSpent(e.target.value)}
                                             className="log-input"
-                                            disabled={true} // Always disabled to make it read-only
+                                            disabled={!canEdit} // Always disabled to make it read-only
                                         />
                                         <button className="add-time-button" onClick={handleAddTime} disabled={true}>+</button> {/* Always disabled to make it read-only */}
                                         <span className="log-input-label">hour(s)</span>
