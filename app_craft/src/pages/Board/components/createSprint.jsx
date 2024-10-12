@@ -12,6 +12,8 @@ const CreateSprint = ({ onCreate, onClose }) => {
     const [members, setMembers] = useState([]);
     const [error, setError] = useState('');
     const [memberOptions, setMemberOptions] = useState([]);
+    const [prevProductOwner, setPrevProductOwner] = useState(null);
+    const [prevScrumMaster, setPrevScrumMaster] = useState(null);
 
     // Only fetch users once when the component mounts
     useEffect(() => {
@@ -49,7 +51,15 @@ const CreateSprint = ({ onCreate, onClose }) => {
     // Automatically add Product Owner and Scrum Master to the members list
     useEffect(() => {
         let updatedMembers = [...members];
+        // Remove the previous Product Owner from the members list if they weren't manually added before
+        if (prevProductOwner && prevProductOwner.value !== productOwner?.value) {
+            updatedMembers = updatedMembers.filter(member => member.value !== prevProductOwner.value);
+        }
 
+        // Remove the previous Scrum Master from the members list if they weren't manually added before
+        if (prevScrumMaster && prevScrumMaster.value !== scrumMaster?.value) {
+            updatedMembers = updatedMembers.filter(member => member.value !== prevScrumMaster.value);
+        }
         // Add Product Owner if not already in the members list
         if (productOwner && !updatedMembers.some(member => member.value === productOwner.value)) {
             updatedMembers = [...updatedMembers, productOwner];
@@ -59,7 +69,8 @@ const CreateSprint = ({ onCreate, onClose }) => {
         if (scrumMaster && !updatedMembers.some(member => member.value === scrumMaster.value)) {
             updatedMembers = [...updatedMembers, scrumMaster];
         }
-
+        setPrevProductOwner(productOwner);
+        setPrevScrumMaster(scrumMaster);
         setMembers(updatedMembers);
     }, [productOwner, scrumMaster]); // Only runs when productOwner or scrumMaster changes
 
