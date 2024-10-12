@@ -151,9 +151,10 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
             loadUsers();
         }, []);
 
-    const handleMemberSelect = (option) => {
-        setMembers(option.value);
-    };
+        const handleMemberSelect = (option) => {
+            setAssignee(option.value);
+        };
+        
 
     const handleTagChange = (event) => {
         const value = event.target.value;
@@ -374,10 +375,13 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
                 <div className="form-group">
                     <label htmlFor="assignee" className="task-label">Assignee</label>
                     <MemberDropdown
-                        inputValue={assignee}
-                        options={memberOptions} 
+                        inputValue={{ label: assignee, value: assignee }}
+                        options={memberOptions}
                         handleSelect={handleMemberSelect}
+                        isMulti={false} 
                     />
+
+
 
                     {/* <input
                         type="text"
