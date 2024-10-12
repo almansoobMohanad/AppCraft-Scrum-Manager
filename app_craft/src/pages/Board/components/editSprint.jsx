@@ -53,6 +53,12 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
     useEffect(() => {
         let updatedMembers = [...members];
 
+        if (productOwner && scrumMaster && productOwner.value === scrumMaster.value) {
+            setError('Product Owner and Scrum Master cannot be the same person.');
+            return; // Exit the effect early, don't update members
+        } else {
+            setError(''); // Clear any previous error if it's valid
+        }
         // Remove the previous po if they were added automatically
         if (prevProductOwner && prevProductOwner.value !== productOwner?.value) {
             updatedMembers = updatedMembers.filter(member => member.value !== prevProductOwner.value);
@@ -80,6 +86,11 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
 
     const handleEditSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
+
+        if (productOwner && scrumMaster && productOwner.value === scrumMaster.value) {
+            setError('Product Owner and Scrum Master cannot be the same person.');
+            return; // Prevent submission
+        }
 
         if (!sprintName.trim() || !startDate || !endDate || !productOwner || !members.length) {
             setError('All fields are required.');

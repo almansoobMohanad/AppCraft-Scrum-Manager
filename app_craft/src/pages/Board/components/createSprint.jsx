@@ -51,6 +51,14 @@ const CreateSprint = ({ onCreate, onClose }) => {
     // Automatically add Product Owner and Scrum Master to the members list
     useEffect(() => {
         let updatedMembers = [...members];
+
+        if (productOwner && scrumMaster && productOwner.value === scrumMaster.value) {
+            setError('Product Owner and Scrum Master cannot be the same person.');
+            return; // Exit the effect early, don't update members
+        } else {
+            setError(''); 
+        }
+
         // Remove the previous Product Owner from the members list if they weren't manually added before
         if (prevProductOwner && prevProductOwner.value !== productOwner?.value) {
             updatedMembers = updatedMembers.filter(member => member.value !== prevProductOwner.value);
@@ -76,6 +84,12 @@ const CreateSprint = ({ onCreate, onClose }) => {
 
     const handleCreateSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
+
+        //po and sm cannot be the same person
+        if (productOwner && scrumMaster && productOwner.value === scrumMaster.value) {
+            setError('Product Owner and Scrum Master cannot be the same person.');
+            return;
+        }
 
         if (!sprintName.trim() || !startDate || !endDate || !productOwner || !scrumMaster || members.length === 0) {
             setError('All fields are required.');
