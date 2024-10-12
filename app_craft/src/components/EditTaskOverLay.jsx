@@ -178,7 +178,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
     const generateHistoryEntry = (name) => {
         return {
             date: new Date().toLocaleDateString('en-GB'),
-            name: assignee,
+            name: currentUser.email,
         };
     };
 
