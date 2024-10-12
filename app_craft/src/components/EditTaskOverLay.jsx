@@ -22,6 +22,7 @@ import {
 } from 'chart.js';
 import 'chart.js/auto';
 import MemberDropdown from '../pages/Board/components/memberDropdown';
+import { fetchUsers } from '../pages/Board/components/sprintDatabaseLogic';
 
 ChartJS.register(
     CategoryScale,
@@ -69,10 +70,8 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     const [totalLogTime, setTotalLogTime] = useState(0); // To display total logged time
     const [logTimeHistory, setLogTimeHistory] = useState([]); // New state for log time by date
     const [sprintId, setSprintId] = useState(null);
-    const [members, setMembers] = useState([
-        { label: 'Alice', value: 'Alice' },
-        { label: 'Bob', value: 'Bob' },
-    ]); // New state for members
+    const [members, setMembers] = useState([]); 
+    const [memberOptions, setMemberOptions] = useState([]);
 
 
     const taskTypes = ['Story', 'Bug'];
@@ -136,6 +135,21 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
 
         }
     }, [task]);
+
+        // Fetch users from Firestore and populate member options
+        useEffect(() => {
+            const loadUsers = async () => {
+                try {
+                    const users = await fetchUsers();
+                    const options = users.map(user => ({ label: user.email, value: user.email }));
+                    setMemberOptions(options);
+                } catch (error) {
+                    console.error('Error fetching users:', error);
+                }
+            };
+            
+            loadUsers();
+        }, []);
 
     const handleMemberSelect = (option) => {
         setMembers(option.value);
@@ -360,10 +374,11 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
                 <div className="form-group">
                     <label htmlFor="assignee" className="task-label">Assignee</label>
                     <MemberDropdown
-                        inputValue=""
-                        options={members}
+                        inputValue={assignee}
+                        options={memberOptions} 
                         handleSelect={handleMemberSelect}
                     />
+
                     {/* <input
                         type="text"
                         id="assignee"
