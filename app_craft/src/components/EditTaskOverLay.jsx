@@ -203,7 +203,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
     const generateHistoryEntry = (name) => {
         return {
             date: new Date().toLocaleDateString('en-GB'),
-            name: name,
+            name: assignee,
         };
     };
 
