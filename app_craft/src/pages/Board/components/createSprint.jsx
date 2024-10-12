@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../css/createSprint.css'; // Ensure you import the CSS file
-import { TaskSharp } from '@mui/icons-material';
-import '../css/createSprint.css';
+import '../css/createSprint.css'; 
 import MemberDropdown from './memberDropdown.jsx';
 import { fetchUsers } from './sprintDatabaseLogic.jsx';
 
@@ -9,63 +7,61 @@ const CreateSprint = ({ onCreate, onClose }) => {
     const [sprintName, setSprintName] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [productOwner, setProductOwner] = useState('');
-    const [scrumMaster, setScrumMaster] = useState(''); // New state for Scrum Master
-    const [members, setMembers] = useState('');
+    const [productOwner, setProductOwner] = useState(null); // Initialize with null
+    const [scrumMaster, setScrumMaster] = useState(null); // Initialize with null
+    const [members, setMembers] = useState([]);
     const [error, setError] = useState('');
     const [memberOptions, setMemberOptions] = useState([]);
 
+    // Only fetch users once when the component mounts
     useEffect(() => {
         const loadUsers = async () => {
             try {
                 const users = await fetchUsers();
                 const options = users.map(user => ({ label: user.email, value: user.email }));
                 setMemberOptions(options);
-    
-                //if the pre-selected Product Owner or Scrum Master no longer exist, clear them
-                if (productOwner && !options.some(option => option.value === productOwner.value)) {
-                    setProductOwner(null);
-                }
-                if (scrumMaster && !options.some(option => option.value === scrumMaster.value)) {
-                    setScrumMaster(null);
-                }
-    
-                // Filter out invalid members
-                const validMembers = members.filter(member => options.some(option => option.value === member.value));
-                setMembers(validMembers);
             } catch (error) {
                 console.error("Error fetching users:", error);
             }
         };
     
         loadUsers();
-    }, []);
-    
+    }, []); // Empty dependency array ensures this runs once on mount
 
-    /*const memberOptions = [
-        { label: 'Alice', value: 'Alice' },
-        { label: 'Bob', value: 'Bob' },
-        { label: 'Charlie', value: 'Charlie' },
-    ];
-    */
+    // Sync productOwner, scrumMaster, and members with member options when options are loaded
+    useEffect(() => {
+        if (!memberOptions.length) return;
+
+        // Clear productOwner or scrumMaster if they are no longer valid
+        if (productOwner && !memberOptions.some(option => option.value === productOwner.value)) {
+            setProductOwner(null);
+        }
+        if (scrumMaster && !memberOptions.some(option => option.value === scrumMaster.value)) {
+            setScrumMaster(null);
+        }
+
+        // Filter out invalid members
+        const validMembers = members.filter(member => memberOptions.some(option => option.value === member.value));
+        setMembers(validMembers);
+
+    }, [memberOptions]); // Only runs when memberOptions changes
 
     // Automatically add Product Owner and Scrum Master to the members list
     useEffect(() => {
         let updatedMembers = [...members];
 
-        // add po if not already in the members list
+        // Add Product Owner if not already in the members list
         if (productOwner && !updatedMembers.some(member => member.value === productOwner.value)) {
             updatedMembers = [...updatedMembers, productOwner];
         }
 
-        // add sm if not already in the members list
+        // Add Scrum Master if not already in the members list
         if (scrumMaster && !updatedMembers.some(member => member.value === scrumMaster.value)) {
             updatedMembers = [...updatedMembers, scrumMaster];
         }
 
         setMembers(updatedMembers);
-    }, []); 
-
+    }, [productOwner, scrumMaster]); // Only runs when productOwner or scrumMaster changes
 
     const handleCreateSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
@@ -90,10 +86,10 @@ const CreateSprint = ({ onCreate, onClose }) => {
             startDate,
             endDate,
             productOwner: productOwner.value,
-            scrumMaster: scrumMaster.value,   
+            scrumMaster: scrumMaster.value,
             members: members.map((member) => member.value),
-            tasks: [], 
-            status: 'Not Started' 
+            tasks: [],
+            status: 'Not Started'
         });
         onClose(); // Close overlay after creating the sprint
     };
