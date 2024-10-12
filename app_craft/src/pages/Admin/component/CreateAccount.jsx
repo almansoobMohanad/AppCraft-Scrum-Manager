@@ -6,7 +6,7 @@ import { auth, db } from "../../../firebase/firebaseConfig"; // Import Firebase 
 import '../css/CreateAccount.css'; 
 
 function CreateAccount({ onClose }) {
-    const [accountData, setAccountData] = useState({ email: "", password: "", isAdmin: false });
+    const [accountData, setAccountData] = useState({ username: "", email: "", password: "", isAdmin: false });
     const [error, setError] = useState("");
 
     const handleChange = (e) => {
@@ -35,14 +35,14 @@ function CreateAccount({ onClose }) {
 
             // Add user details to Firestore
             await setDoc(doc(db, "users", user.uid), {
+                username: accountData.username,
                 email: accountData.email,
-                password: accountData.password, // Storing passwxord directly is not recommended
+                password: accountData.password, // Storing password directly is not recommended
                 isAdmin: accountData.isAdmin,
                 logTimeSpentTotal: 0, // used for tracking user's time spent in admin view
                 logTimeSpentTasks: {}, // used for tracking user's time spent on tasks (key: timestamp, value: task ID)
                 averageLogTime: 0, // used for tracking user's average time spent in admin view
                 creationTime: new Date().toISOString(), // Store the creation time of the account
-
             });
 
             console.log("Account created successfully");
@@ -62,6 +62,17 @@ function CreateAccount({ onClose }) {
                     </button>
                     <h2>Create Account</h2>
                     <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label htmlFor="username">Username:</label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                value={accountData.username}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
                         <div className="form-group">
                             <label htmlFor="email">Email:</label>
                             <input

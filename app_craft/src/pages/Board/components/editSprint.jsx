@@ -26,7 +26,7 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
         const loadUsers = async () => {
             try {
                 const users = await fetchUsers();
-                const options = users.map(user => ({ label: user.email, value: user.email }));
+                const options = users.map(user => ({ label: user.username, value: user.username }));
                 setMemberOptions(options);
     
                 // Check if the selected Product Owner or Scrum Master are still valid

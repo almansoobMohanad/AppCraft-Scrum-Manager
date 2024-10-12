@@ -143,7 +143,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
             const loadUsers = async () => {
                 try {
                     const users = await fetchUsers();
-                    const options = users.map(user => ({ label: user.email, value: user.email }));
+                    const options = users.map(user => ({ label: user.username, value: user.username }));
                     setMemberOptions(options);
                 } catch (error) {
                     console.error('Error fetching users:', error);
