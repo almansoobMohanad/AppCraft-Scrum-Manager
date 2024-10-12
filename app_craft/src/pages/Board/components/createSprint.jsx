@@ -46,7 +46,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
         const validMembers = members.filter(member => memberOptions.some(option => option.value === member.value));
         setMembers(validMembers);
 
-    }, [memberOptions]); // Only runs when memberOptions changes
+    }, []); // Only runs when memberOptions changes
 
     // Automatically add Product Owner and Scrum Master to the members list
     useEffect(() => {
@@ -80,7 +80,7 @@ const CreateSprint = ({ onCreate, onClose }) => {
         setPrevProductOwner(productOwner);
         setPrevScrumMaster(scrumMaster);
         setMembers(updatedMembers);
-    }, [productOwner, scrumMaster]); // Only runs when productOwner or scrumMaster changes
+    }, []); // Only runs when productOwner or scrumMaster changes
 
     const handleCreateSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
