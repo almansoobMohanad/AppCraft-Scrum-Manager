@@ -156,17 +156,6 @@ function AddTaskOverlay({ onClose, onSave }) {
                     </div>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="assignee" className="task-label">Assignee</label>
-                    <input
-                        type="text"
-                        id="assignee"
-                        placeholder="Optional"
-                        value={assignee}
-                        onChange={(e) => setAssignee(e.target.value)}
-                        className="task-input"
-                    />
-                </div>
-                <div className="form-group">
                     <label htmlFor="description" className="task-label">Description</label>
                     <textarea
                         id="description"

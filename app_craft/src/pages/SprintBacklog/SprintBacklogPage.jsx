@@ -368,13 +368,14 @@ function Column({ column, tasks, updateTask }) {
                 )}
             </Droppable>
             {showOverlay && selectedTask && (
-                <EditTaskOverlay
+            <EditTaskOverlay
                 task={selectedTask}
                 onClose={() => handleClose()}
                 onSave={(updatedTask) => updateTask(updatedTask)}
                 onUpdate={handleUpdate}
-                />
-            )}
+                showAssignee={true} // Show assignee in sprint backlog
+            />
+        )}
         </div>
     );
 }

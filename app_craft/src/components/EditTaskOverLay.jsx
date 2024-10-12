@@ -53,8 +53,10 @@ const mockTask = {
 };
 */
 
-function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
+function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee }) {
     console.log('Props received:', { task, onClose, onSave, onUpdate });
+
+    console.log('showAssignee value:', showAssignee);
 
     const [name, setTaskName] = useState('');
     const [taskType, setTaskType] = useState('Bug');
@@ -371,26 +373,18 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate }) {
                     </div>
                 </div>
 
-                {/* Assignee */}
-                <div className="form-group">
-                    <label htmlFor="assignee" className="task-label">Assignee</label>
-                    <MemberDropdown
-                        inputValue={{ label: assignee, value: assignee }}
-                        options={memberOptions}
-                        handleSelect={handleMemberSelect}
-                        isMulti={false} 
-                    />
-
-
-
-                    {/* <input
-                        type="text"
-                        id="assignee"
-                        className="task-input"
-                        value={assignee}
-                        onChange={(e) => setAssignee(e.target.value)}
-                    /> */}
-                </div>
+                {/* Conditionally render the Assignee dropdown */}
+                {showAssignee && (
+                    <div className="form-group">
+                        <label htmlFor="assignee" className="task-label">Assignee</label>
+                        <MemberDropdown
+                            inputValue={{ label: assignee, value: assignee }}
+                            options={memberOptions}
+                            handleSelect={handleMemberSelect}
+                            isMulti={false}
+                        />
+                    </div>
+                )}
 
                 {/* Description */}
                 <div className="form-group">
@@ -469,6 +463,9 @@ EditTaskOverlay.propTypes = {
     onClose: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
     handleUpdate: PropTypes.func.isRequired,
+    showAssignee: PropTypes.bool,
 };
+
+
 
 export default EditTaskOverlay

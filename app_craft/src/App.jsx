@@ -88,12 +88,13 @@ function App() {
 
       {/* Conditionally render the EditTaskOverlay */}
       {isEditOverlayVisible && selectedTask && (
-        <EditTaskOverlay
+      <EditTaskOverlay
           task={selectedTask}
           onClose={handleEditOverlayClose}
           onSave={handleTaskEditSave}
-        />
-      )}
+          showAssignee={false} 
+      />
+  )}
     </div>
   );
 }
