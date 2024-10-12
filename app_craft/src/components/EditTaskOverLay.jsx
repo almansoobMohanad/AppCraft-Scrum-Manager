@@ -190,7 +190,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
                 const userDoc = doc(db, "users", user.uid);
                 const userData = (await getDoc(userDoc)).data();
 
-                const LTSTasks = userData.logTimeSpentTasks || {};
+                const LTSTasks = userData.logTimeSpentTasks || [];
 
                 let updatedTotalLogTime = (userData.logTimeSpentTotal || 0) + Number(newLogTime);
                 let dateFound = false;

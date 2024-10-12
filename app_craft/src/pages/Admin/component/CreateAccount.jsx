@@ -40,7 +40,7 @@ function CreateAccount({ onClose }) {
                 password: accountData.password, // Storing password directly is not recommended
                 isAdmin: accountData.isAdmin,
                 logTimeSpentTotal: 0, // used for tracking user's time spent in admin view
-                logTimeSpentTasks: {}, // used for tracking user's time spent on tasks (key: timestamp, value: task ID)
+                logTimeSpentTasks: [], // used for tracking user's time spent on tasks (key: timestamp, value: task ID)
                 averageLogTime: 0, // used for tracking user's average time spent in admin view
                 creationTime: new Date().toISOString(), // Store the creation time of the account
             });
