@@ -43,7 +43,8 @@
 
 .view-sprint-btn,
 .edit-sprint-btn,
-.delete-sprint-btn {
+.delete-sprint-btn,
+.view-members-btn {
     margin: 0 5px;
     padding: 5px 10px;
     border: none;
@@ -57,6 +58,10 @@
 /* THIS WHOLE SECTION IS FOR THE BUTTON COLOUR*/
 .view-sprint-btn {
     background-color: #1d33dd; /* Blue for View */
+}
+
+.view-members-btn {
+    background-color: #36a3f5; /* Light blue for View Members */
 }
 
 .edit-sprint-btn {
@@ -79,7 +84,8 @@
 }
 
 .view-sprint-btn:hover,
-.edit-sprint-btn:hover {
+.edit-sprint-btn:hover,
+.view-members-btn:hover {
     opacity: 0.8;
 }
 

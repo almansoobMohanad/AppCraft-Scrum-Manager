@@ -5,15 +5,14 @@ import '../css/viewMembers.css';
 const ViewMembers = ({ sprintDetails, members, onRemoveMember }) => {
     return (
         <div className="view-members">
-            <h3>Members in Sprint</h3>
             <ul>
-                {members.map(member => (
-                    <li key={member.id}>
-                        <span>{member.email}</span>
+                {members.map((member) => (
+                    <li key={member.id || member}> 
+                        <span>{member.email || member}</span> 
                         <button 
-                            className={sprintDetails.status === 'active' ? "" : "disabled"} 
-                            onClick={() => onRemoveMember(member.id)}
-                            disabled={sprintDetails.status !== 'active'}
+                            className={`remove-member-btn ${sprintDetails.status === 'Active' ? "" : "disabled"}`} 
+                            onClick={() => onRemoveMember(member)}
+                            disabled={sprintDetails.status !== 'Active'}
                         >
                             Remove Member
                         </button>
