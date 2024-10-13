@@ -149,3 +149,43 @@ export async function fetchUsers() {
     });
     return usersList;
 }
+
+
+
+// Function to remove member from the sprint
+export async function removeMemberFromActiveSprint(sprintId, memberId) {
+    try {
+        // Get the sprint document reference
+        const sprintDocRef = doc(db, "sprints", sprintId);
+        const sprintDoc = await getDoc(sprintDocRef);
+
+        if (sprintDoc.exists()) {
+            const sprintData = sprintDoc.data();
+
+            //remove the member from the sprint's members list
+            const updatedMembers = sprintData.members.filter(member => member !== memberId);
+
+            //ensure the tasks remain in the sprint but without the removed member as the assignee
+            const updatedTasks = sprintData.tasks.map(task => {
+                if (task.assignee === memberId) {
+                    //keep the task in the sprint but unassign the member
+                    return { ...task, assignee: null };
+                }
+                return task;
+            });
+
+            // update the sprint document in Firestore with the new members and tasks
+            await updateDoc(sprintDocRef, {
+                members: updatedMembers,
+                tasks: updatedTasks,
+            });
+
+            console.log(`Member ${memberId} successfully removed from Sprint ${sprintId}`);
+        } else {
+            console.error(`Sprint with ID ${sprintId} not found`);
+        }
+    } catch (error) {
+        console.error("Error removing member from active sprint:", error);
+    }
+}
+

@@ -160,6 +160,12 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) =
     setSelectedSprint(null);
   };
 
+  const handleRemoveMember = (memberId) => {
+    const updatedMembers = selectedSprintMembers.filter(member => member.id !== memberId);
+    setSelectedSprintMembers(updatedMembers);
+    removeMemberFromActiveSprint(selectedSprint.id, memberId);
+  };
+
   return (
     <div className="table-container"> {/* Added this div */}
       <table className="sprint-table">
@@ -224,10 +230,18 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) =
       </table>
       {/* Render the Members Overlay when the button is clicked */}
       {showMembersOverlay && selectedSprint && (
-        <ViewMembers 
-          members={selectedSprintMembers} 
-          onClose={handleCloseMembersOverlay} 
-        />
+        <div className="overlay">
+          <div className="overlay-content"> ref={overlayRef}
+            <button className="close-overlay-btn" onClick={handleCloseMembersOverlay}>
+              &times;
+            </button>
+            <ViewMembers 
+              sprintDetails={selectedSprint}
+              members={selectedSprintMembers} 
+              onRemoveMember={handleRemoveMember} // Pass the member removal function
+            />
+          </div>
+        </div>
       )}
       {showBurndownChart && selectedSprint && (
         <div className="overlay">
