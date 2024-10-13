@@ -6,10 +6,13 @@ import BurndownChart from '../../SprintBacklog/BurnDownChart'; // Import the Bur
 import '../css/sprintTable.css';
 import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome CSS
 import localDB from '../../../LocalDatabase';
+import '../css/viewMembers.css';
+import ViewMembers from './removeSprintMember';
 
 const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) => {
   const [sprints, setSprints] = useState([]);
   const [showBurndownChart, setShowBurndownChart] = useState(false);
+  const [showMembersOverlay, setShowMembersOverlay] = useState(false);
   const [selectedSprint, setSelectedSprint] = useState(null);
   const overlayRef = useRef(null);
   const navigate = useNavigate();
@@ -145,6 +148,18 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) =
     };
   }, [showBurndownChart]);
 
+  const handleViewMembers = (sprint) => {
+    // Show the overlay and set the selected sprint members
+    setSelectedSprint(sprint);
+    setSelectedSprintMembers(sprint.members);
+    setShowMembersOverlay(true);
+  };
+
+  const handleCloseMembersOverlay = () => {
+    setShowMembersOverlay(false);
+    setSelectedSprint(null);
+  };
+
   return (
     <div className="table-container"> {/* Added this div */}
       <table className="sprint-table">
@@ -178,6 +193,12 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) =
                     </button>
                   )}
 
+                  {isAdmin && sprint.status === 'Active' && (
+                    <button className="remove-member-btn" onClick={() => handleViewMembers(sprint)}>
+                      View Members
+                    </button>
+                  )}
+
                   {isAdmin && sprint.status !== 'Completed' && sprint.status !== 'Active' && (
                     <button className="edit-sprint-btn" onClick={() => onEditSprint(sprint)}>
                       Edit Sprint
@@ -201,7 +222,13 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) =
           })}
         </tbody>
       </table>
-
+      {/* Render the Members Overlay when the button is clicked */}
+      {showMembersOverlay && selectedSprint && (
+        <ViewMembers 
+          members={selectedSprintMembers} 
+          onClose={handleCloseMembersOverlay} 
+        />
+      )}
       {showBurndownChart && selectedSprint && (
         <div className="overlay">
           <div className="overlay-content" ref={overlayRef}>
