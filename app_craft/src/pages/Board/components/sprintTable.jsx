@@ -161,16 +161,22 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) =
     setSelectedSprint(null);
   };
 
-const handleRemoveMember = (member) => {
-  const memberId = member.id || member;
+  const handleRemoveMember = (member) => {
+    const memberId = member.id || member;
 
-  if (window.confirm("Are you sure you want to remove this member?")) {
-    const updatedMembers = selectedSprintMembers.filter(mem => mem.id !== memberId && mem !== memberId);
-    setSelectedSprintMembers(updatedMembers);
-    removeMemberFromActiveSprint(selectedSprint.id, memberId);
-  }
-};
-  
+    if (window.confirm("Are you sure you want to remove this member?")) {
+      const updatedMembers = selectedSprintMembers.filter(mem => mem.id !== memberId && mem !== memberId);
+      setSelectedSprintMembers(updatedMembers);
+      removeMemberFromActiveSprint(selectedSprint.id, memberId);
+    }
+  };
+
+  // Calculate the progress of each sprint
+  const calculateSprintProgress = (sprint) => {
+    if (!sprint.tasks || sprint.tasks.length === 0) return 0;
+    const completedTasks = sprint.tasks.filter(task => task.status === 'completed').length;
+    return (completedTasks / sprint.tasks.length) * 100;
+  };
 
   return (
     <div className="table-container"> {/* Added this div */}
@@ -179,12 +185,14 @@ const handleRemoveMember = (member) => {
           <tr>
             <th>Sprint Name</th>
             <th>Status</th>
+            <th>Progress</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {sprints.map((sprint) => {
             const status = sprint.status ? sprint.status.toLowerCase().replace(/\s+/g, '-') : 'not-started'; // Ensure default status
+            const progress = calculateSprintProgress(sprint);
 
             return (
               <tr key={sprint.id}>
@@ -193,6 +201,15 @@ const handleRemoveMember = (member) => {
                   <span className={`status-text status-${status}`}>
                     {sprint.status || 'Not Started'}
                   </span>
+                </td>
+                <td>
+                  <div className="progress-bar">
+                    <div
+                      className="progress-bar-fill"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <span>{progress.toFixed(2)}%</span>
                 </td>
                 <td className="actions-column">
                   <button className="view-sprint-btn" onClick={() => handleViewSprint(sprint)}>
@@ -238,12 +255,12 @@ const handleRemoveMember = (member) => {
       {showMembersOverlay && selectedSprint && (
         <div className="overlay">
           <div className="overlay-content" ref={overlayRef}>
-          <div className="overlay-header">
-          <h3>Members in Sprint</h3>
-          <button className="close-overlay-btn" onClick={handleCloseMembersOverlay}>
-              &times;
-          </button>
-      </div>
+            <div className="overlay-header">
+              <h3>Members in Sprint</h3>
+              <button className="close-overlay-btn" onClick={handleCloseMembersOverlay}>
+                &times;
+              </button>
+            </div>
             <ViewMembers 
               sprintDetails={selectedSprint}
               members={selectedSprintMembers} 
