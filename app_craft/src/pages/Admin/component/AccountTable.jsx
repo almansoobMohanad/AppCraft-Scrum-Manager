@@ -115,13 +115,13 @@ function AccountTable({ title, accounts, onDelete, graph, changePassword, timeRa
                                     className="show-graph-button" 
                                     onClick={() => graph(account)}
                                 >
-                                    Graph
+                                    <i className="fa fa-bar-chart"></i>
                                 </button>
                                 <button 
                                     className="delete-button" 
                                     onClick={() => onDelete(account.id)}
                                 >
-                                    Delete
+                                    <i className="fa fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
