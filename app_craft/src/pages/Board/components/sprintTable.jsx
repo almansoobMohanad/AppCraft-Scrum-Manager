@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getFirestore, doc, updateDoc, collection, onSnapshot } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, collection, onSnapshot, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../../firebase/firebaseConfig'; // Firestore config
 import BurndownChart from '../../SprintBacklog/BurnDownChart'; // Import the BurndownChart component
 import '../css/sprintTable.css';
@@ -8,6 +8,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome C
 import localDB from '../../../LocalDatabase';
 import '../css/viewMembers.css';
 import ViewMembers from './removeSprintMember';
+import { removeMemberFromActiveSprint } from './sprintDatabaseLogic';
 
 const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) => {
   const [sprints, setSprints] = useState([]);
@@ -149,11 +150,26 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) =
     };
   }, [showBurndownChart]);
 
-  const handleViewMembers = (sprint) => {
-    // Show the overlay and set the selected sprint members
-    setSelectedSprint(sprint);
-    setSelectedSprintMembers(sprint.members || []);
-    setShowMembersOverlay(true);
+  const handleViewMembers = async (sprint) => {
+    try {
+      // Fetch members from the database based on their names
+      //const membersQuery = query(collection(db, 'users'));
+      const membersQuery = query(collection(db, 'users'), where('username', 'in', sprint.members));
+      const membersSnapshot = await getDocs(membersQuery);
+      const membersWithIds = membersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      console.log('Members in sprint:', membersWithIds);
+
+      // Show the overlay and set the selected sprint members
+      setSelectedSprint(sprint);
+      setSelectedSprintMembers(membersWithIds);
+      setShowMembersOverlay(true);
+    } catch (error) {
+      console.error('Error fetching members:', error);
+    }
   };
 
   const handleCloseMembersOverlay = () => {
@@ -164,10 +180,21 @@ const SprintTable = ({ onEditSprint, onDeleteSprint, onStartSprint, isAdmin }) =
   const handleRemoveMember = (member) => {
     const memberId = member.id || member;
 
+    console.log(member.id, 'THIS IS THE MEMBER ID BOSS')
+
+    console.log(selectedSprint.scrumMaster, 'THIS IS THE SCRUM MASTER')
+    console.log(selectedSprint.productOwner, 'THIS IS THE PRODUCT OWNER')
+    
+    if (member.username === selectedSprint.scrumMaster || member.username === selectedSprint.productOwner) {
+      alert('Cannot remove the Scrum Master or Product Owner from the sprint.');
+      return;
+    }
+
     if (window.confirm("Are you sure you want to remove this member?")) {
       const updatedMembers = selectedSprintMembers.filter(mem => mem.id !== memberId && mem !== memberId);
       setSelectedSprintMembers(updatedMembers);
-      removeMemberFromActiveSprint(selectedSprint.id, memberId);
+      console.log("THIS IS THE ONE WE TRYING TO DELETE", selectedSprint.id, memberId)
+      removeMemberFromActiveSprint(selectedSprint.id, member.username);
     }
   };
 

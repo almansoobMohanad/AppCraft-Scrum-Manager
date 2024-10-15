@@ -1,5 +1,5 @@
 import React from "react";
-import { addDoc, collection, getFirestore, doc, setDoc, getDocs, deleteDoc } from "firebase/firestore";
+import { addDoc, collection, getFirestore, doc, setDoc, getDocs, deleteDoc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig.js";
 
 /** 
@@ -152,8 +152,10 @@ export async function fetchUsers() {
 
 
 
+
+
 // Function to remove member from the sprint
-export async function removeMemberFromActiveSprint(sprintId, memberId) {
+export async function removeMemberFromActiveSprint(sprintId, memberName) {
     try {
         // Get the sprint document reference
         const sprintDocRef = doc(db, "sprints", sprintId);
@@ -161,26 +163,32 @@ export async function removeMemberFromActiveSprint(sprintId, memberId) {
 
         if (sprintDoc.exists()) {
             const sprintData = sprintDoc.data();
+            console.log('Sprint data before update:', sprintData);
 
-            //remove the member from the sprint's members list
-            const updatedMembers = sprintData.members.filter(member => member !== memberId);
+            // Remove the member from the sprint's members list
+            const updatedMembers = sprintData.members.filter(member => member !== memberName);
 
-            //ensure the tasks remain in the sprint but without the removed member as the assignee
+            // Ensure the tasks remain in the sprint but without the removed member as the assignee
             const updatedTasks = sprintData.tasks.map(task => {
-                if (task.assignee === memberId) {
-                    //keep the task in the sprint but unassign the member
+                if (task.assignee === memberName) {
+                    // Keep the task in the sprint but unassign the member
                     return { ...task, assignee: null };
                 }
                 return task;
             });
 
-            // update the sprint document in Firestore with the new members and tasks
+            // Update the sprint document in Firestore with the new members and tasks
             await updateDoc(sprintDocRef, {
                 members: updatedMembers,
                 tasks: updatedTasks,
             });
 
-            console.log(`Member ${memberId} successfully removed from Sprint ${sprintId}`);
+            console.log('Sprint data after update:', {
+                members: updatedMembers,
+                tasks: updatedTasks,
+            });
+
+            console.log(`Member ${memberName} successfully removed from Sprint ${sprintId}`);
         } else {
             console.error(`Sprint with ID ${sprintId} not found`);
         }
