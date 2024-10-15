@@ -14,7 +14,7 @@ for all the tag filter button and it's item.
 
 /* Buttons and dropdowns in the same row */
 .filter-button, .dropdown-button, .Storypoint-button {
-  background-color: #007bff;
+  background-color: #00008B;
   color: white;
   border: none;
   border-radius: 5px;
@@ -26,7 +26,7 @@ for all the tag filter button and it's item.
 }
 
 .filter-button:hover, .dropdown-button:hover, .Storypoint-button:hover {
-  background-color: #0056b3;
+  background-color: #133f96;
 }
 
 /* Ensure dropdowns do not affect layout */
@@ -66,14 +66,14 @@ for all the tag filter button and it's item.
 }
 
 /* Custom colors for each tag */
-.filter-button.frontend { color:black; background-color: #FF5566; }  /* Frontend */
-.filter-button.backend { color:black; background-color: #F4A566; }   /* Backend */
-.filter-button.api { color:black; background-color: #6578FF; }       /* API */
-.filter-button.database { color:black; background-color: #40FF00; }  /* Database */
-.filter-button.framework { color:black; background-color: #D76BFF; } /* Framework */
-.filter-button.testing { color:black; background-color: #FF9500; }   /* Testing */
-.filter-button.ui { color:black; background-color: #A6F1C8; }        /* UI */
-.filter-button.ux { color:black; background-color: #66BB77; }        /* UX */
+.filter-button.frontend { color:black; background-color: #f444449d; }  /* Frontend */
+.filter-button.backend { color:black; background-color: #ea6e3d9d; }   /* Backend */
+.filter-button.api { color:black; background-color: #dfbe3a9d; }       /* API */
+.filter-button.database { color:black; background-color: #8fdc2b9d; }  /* Database */
+.filter-button.framework { color:black; background-color: #35b7769d; } /* Framework */
+.filter-button.testing { color:black; background-color: #3b97c99d; }   /* Testing */
+.filter-button.ui { color:black; background-color: #414ccb9d; }        /* UI */
+.filter-button.ux { color:black; background-color: #783ab69d; }        /* UX */
 
 /* Darken the background color on hover */
 .filter-button.frontend:hover, .filter-button.frontend.active { filter: brightness(0.6); }
@@ -87,7 +87,7 @@ for all the tag filter button and it's item.
 
 /* Custom colors for each priority */
 /* Priority specific styles */
-.priority-dropdown-item.low { background-color: #00FF00; /* Green for Low */ }
+.priority-dropdown-item.low { background-color: #085c0b; /* Green for Low */ }
 
 .priority-dropdown-item.medium { background-color: #FFFF00; /* Yellow for Medium */}
 
@@ -96,13 +96,13 @@ for all the tag filter button and it's item.
 .priority-dropdown-item.urgent { background-color: #FF0000; /* Red for Urgent */ }
 
 /* Priority Colors */
-.low { background-color: #00FF00 !important; /* Green for Low */ }
+.low { background-color: #085c0b !important; /* Green for Low */ }
 
-.medium { background-color: #FFFF00 !important; /* Yellow for Medium */ }
+.medium { background-color: #ffd103 !important; /* Yellow for Medium */ }
 
-.important { background-color: #FFA500 !important; /* Orange for Important */ }
+.important { background-color: #ff9100 !important; /* Orange for Important */ }
 
-.urgent { background-color: #FF0000 !important; /* Red for Urgent */ }
+.urgent { background-color: #ce0000 !important; /* Red for Urgent */ }
 
 
 /* this whole section is for story points */
@@ -131,7 +131,7 @@ for all the tag filter button and it's item.
   padding: 8px 16px;
   border: none;
   border-radius: 5px;
-  background-color: #007bff;
+  background-color: #00008B;
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;

@@ -51,7 +51,7 @@
 }
 
 .account-table .change-password-button {
-    background-color: rgb(0, 220, 0);
+    background-color: #085c0b;
 }
 
 .account-table .change-password-button:hover {
@@ -67,11 +67,11 @@
 }
 
 .account-table .show-graph-button {
-    background-color: rgb(0, 0, 220);
+    background-color: #00008B;
 }
 
 .account-table .show-graph-button:hover {
-    background-color: rgb(0, 0, 180);
+    background-color: #133f96;
 }
 
 /* Password */

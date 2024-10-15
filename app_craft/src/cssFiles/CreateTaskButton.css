@@ -1,5 +1,5 @@
 .create-task-button {
-    background-color: #28a745;
+    background-color: #085c0b;
     color: white;
     border: none;
     border-radius: 5px;
@@ -11,6 +11,6 @@
 }
 
 .create-task-button:hover {
-    background-color: #0056b3;
+    background-color: #3a723a;
 }
 
