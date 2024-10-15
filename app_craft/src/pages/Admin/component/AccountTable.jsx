@@ -37,7 +37,7 @@ function AccountTable({ title, accounts, onDelete, graph, changePassword, timeRa
                     }
 
                     if (filteredTasks.length > 0) {
-                        const totalLogTime = filteredTasks.reduce((total, task) => total + task.logTime, 0);
+                        const totalLogTime = filteredTasks.reduce((total, task) => total + task.logTimeSpent, 0);
                         totals.push(totalLogTime);
 
                         let averageLogTime;
