@@ -5,12 +5,27 @@ import accountIcon from '../assets/images/accountIcon.png';
 import backlogIcon from '../assets/images/backlogIcon.png';
 import kanbanIcon from '../assets/images/kanbanIcon.png';
 import adminIcon from '../assets/images/adminIcon.png';
+import { auth, db } from '../firebase/firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
 
 const NavigationBar = () => {
     const [activeItem, setActiveItem] = useState("");
     const location = useLocation();
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
+        const checkAdminStatus = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    setIsAdmin(userData.isAdmin);
+                }
+            }
+        };
+        checkAdminStatus();
+
         const path = location.pathname;
         if (path.includes("account")) {
             setActiveItem("Account");
@@ -55,7 +70,8 @@ const NavigationBar = () => {
                     <img src={kanbanIcon} alt="Kanban Board Icon" className="nav-icon" />
                     <span>Board</span>
                 </Link>
-                <Link 
+                {isAdmin && (
+                    <Link 
                     to="/admin" 
                     className={`nav-item ${activeItem === "Admin" ? "active" : ""}`}
                     onClick={() => handleItemClick("Admin")}
@@ -63,6 +79,7 @@ const NavigationBar = () => {
                     <img src={adminIcon} alt="Admin Icon" className="nav-icon" />
                     <span>Admin</span>
                 </Link>
+                )}
             </nav>
         </header>
     );
