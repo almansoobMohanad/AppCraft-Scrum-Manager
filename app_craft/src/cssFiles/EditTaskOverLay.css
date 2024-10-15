@@ -136,14 +136,14 @@
 }
 
 /* Custom colors for each tag */
-.tag-checkbox.frontend + .tag-label { background-color: #FF5566; }  /* Frontend */
-.tag-checkbox.backend + .tag-label { background-color: #F4A566; }   /* Backend */
-.tag-checkbox.api + .tag-label { background-color: #6578FF; }       /* API */
-.tag-checkbox.database + .tag-label { background-color: #40FF00; }  /* Database */
-.tag-checkbox.framework + .tag-label { background-color: #D76BFF; } /* Framework */
-.tag-checkbox.testing + .tag-label { background-color: #FF9500; }   /* Testing */
-.tag-checkbox.ui + .tag-label { background-color: #A6F1C8; }        /* UI */
-.tag-checkbox.ux + .tag-label { background-color: #66BB77; }        /* UX */
+.tag-checkbox.frontend + .tag-label { background-color: #f444449d; }  /* Frontend */
+.tag-checkbox.backend + .tag-label { background-color: #ea6e3d9d; }   /* Backend */
+.tag-checkbox.api + .tag-label { background-color: #dfbe3a9d; }       /* API */
+.tag-checkbox.database + .tag-label { background-color: #8fdc2b9d; }  /* Database */
+.tag-checkbox.framework + .tag-label { background-color: #35b7769d; } /* Framework */
+.tag-checkbox.testing + .tag-label { background-color: #3b97c99d; }   /* Testing */
+.tag-checkbox.ui + .tag-label { background-color: #414ccb9d; }        /* UI */
+.tag-checkbox.ux + .tag-label { background-color: #783ab69d; }        /* UX */
 
 /* Priority selection boxes */
 .priority-checkbox-wrapper {
