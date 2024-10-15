@@ -46,9 +46,9 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
                 console.error("Error fetching users:", error);
             }
         };
-    
+        
         loadUsers();
-    }, [productOwner, scrumMaster, members]);
+    }, []);
     
     useEffect(() => {
         let updatedMembers = [...members];
@@ -82,7 +82,7 @@ const EditSprint = ({ sprintDetails, onEdit, onClose }) => {
         setPrevProductOwner(productOwner); // Update the previous po
         setPrevScrumMaster(scrumMaster); // Update the previous sm
         setMembers(updatedMembers);
-    }, [productOwner, scrumMaster]); 
+    }, []); 
 
     const handleEditSprint = () => {
         const today = new Date().setHours(0, 0, 0, 0); // Get today's date without time
