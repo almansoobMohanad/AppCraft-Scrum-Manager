@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, onSnapshot, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db, auth } from '../../firebase/firebaseConfig'; // Firestore and Auth config
 import { reauthenticateWithCredential, EmailAuthProvider, updatePassword, onAuthStateChanged } from "firebase/auth";
 import NavigationBar from "../../components/NavigationBar";
@@ -34,9 +34,14 @@ function AdminView() {
     }, []);
 
     useEffect(() => {
-        const authUnsubscribe = onAuthStateChanged(auth, (user) => {
+        const authUnsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                setCurrentUser(user);
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    setCurrentUser({ uid: user.uid, ...userDoc.data() });
+                } else {
+                    setCurrentUser(null);
+                }
             } else {
                 setCurrentUser(null);
             }
