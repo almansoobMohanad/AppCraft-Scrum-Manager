@@ -32,7 +32,7 @@ function GraphOverlay({ onClose, selectedAccount, timeRange }) {
 
                 const filteredHoursSpent = dates.map(date => {
                     const entry = Object.values(account.logTimeSpentTasks).find(task => task.date === date);
-                    return entry ? entry.logTime : 0;
+                    return entry ? entry.logTimeSpent : 0;
                 });
 
                 setLabels(dates);
