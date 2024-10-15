@@ -6,7 +6,7 @@ import backlogIcon from '../assets/images/backlogIcon.png';
 import kanbanIcon from '../assets/images/kanbanIcon.png';
 import adminIcon from '../assets/images/adminIcon.png';
 
-const NavigationBar = () => {
+const NavigationBar = ({ currentUser }) => {
     const [activeItem, setActiveItem] = useState("");
     const location = useLocation();
 
@@ -55,14 +55,16 @@ const NavigationBar = () => {
                     <img src={kanbanIcon} alt="Kanban Board Icon" className="nav-icon" />
                     <span>Board</span>
                 </Link>
-                <Link 
-                    to="/admin" 
-                    className={`nav-item ${activeItem === "Admin" ? "active" : ""}`}
-                    onClick={() => handleItemClick("Admin")}
-                >
-                    <img src={adminIcon} alt="Admin Icon" className="nav-icon" />
-                    <span>Admin</span>
-                </Link>
+                {currentUser && currentUser.isAdmin && (
+                    <Link 
+                        to="/admin" 
+                        className={`nav-item ${activeItem === "Admin" ? "active" : ""}`}
+                        onClick={() => handleItemClick("Admin")}
+                    >
+                        <img src={adminIcon} alt="Admin Icon" className="nav-icon" />
+                        <span>Admin</span>
+                    </Link>
+                )}
             </nav>
         </header>
     );

@@ -4,7 +4,7 @@ import './AccountPage.css';
 import changeDetails from './components/accountsDatabaseLogic';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // run this: npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { getFirestore, doc, updateDoc } from "firebase/firestore"; // Import Firestore functions
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore"; // Import Firestore functions
 import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 
 function AccountPage() {
@@ -17,14 +17,25 @@ function AccountPage() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false); // New state for confirm password visibility
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [currentUser, setCurrentUser] = useState(null); // State to store current user
 
     useEffect(() => {
         const auth = getAuth();
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const db = getFirestore();
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
-                setEmail(user.email);
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    setEmail(userData.email);
+                    setCurrentUser({ uid: user.uid, ...userData }); // Set the current user
+                } else {
+                    setEmail("");
+                    setCurrentUser(null); // Clear the current user
+                }
             } else {
                 setEmail("");
+                setCurrentUser(null); // Clear the current user
             }
         });
 
@@ -84,7 +95,7 @@ function AccountPage() {
 
     return (
         <div className="accountPage-container">
-            <NavigationBar />
+            <NavigationBar currentUser={currentUser} />
             <div className="content">
                 <h1 className="title">Account Page</h1>
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db, auth } from '../../firebase/firebaseConfig'; // Firestore and Auth config
-import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "firebase/auth";
+import { reauthenticateWithCredential, EmailAuthProvider, updatePassword, onAuthStateChanged } from "firebase/auth";
 import NavigationBar from "../../components/NavigationBar";
 import CreateAccount from "./component/CreateAccount";
 import AccountTable from "./component/AccountTable"; // Import the new component
@@ -18,6 +18,7 @@ function AdminView() {
     const [filteredAccounts, setFilteredAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const [timeRange, setTimeRange] = useState({ start: "", end: "" });
+    const [currentUser, setCurrentUser] = useState(null); // State to store current user
 
     const memberAccounts = users.filter(account => !account.isAdmin);
 
@@ -30,6 +31,19 @@ function AdminView() {
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const authUnsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setCurrentUser(user);
+            } else {
+                setCurrentUser(null);
+            }
+        });
+
+        // Cleanup subscription on unmount
+        return () => authUnsubscribe();
     }, []);
 
     const toggleOverlay = () => {
@@ -111,7 +125,7 @@ function AdminView() {
 
     return (
         <div className="adminView-container">
-            <NavigationBar />
+            <NavigationBar currentUser={currentUser} />
             <div className="content">
                 <h1 className="title">Admin View</h1>
 
