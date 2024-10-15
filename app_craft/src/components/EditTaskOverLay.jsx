@@ -176,76 +176,79 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
         if (!logTimeSpent || logTimeSpent <= 0) return; // Skip if invalid input
     
         const currentDate = new Date().toLocaleDateString('en-GB'); // Use today's date
-        
+    
         const updatedTotalLogTime = totalLogTime + Number(logTimeSpent);
         setTotalLogTime(updatedTotalLogTime); // Update the total log time
     
         // Update the log time history with the new log
         const updatedLogTimeHistory = [...logTimeHistory];
-        
+    
         // Check if an entry for the current date already exists
-        const existingEntry = updatedLogTimeHistory.find(entry => entry.date === currentDate);
-        
-        if (existingEntry) {
+        const existingEntryIndex = updatedLogTimeHistory.findIndex(entry => entry.date === currentDate);
+    
+        if (existingEntryIndex !== -1) {
             // If there's already an entry for today, update the log time
-            existingEntry.logTime += Number(logTimeSpent);
+            updatedLogTimeHistory[existingEntryIndex].logTime += Number(logTimeSpent);
         } else {
             // If there's no entry for today, create a new one
             updatedLogTimeHistory.push({ date: currentDate, logTime: Number(logTimeSpent) });
         }
-        
+    
         setLogTimeHistory(updatedLogTimeHistory); // Update state with new history
         setLogTimeSpentUser(Number(logTimeSpent)); // Update the user's log time
         setLogTimeSpent(0); // Reset the input after adding time
-
+    
         console.log(`New Total Log Time: ${updatedTotalLogTime} hours`);
     };
 
     const updateAccountLogtime = async (newLogTime) => {
         const currentDate = new Date().toLocaleDateString('en-GB');
-
+    
         try {
             if (!newLogTime) {
                 console.error('Invalid log time data');
                 return;
             }
-
+    
             const auth = getAuth();
             const user = auth.currentUser;
-
+    
             if (user) {
                 const db = getFirestore();
                 const userDoc = doc(db, "users", user.uid);
                 const userData = (await getDoc(userDoc)).data();
-
-                const LTSTasks = userData.logTimeSpentTasks || [];
-
+    
+                // Ensure LTSTasks is an array
+                let LTSTasks = userData.logTimeSpentTasks || [];
+    
                 let updatedTotalLogTime = (userData.logTimeSpentTotal || 0) + Number(newLogTime);
-                let dateFound = false;
-
-                for (let key in LTSTasks) {
-                    if (LTSTasks[key].date === currentDate) {
-                        LTSTasks[key].logTimeSpent += Number(newLogTime);
-                        dateFound = true;
+                let entryExists = false;
+    
+                // Check if an entry for the current date exists
+                for (let i = 0; i < LTSTasks.length; i++) {
+                    if (LTSTasks[i].date === currentDate) {
+                        LTSTasks[i].logTimeSpent += Number(newLogTime);
+                        entryExists = true;
                         break;
                     }
                 }
-
-                if (!dateFound) {
-                    const newIndex = Object.keys(LTSTasks).length + 1;
-                    LTSTasks[newIndex] = { 
-                        date: currentDate, 
-                        logTimeSpent: Number(newLogTime) 
-                    };
+    
+                // If no entry exists for the current date, add a new one
+                if (!entryExists) {
+                    LTSTasks.push({
+                        date: currentDate,
+                        logTimeSpent: Number(newLogTime),
+                    });
                 }
-
+    
+                // Update Firestore with the new log time
                 await updateDoc(userDoc, {
                     logTimeSpentTotal: updatedTotalLogTime,
-                    logTimeSpentTasks: LTSTasks,
+                    logTimeSpentTasks: LTSTasks,  // Ensure this is an array
                 });
-
+    
                 console.log('Log time updated successfully');
-
+    
             } else {
                 console.error('No authenticated user found.');
             }
@@ -253,6 +256,7 @@ function EditTaskOverlay({ task, onClose, onSave, onUpdate, showAssignee, curren
             console.error('Error updating log time:', error);
         }
     };
+    
 
     const validateFields = () => {
         if (!name || tags.length === 0 || !description) {
