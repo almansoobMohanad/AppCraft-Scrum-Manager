@@ -57,10 +57,16 @@ function CreateAccount({ onClose }) {
 
             onClose(); // Close the form
         } catch (error) {
+            console.error("Error creating account:", error);
             if (error.code === 'auth/email-already-in-use') {
                 setError("The email address is already in use by another account.");
+            } else if (error.code === 'auth/wrong-password') {
+                setError("The password entered for re-authentication is incorrect.");
+            } else if (error.code === 'auth/weak-password') {
+                setError("The password is too weak.");
+            } else if (error.code === 'auth/invalid-email') {
+                setError("The email address is not valid.");
             } else {
-                console.error("Error creating account:", error);
                 setError("Error creating account. Please try again.");
             }
         }
