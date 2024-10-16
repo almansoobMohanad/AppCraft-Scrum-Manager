@@ -3,12 +3,17 @@ import { removeMemberFromActiveSprint } from '../components/sprintDatabaseLogic.
 import '../css/viewMembers.css';
 
 const ViewMembers = ({ sprintDetails, members, onRemoveMember }) => {
+
+    console.log(members, 'members');
+
+
+
     return (
         <div className="view-members">
             <ul>
                 {members.map((member) => (
                     <li key={member.id || member}> 
-                        <span>{member.email || member}</span> 
+                        <span>{member.username}</span> 
                         <button 
                             className={`remove-member-btn ${sprintDetails.status === 'Active' ? "" : "disabled"}`} 
                             onClick={() => onRemoveMember(member)}

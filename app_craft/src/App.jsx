@@ -121,7 +121,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <NavigationBar />
+      <NavigationBar currentUser={userData}/>
       <div className="content">
         <h1 className="title">Product Backlog</h1>
         <div className="button-group">

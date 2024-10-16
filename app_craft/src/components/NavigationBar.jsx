@@ -8,7 +8,7 @@ import adminIcon from '../assets/images/adminIcon.png';
 import { auth, db } from '../firebase/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 
-const NavigationBar = () => {
+const NavigationBar = ({ currentUser }) => {
     const [activeItem, setActiveItem] = useState("");
     const location = useLocation();
     const [isAdmin, setIsAdmin] = useState(false);
@@ -70,6 +70,7 @@ const NavigationBar = () => {
                     <img src={kanbanIcon} alt="Kanban Board Icon" className="nav-icon" />
                     <span>Board</span>
                 </Link>
+<<<<<<< HEAD
                 {isAdmin && (
                     <Link 
                     to="/admin" 
@@ -79,6 +80,17 @@ const NavigationBar = () => {
                     <img src={adminIcon} alt="Admin Icon" className="nav-icon" />
                     <span>Admin</span>
                 </Link>
+=======
+                {currentUser && currentUser.isAdmin && (
+                    <Link 
+                        to="/admin" 
+                        className={`nav-item ${activeItem === "Admin" ? "active" : ""}`}
+                        onClick={() => handleItemClick("Admin")}
+                    >
+                        <img src={adminIcon} alt="Admin Icon" className="nav-icon" />
+                        <span>Admin</span>
+                    </Link>
+>>>>>>> dada2d6834a8584b73fe96b754d2cf524a633c1e
                 )}
             </nav>
         </header>

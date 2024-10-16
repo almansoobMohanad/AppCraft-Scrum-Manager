@@ -138,7 +138,7 @@ const SprintBoard = () => {
 
     return (
         <div className="sprintBoard-container">
-            <NavigationBar /> {/* Add the NavigationBar component */}
+            <NavigationBar currentUser={currentUser}/>
             <div className="content">
                 <h1 className="title">Sprint Board</h1>
                 {currentUser.isAdmin && (

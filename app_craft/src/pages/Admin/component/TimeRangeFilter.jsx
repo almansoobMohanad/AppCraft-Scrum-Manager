@@ -9,6 +9,9 @@ function TimeRangeFilter({ onConfirm }) {
 
     const handleConfirm = () => {
         // Validate if both fields are filled
+        console.log(`Start Date: ${startDate}`);
+        console.log(`End Date: ${endDate}`);
+
         if (!startDate || !endDate) {
             setErrorMessage("Both 'From' and 'To' date fields are required."); // Set error message
         } else {

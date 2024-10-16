@@ -15,29 +15,35 @@ function AccountTable({ title, accounts, onDelete, graph, changePassword, timeRa
             [index]: !prevState[index],
         }));
     };
-
+    const convertDate = (dateStr) => {
+        const [day, month, year] = dateStr.split('/');
+        return `${year}-${month}-${day}`;
+    };
     useEffect(() => {
         // Calculate average log times and total log times and store them in the arrays
         const calculateLogTimes = () => {
             const averages = [];
             const totals = [];
+            console.log("this is run")
 
             accounts.forEach(account => {
                 if (account.logTimeSpentTasks && account.logTimeSpentTasks.length > 0) {
                     let filteredTasks = account.logTimeSpentTasks;
-
+                    console.log("this is run")
                     // Filter tasks based on the timeRange if provided
                     if (timeRange && timeRange.start && timeRange.end) {
                         filteredTasks = account.logTimeSpentTasks.filter(task => {
-                            const taskDate = new Date(task.date);
+                            console.log("this is task", task)
+                            const taskDate = new Date(convertDate(task.date));
                             const startDate = new Date(timeRange.start);
                             const endDate = new Date(timeRange.end);
+                            console.log(`Task Date: ${taskDate}, Start Date: ${startDate}, End Date: ${endDate}`);
                             return taskDate >= startDate && taskDate <= endDate;
                         });
                     }
 
                     if (filteredTasks.length > 0) {
-                        const totalLogTime = filteredTasks.reduce((total, task) => total + task.logTime, 0);
+                        const totalLogTime = filteredTasks.reduce((total, task) => total + task.logTimeSpent, 0);
                         totals.push(totalLogTime);
 
                         let averageLogTime;
@@ -142,7 +148,7 @@ AccountTable.propTypes = {
             logTimeSpentTasks: PropTypes.arrayOf(
                 PropTypes.shape({
                     date: PropTypes.string.isRequired,
-                    logTime: PropTypes.number.isRequired,
+                    logTimeSpent: PropTypes.number.isRequired,
                 })
             ),
         })
