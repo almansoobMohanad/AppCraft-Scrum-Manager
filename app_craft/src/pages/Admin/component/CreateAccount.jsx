@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai"; // Import the cross icon
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../../firebase/firebaseConfig"; // Import Firebase auth and Firestore
 import '../css/CreateAccount.css'; 
@@ -29,7 +29,12 @@ function CreateAccount({ onClose }) {
             return;
         }
         try {
-            // Register the user with Firebase Authentication
+            // Store the current user's credentials
+            const currentUser = auth.currentUser;
+            const currentEmail = currentUser.email;
+            const currentPassword = prompt("Please enter your current password to re-authenticate:");
+
+            // Register the new user with Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, accountData.email, accountData.password);
             const user = userCredential.user;
 
@@ -46,10 +51,18 @@ function CreateAccount({ onClose }) {
             });
 
             console.log("Account created successfully");
+
+            // Re-authenticate the current user
+            await signInWithEmailAndPassword(auth, currentEmail, currentPassword);
+
             onClose(); // Close the form
         } catch (error) {
-            console.error("Error creating account:", error);
-            setError("Error creating account. Please try again.");
+            if (error.code === 'auth/email-already-in-use') {
+                setError("The email address is already in use by another account.");
+            } else {
+                console.error("Error creating account:", error);
+                setError("Error creating account. Please try again.");
+            }
         }
     };
 
