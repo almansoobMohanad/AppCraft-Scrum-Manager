@@ -1,4 +1,4 @@
-# AppCraft - Scrum Manager 🧩
+# AppCraft - Scrum Manager
 
 A web-based Scrum project management tool designed and developed as part of a university team project using **React**, **Firebase**, and Agile Scrum methodology. This tool helps teams manage product and sprint backlogs, tasks, sprint progress, and team roles efficiently.
 
@@ -64,4 +64,5 @@ Collaboration, communication, and flexibility were key to our success.
 | Git          | Version Control & CI/CD    |
 
 ---
+
 
