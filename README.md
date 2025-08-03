@@ -44,7 +44,7 @@ Collaboration, communication, and flexibility were key to our success.
 
 ---
 
-## 🛠️ Features
+## Features
 
 - Create and manage **Product Backlog** and **Sprint Backlog**
 - Track and manage individual **tasks and their statuses**
@@ -64,3 +64,4 @@ Collaboration, communication, and flexibility were key to our success.
 | Git          | Version Control & CI/CD    |
 
 ---
+
